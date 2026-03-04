@@ -10,6 +10,7 @@ import { deriveAccentTokens } from "@/lib/colorUtils";
 import { CATEGORIES, componentRegistry, type ComponentDef } from "@/lib/componentData";
 import { componentPreviews } from "@/lib/componentPreviews";
 import { PlaygroundPanel, defaultPlaygroundState, type PlaygroundState } from "./PlaygroundPanel";
+import { BentoGrid } from "./BentoGrid";
 import { CodeBlock } from "./CodeBlock";
 import { InstallTabs } from "./InstallTabs";
 import { AiUsageSection } from "./AiUsageSection";
@@ -59,6 +60,7 @@ function PageShell({
   const [tab, setTab] = useState<"preview" | "code">("preview");
   const [navOpen, setNavOpen] = useState(true);
   const [appearanceOpen, setAppearanceOpen] = useState(true);
+  const [generateUI, setGenerateUI] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const a = (v: string | number) => v as any;
@@ -287,6 +289,35 @@ function PageShell({
             )}
           </div>
 
+          {/* ── Generate UI button ── */}
+          <div style={{ borderBottom: `1px solid ${shell.border}` }}>
+            <button
+              onClick={() => setGenerateUI((v) => !v)}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 16px",
+                background: generateUI ? shell.goldBg : "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: generateUI ? shell.gold : shell.text,
+                fontFamily: "var(--font-dm-sans), sans-serif",
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                transition: "all 0.15s",
+              }}
+            >
+              ✦ Generate UI
+              {generateUI && (
+                <span style={{ fontSize: 10, color: shell.gold }}>ON</span>
+              )}
+            </button>
+          </div>
+
           {/* ── Appearance panel ── */}
           <div>
             <button
@@ -320,6 +351,46 @@ function PageShell({
         </aside>
 
         {/* ── Main content ── */}
+        {generateUI ? (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            {/* Bento toolbar */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "16px 48px 0",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 12,
+                  color: shell.muted,
+                  fontFamily: "var(--font-dm-sans), sans-serif",
+                  flex: 1,
+                }}
+              >
+                All components — adjust appearance settings to preview changes across the system
+              </span>
+              <button
+                onClick={() => setGenerateUI(false)}
+                style={{
+                  padding: "5px 14px",
+                  border: `1px solid ${shell.border}`,
+                  borderRadius: 6,
+                  background: "transparent",
+                  color: shell.muted,
+                  fontFamily: "var(--font-dm-sans), sans-serif",
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                ← Back to docs
+              </button>
+            </div>
+            <BentoGrid previewStyle={previewContainerStyle} />
+          </div>
+        ) : (
         <main
           style={{
             flex: 1,
@@ -342,7 +413,7 @@ function PageShell({
               <h1
                 style={{
                   fontFamily: "var(--font-unbounded), sans-serif",
-                  fontSize: 22,
+                  fontSize: 32,
                   fontWeight: 700,
                   color: shell.text,
                   margin: 0,
@@ -536,6 +607,7 @@ function PageShell({
             ) : <div />}
           </div>
         </main>
+        )}
       </div>
     </div>
   );
@@ -549,7 +621,7 @@ function SectionTitle({ children, shell }: { children: React.ReactNode; shell: R
       <h2
         style={{
           fontFamily: "var(--font-unbounded), sans-serif",
-          fontSize: 13,
+          fontSize: 20,
           fontWeight: 600,
           color: shell.text,
           margin: 0,
