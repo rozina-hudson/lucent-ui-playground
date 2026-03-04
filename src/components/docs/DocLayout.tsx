@@ -2,7 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LucentProvider, useLucent, Badge, Button, Text } from "lucent-ui";
+import {
+  LucentProvider,
+  useLucent,
+  Badge,
+  Button,
+  Text,
+  PageLayout,
+  Collapsible,
+  NavLink,
+  Breadcrumb,
+  Tabs,
+} from "lucent-ui";
 import type { LucentTokens } from "lucent-ui";
 
 import { getShell } from "@/lib/shellColors";
@@ -57,7 +68,6 @@ function PageShell({
   shell: ReturnType<typeof getShell>;
 }) {
   const { tokens } = useLucent();
-  const [tab, setTab] = useState<"preview" | "code">("preview");
   const [navOpen, setNavOpen] = useState(true);
   const [appearanceOpen, setAppearanceOpen] = useState(true);
   const [generateUI, setGenerateUI] = useState(false);
@@ -92,300 +102,193 @@ function PageShell({
   const firstExample = def.examples[0];
   const TopPreview = firstExample ? componentPreviews[firstExample.previewKey] : null;
 
-  const HEADER_H = 56;
-  const SIDEBAR_W = 240;
+  const sidebarLabel: React.CSSProperties = {
+    fontFamily: "var(--font-dm-sans), sans-serif",
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+  };
 
-  return (
-    <div style={{ background: shell.bg, color: shell.text, minHeight: "100vh" }}>
+  const sidebar = (
+    <div style={{
+      height: "100%",
+      overflowY: "auto",
+      display: "flex",
+      flexDirection: "column",
+      background: shell.bg,
+      borderRight: `1px solid ${shell.border}`,
+    }}>
+      {/* ── Components panel ── */}
+      <Collapsible
+        open={navOpen}
+        onOpenChange={setNavOpen}
+        style={{ borderBottom: `1px solid ${shell.border}` }}
+        trigger={
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...sidebarLabel }}>
+            Components
+            <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>{navOpen ? "▲" : "▼"}</span>
+          </div>
+        }
+      >
+        <div style={{ paddingBottom: 12 }}>
+          {CATEGORIES.map((cat) => (
+            <div key={cat.label} style={{ marginBottom: 16 }}>
+              <Text
+                as="p"
+                size="xs"
+                weight="bold"
+                style={{ letterSpacing: "0.1em", textTransform: "uppercase", color: shell.subtle, padding: "0 20px", margin: "0 0 6px" }}
+              >
+                {cat.label}
+              </Text>
+              <nav>
+                {cat.slugs.map((slug) => {
+                  const comp = componentRegistry.find((c) => c.slug === slug);
+                  return (
+                    <NavLink key={slug} href={`/components/${slug}`} as={Link} isActive={slug === def.slug}>
+                      {comp?.name ?? slug}
+                    </NavLink>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
+        </div>
+      </Collapsible>
 
-      {/* ─── Top nav ─── */}
-      <header
+      {/* ── Generate UI toggle ── */}
+      <div style={{ borderBottom: `1px solid ${shell.border}` }}>
+        <button
+          onClick={() => setGenerateUI((v) => !v)}
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "10px 16px",
+            background: generateUI ? shell.goldBg : "transparent",
+            border: "none",
+            cursor: "pointer",
+            color: generateUI ? shell.gold : shell.text,
+            transition: "all 0.15s",
+            ...sidebarLabel,
+          }}
+        >
+          ✦ Generate UI
+          {generateUI && <span style={{ fontSize: 10, color: shell.gold }}>ON</span>}
+        </button>
+      </div>
+
+      {/* ── Appearance panel ── */}
+      <Collapsible
+        open={appearanceOpen}
+        onOpenChange={setAppearanceOpen}
+        trigger={
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...sidebarLabel }}>
+            Appearance
+            <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>{appearanceOpen ? "▲" : "▼"}</span>
+          </div>
+        }
+      >
+        <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
+      </Collapsible>
+    </div>
+  );
+
+  const header = (
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "0 24px",
+      height: "100%",
+      borderBottom: `1px solid ${shell.border}`,
+      background: shell.bg,
+      gap: 12,
+    }}>
+      <Link
+        href="/"
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 24px",
-          height: HEADER_H,
-          borderBottom: `1px solid ${shell.border}`,
-          position: "sticky",
-          top: 0,
-          background: shell.bg,
-          zIndex: 40,
-          gap: 12,
+          fontFamily: "var(--font-unbounded), sans-serif",
+          fontWeight: 600,
+          fontSize: 13,
+          color: shell.gold,
+          textDecoration: "none",
+          letterSpacing: "-0.01em",
+          flexShrink: 0,
         }}
       >
-        <Link
-          href="/"
-          style={{
-            fontFamily: "var(--font-unbounded), sans-serif",
-            fontWeight: 600,
-            fontSize: 13,
-            color: shell.gold,
-            textDecoration: "none",
-            letterSpacing: "-0.01em",
-            flexShrink: 0,
-          }}
-        >
-          Lucent UI
-        </Link>
+        Lucent UI
+      </Link>
 
-        {/* Prev / Name / Next */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {prev ? (
-            <Link
-              href={`/components/${prev.slug}`}
-              style={{
-                fontSize: 12,
-                color: shell.muted,
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontFamily: "var(--font-dm-sans), sans-serif",
-              }}
-            >
-              ← {prev.name}
-            </Link>
-          ) : (
-            <span style={{ width: 60 }} />
-          )}
-          <span
-            style={{
-              fontFamily: "var(--font-unbounded), sans-serif",
-              fontSize: 12,
-              color: shell.text,
-              fontWeight: 600,
-            }}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {prev ? (
+          <Link
+            href={`/components/${prev.slug}`}
+            style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}
           >
-            {def.name}
-          </span>
-          {next ? (
-            <Link
-              href={`/components/${next.slug}`}
-              style={{
-                fontSize: 12,
-                color: shell.muted,
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontFamily: "var(--font-dm-sans), sans-serif",
-              }}
-            >
-              {next.name} →
-            </Link>
-          ) : (
-            <span style={{ width: 60 }} />
-          )}
-        </div>
-
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <Badge variant="accent" size="sm">✦ LLM-ready</Badge>
-        </div>
-      </header>
-
-      {/* ─── Two-column layout ─── */}
-      <div style={{ display: "flex" }}>
-
-        {/* ── Sidebar ── */}
-        <aside
-          style={{
-            width: SIDEBAR_W,
-            flexShrink: 0,
-            borderRight: `1px solid ${shell.border}`,
-            position: "sticky",
-            top: HEADER_H,
-            height: `calc(100vh - ${HEADER_H}px)`,
-            overflowY: "auto",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {/* ── Components panel ── */}
-          <div style={{ borderBottom: `1px solid ${shell.border}` }}>
-            <button
-              onClick={() => setNavOpen((v) => !v)}
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "10px 16px",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                color: shell.text,
-                fontFamily: "var(--font-dm-sans), sans-serif",
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              Components
-              <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>
-                {navOpen ? "▲" : "▼"}
-              </span>
-            </button>
-            {navOpen && (
-              <div style={{ paddingBottom: 12 }}>
-                {CATEGORIES.map((cat) => (
-                  <div key={cat.label} style={{ marginBottom: 16 }}>
-                    <p
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        color: shell.subtle,
-                        padding: "0 20px",
-                        margin: "0 0 6px",
-                        fontFamily: "var(--font-dm-sans), sans-serif",
-                      }}
-                    >
-                      {cat.label}
-                    </p>
-                    <nav>
-                      {cat.slugs.map((slug) => {
-                        const comp = componentRegistry.find((c) => c.slug === slug);
-                        const isActive = slug === def.slug;
-                        return (
-                          <Link
-                            key={slug}
-                            href={`/components/${slug}`}
-                            style={{
-                              display: "block",
-                              padding: "5px 20px",
-                              fontSize: 13,
-                              color: isActive ? shell.gold : shell.muted,
-                              textDecoration: "none",
-                              fontFamily: "var(--font-dm-sans), sans-serif",
-                              fontWeight: isActive ? 600 : 400,
-                              background: isActive ? shell.goldBg : "transparent",
-                              borderLeft: isActive ? `2px solid ${shell.gold}` : "2px solid transparent",
-                            }}
-                          >
-                            {comp?.name ?? slug}
-                          </Link>
-                        );
-                      })}
-                    </nav>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ── Generate UI button ── */}
-          <div style={{ borderBottom: `1px solid ${shell.border}` }}>
-            <button
-              onClick={() => setGenerateUI((v) => !v)}
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "10px 16px",
-                background: generateUI ? shell.goldBg : "transparent",
-                border: "none",
-                cursor: "pointer",
-                color: generateUI ? shell.gold : shell.text,
-                fontFamily: "var(--font-dm-sans), sans-serif",
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                transition: "all 0.15s",
-              }}
-            >
-              ✦ Generate UI
-              {generateUI && (
-                <span style={{ fontSize: 10, color: shell.gold }}>ON</span>
-              )}
-            </button>
-          </div>
-
-          {/* ── Appearance panel ── */}
-          <div>
-            <button
-              onClick={() => setAppearanceOpen((v) => !v)}
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "10px 16px",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                color: shell.text,
-                fontFamily: "var(--font-dm-sans), sans-serif",
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              Appearance
-              <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>
-                {appearanceOpen ? "▲" : "▼"}
-              </span>
-            </button>
-            {appearanceOpen && (
-              <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
-            )}
-          </div>
-        </aside>
-
-        {/* ── Main content ── */}
-        {generateUI ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            {/* Bento toolbar */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "16px 48px 0",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 12,
-                  color: shell.muted,
-                  fontFamily: "var(--font-dm-sans), sans-serif",
-                  flex: 1,
-                }}
-              >
-                All components — adjust appearance settings to preview changes across the system
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setGenerateUI(false)}
-                style={{ color: shell.muted, borderColor: shell.border }}
-              >
-                ← Back to docs
-              </Button>
-            </div>
-            <BentoGrid previewStyle={previewContainerStyle} />
-          </div>
+            ← {prev.name}
+          </Link>
         ) : (
-        <main
-          style={{
-            flex: 1,
-            padding: "40px 48px",
-            maxWidth: 900,
-          }}
-        >
-          {/* Breadcrumb */}
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 24, fontSize: 12, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>
-            <Link href="/" style={{ color: shell.muted, textDecoration: "none" }}>Home</Link>
-            <span>/</span>
-            <Link href="/components/button" style={{ color: shell.muted, textDecoration: "none" }}>Components</Link>
-            <span>/</span>
-            <span style={{ color: shell.text }}>{def.name}</span>
+          <span style={{ width: 60 }} />
+        )}
+        <span style={{ fontFamily: "var(--font-unbounded), sans-serif", fontSize: 12, color: shell.text, fontWeight: 600 }}>
+          {def.name}
+        </span>
+        {next ? (
+          <Link
+            href={`/components/${next.slug}`}
+            style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}
+          >
+            {next.name} →
+          </Link>
+        ) : (
+          <span style={{ width: 60 }} />
+        )}
+      </div>
+
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <Badge variant="accent" size="sm">✦ LLM-ready</Badge>
+      </div>
+    </div>
+  );
+
+  return (
+    <PageLayout
+      style={{ background: shell.bg, color: shell.text, minHeight: "100vh" }}
+      header={header}
+      sidebar={sidebar}
+      headerHeight={56}
+      sidebarWidth={240}
+    >
+      {generateUI ? (
+        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 48px 0" }}>
+            <span style={{ fontSize: 12, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", flex: 1 }}>
+              All components — adjust appearance settings to preview changes across the system
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setGenerateUI(false)}
+              style={{ color: shell.muted, borderColor: shell.border }}
+            >
+              ← Back to docs
+            </Button>
           </div>
+          <BentoGrid previewStyle={previewContainerStyle} />
+        </div>
+      ) : (
+        <main style={{ flex: 1, padding: "40px 48px", maxWidth: 900 }}>
+          <Breadcrumb
+            style={{ marginBottom: 24 }}
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Components", href: "/components/button" },
+              { label: def.name },
+            ]}
+          />
 
           {/* Component header */}
           <div style={{ marginBottom: 32 }}>
@@ -409,8 +312,6 @@ function PageShell({
             >
               {def.description}
             </Text>
-
-            {/* Copy import */}
             <CopyImportButton importStatement={def.importStatement} shell={shell} />
           </div>
 
@@ -418,48 +319,35 @@ function PageShell({
 
           {/* Preview / Code tabs */}
           <SectionTitle shell={shell}>Preview</SectionTitle>
-          <div style={{ marginBottom: 40 }}>
-            <div style={{ display: "flex", gap: 2, marginBottom: 12 }}>
-              {(["preview", "code"] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  style={{
-                    padding: "5px 14px",
-                    border: `1px solid ${tab === t ? shell.gold : shell.border}`,
-                    borderRadius: 6,
-                    background: tab === t ? shell.goldBg : "transparent",
-                    color: tab === t ? shell.gold : shell.muted,
-                    fontFamily: "var(--font-dm-sans), sans-serif",
-                    fontSize: 12,
-                    fontWeight: tab === t ? 600 : 400,
-                    cursor: "pointer",
-                    textTransform: "capitalize",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-
-            {tab === "preview" ? (
-              <div
-                style={{
-                  border: `1px solid ${shell.border}`,
-                  borderRadius: 12,
-                  background: tokens.bgBase,
-                  padding: "32px 28px",
-                  minHeight: 120,
-                  ...previewContainerStyle,
-                }}
-              >
-                {TopPreview ? <TopPreview /> : null}
-              </div>
-            ) : (
-              <CodeBlock code={firstExample?.code ?? ""} shell={shell} />
-            )}
-          </div>
+          <Tabs
+            defaultValue="preview"
+            style={{ marginBottom: 40 }}
+            tabs={[
+              {
+                value: "preview",
+                label: "Preview",
+                content: (
+                  <div
+                    style={{
+                      border: `1px solid ${shell.border}`,
+                      borderRadius: 12,
+                      background: tokens.bgBase,
+                      padding: "32px 28px",
+                      minHeight: 120,
+                      ...previewContainerStyle,
+                    }}
+                  >
+                    {TopPreview ? <TopPreview /> : null}
+                  </div>
+                ),
+              },
+              {
+                value: "code",
+                label: "Code",
+                content: <CodeBlock code={firstExample?.code ?? ""} shell={shell} />,
+              },
+            ]}
+          />
 
           <Divider shell={shell} />
 
@@ -527,48 +415,23 @@ function PageShell({
           </div>
 
           {/* Prev / Next footer */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingTop: 24,
-              borderTop: `1px solid ${shell.border}`,
-            }}
-          >
+          <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 24, borderTop: `1px solid ${shell.border}` }}>
             {prev ? (
-              <Link
-                href={`/components/${prev.slug}`}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                  textDecoration: "none",
-                }}
-              >
+              <Link href={`/components/${prev.slug}`} style={{ display: "flex", flexDirection: "column", gap: 2, textDecoration: "none" }}>
                 <span style={{ fontSize: 11, color: shell.subtle, fontFamily: "var(--font-dm-sans), sans-serif" }}>← Previous</span>
                 <span style={{ fontSize: 13, color: shell.text, fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 500 }}>{prev.name}</span>
               </Link>
             ) : <div />}
             {next ? (
-              <Link
-                href={`/components/${next.slug}`}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  gap: 2,
-                  textDecoration: "none",
-                }}
-              >
+              <Link href={`/components/${next.slug}`} style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2, textDecoration: "none" }}>
                 <span style={{ fontSize: 11, color: shell.subtle, fontFamily: "var(--font-dm-sans), sans-serif" }}>Next →</span>
                 <span style={{ fontSize: 13, color: shell.text, fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 500 }}>{next.name}</span>
               </Link>
             ) : <div />}
           </div>
         </main>
-        )}
-      </div>
-    </div>
+      )}
+    </PageLayout>
   );
 }
 
