@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useMemo, useState, useCallback } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import Link from "next/link";
 import {
@@ -16,9 +16,150 @@ import type { LucentTokens } from "lucent-ui";
 import { getShell } from "@/lib/shellColors";
 import { deriveAccentTokens } from "@/lib/colorUtils";
 import { usePlayground } from "@/lib/playgroundContext";
-import { CATEGORIES, componentRegistry, getComponent, getPrevNext } from "@/lib/componentData";
+import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { PlaygroundPanel } from "@/components/docs/PlaygroundPanel";
 import { BentoGrid } from "@/components/docs/BentoGrid";
+
+type Shell = ReturnType<typeof getShell>;
+
+const SIDEBAR_LABEL: React.CSSProperties = {
+  fontFamily: "var(--font-dm-sans), sans-serif",
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+};
+
+// ─── Stable sub-components — only re-render on theme/slug/toggle changes ─────
+
+const SidebarNav = memo(function SidebarNav({
+  shell,
+  segment,
+  navOpen,
+  onOpenChange,
+}: {
+  shell: Shell;
+  segment: string | null;
+  navOpen: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
+  return (
+    <Collapsible
+      open={navOpen}
+      onOpenChange={onOpenChange}
+      style={{ borderBottom: `1px solid ${shell.border}` }}
+      trigger={
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...SIDEBAR_LABEL }}>
+          Components
+          <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>{navOpen ? "▲" : "▼"}</span>
+        </div>
+      }
+    >
+      <div style={{ paddingBottom: 12 }}>
+        {CATEGORIES.map((cat) => (
+          <div key={cat.label} style={{ marginBottom: 16 }}>
+            <Text as="p" size="xs" weight="bold" style={{ letterSpacing: "0.1em", textTransform: "uppercase", color: shell.subtle, padding: "0 20px", margin: "0 0 6px" }}>
+              {cat.label}
+            </Text>
+            <nav>
+              {cat.slugs.map((slug) => {
+                const comp = componentRegistry.find((c) => c.slug === slug);
+                const isActive = slug === segment;
+                return (
+                  <Link
+                    key={slug}
+                    href={`/components/${slug}`}
+                    style={{
+                      display: "block",
+                      padding: "5px 20px",
+                      fontSize: 13,
+                      color: isActive ? shell.gold : shell.muted,
+                      textDecoration: "none",
+                      fontFamily: "var(--font-dm-sans), sans-serif",
+                      fontWeight: isActive ? 600 : 400,
+                      background: isActive ? shell.goldBg : "transparent",
+                      borderLeft: isActive ? `2px solid ${shell.gold}` : "2px solid transparent",
+                    }}
+                  >
+                    {comp?.name ?? slug}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        ))}
+      </div>
+    </Collapsible>
+  );
+});
+
+const GenerateUIToggle = memo(function GenerateUIToggle({
+  shell,
+  active,
+  onToggle,
+}: {
+  shell: Shell;
+  active: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div style={{ borderBottom: `1px solid ${shell.border}` }}>
+      <button
+        onClick={onToggle}
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "10px 16px",
+          background: active ? shell.goldBg : "transparent",
+          border: "none",
+          cursor: "pointer",
+          color: active ? shell.gold : shell.text,
+          transition: "all 0.15s",
+          ...SIDEBAR_LABEL,
+        }}
+      >
+        ✦ Generate UI
+        {active && <span style={{ fontSize: 10, color: shell.gold }}>ON</span>}
+      </button>
+    </div>
+  );
+});
+
+const HeaderContent = memo(function HeaderContent({
+  shell,
+  prev,
+  next,
+  defName,
+}: {
+  shell: Shell;
+  prev: ComponentDef | null;
+  next: ComponentDef | null;
+  defName: string;
+}) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: shell.bg, gap: 12 }}>
+      <Link href="/" style={{ fontFamily: "var(--font-unbounded), sans-serif", fontWeight: 600, fontSize: 13, color: shell.gold, textDecoration: "none", letterSpacing: "-0.01em", flexShrink: 0 }}>
+        Lucent UI
+      </Link>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {prev
+          ? <Link href={`/components/${prev.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>← {prev.name}</Link>
+          : <span style={{ width: 60 }} />}
+        <span style={{ fontFamily: "var(--font-unbounded), sans-serif", fontSize: 12, color: shell.text, fontWeight: 600 }}>{defName}</span>
+        {next
+          ? <Link href={`/components/${next.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>{next.name} →</Link>
+          : <span style={{ width: 60 }} />}
+      </div>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <Badge variant="accent" size="sm">✦ LLM-ready</Badge>
+      </div>
+    </div>
+  );
+});
+
+// ─── Main shell ───────────────────────────────────────────────────────────────
 
 export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const { pg, setPg } = usePlayground();
@@ -30,7 +171,9 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const def = segment ? getComponent(segment) : null;
   const { prev, next } = segment ? getPrevNext(segment) : { prev: null, next: null };
 
-  const shell = getShell(pg.theme);
+  // Only recomputes when theme changes, not on every color picker drag
+  const shell = useMemo(() => getShell(pg.theme), [pg.theme]);
+
   const tokenOverrides: Partial<LucentTokens> = {
     ...deriveAccentTokens(pg.primaryColor),
     borderDefault: pg.borderColor,
@@ -59,95 +202,20 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     [a("--lucent-radius-lg")]: `${pg.borderRadius + 4}px`,
   };
 
-  const sidebarLabel: React.CSSProperties = {
-    fontFamily: "var(--font-dm-sans), sans-serif",
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-  };
+  // Stable callbacks so memoized components don't re-render on pg changes
+  const toggleGenerateUI = useCallback(() => setGenerateUI((v) => !v), []);
+  const dismissGenerateUI = useCallback(() => setGenerateUI(false), []);
 
   const sidebar = (
     <div style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
-      <Collapsible
-        open={navOpen}
-        onOpenChange={setNavOpen}
-        style={{ borderBottom: `1px solid ${shell.border}` }}
-        trigger={
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...sidebarLabel }}>
-            Components
-            <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>{navOpen ? "▲" : "▼"}</span>
-          </div>
-        }
-      >
-        <div style={{ paddingBottom: 12 }}>
-          {CATEGORIES.map((cat) => (
-            <div key={cat.label} style={{ marginBottom: 16 }}>
-              <Text
-                as="p"
-                size="xs"
-                weight="bold"
-                style={{ letterSpacing: "0.1em", textTransform: "uppercase", color: shell.subtle, padding: "0 20px", margin: "0 0 6px" }}
-              >
-                {cat.label}
-              </Text>
-              <nav>
-                {cat.slugs.map((slug) => {
-                  const comp = componentRegistry.find((c) => c.slug === slug);
-                  const isActive = slug === segment;
-                  return (
-                    <Link
-                      key={slug}
-                      href={`/components/${slug}`}
-                      style={{
-                        display: "block",
-                        padding: "5px 20px",
-                        fontSize: 13,
-                        color: isActive ? shell.gold : shell.muted,
-                        textDecoration: "none",
-                        fontFamily: "var(--font-dm-sans), sans-serif",
-                        fontWeight: isActive ? 600 : 400,
-                        background: isActive ? shell.goldBg : "transparent",
-                        borderLeft: isActive ? `2px solid ${shell.gold}` : "2px solid transparent",
-                      }}
-                    >
-                      {comp?.name ?? slug}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-          ))}
-        </div>
-      </Collapsible>
-
-      <div style={{ borderBottom: `1px solid ${shell.border}` }}>
-        <button
-          onClick={() => setGenerateUI((v) => !v)}
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "10px 16px",
-            background: generateUI ? shell.goldBg : "transparent",
-            border: "none",
-            cursor: "pointer",
-            color: generateUI ? shell.gold : shell.text,
-            transition: "all 0.15s",
-            ...sidebarLabel,
-          }}
-        >
-          ✦ Generate UI
-          {generateUI && <span style={{ fontSize: 10, color: shell.gold }}>ON</span>}
-        </button>
-      </div>
-
+      <SidebarNav shell={shell} segment={segment} navOpen={navOpen} onOpenChange={setNavOpen} />
+      <GenerateUIToggle shell={shell} active={generateUI} onToggle={toggleGenerateUI} />
+      {/* Appearance panel intentionally not memoized — needs to update with every pg change */}
       <Collapsible
         open={appearanceOpen}
         onOpenChange={setAppearanceOpen}
         trigger={
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...sidebarLabel }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...SIDEBAR_LABEL }}>
             Appearance
             <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>{appearanceOpen ? "▲" : "▼"}</span>
           </div>
@@ -158,42 +226,11 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 
-  const header = (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: shell.bg, gap: 12 }}>
-      <Link
-        href="/"
-        style={{ fontFamily: "var(--font-unbounded), sans-serif", fontWeight: 600, fontSize: 13, color: shell.gold, textDecoration: "none", letterSpacing: "-0.01em", flexShrink: 0 }}
-      >
-        Lucent UI
-      </Link>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        {prev ? (
-          <Link href={`/components/${prev.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>
-            ← {prev.name}
-          </Link>
-        ) : <span style={{ width: 60 }} />}
-        <span style={{ fontFamily: "var(--font-unbounded), sans-serif", fontSize: 12, color: shell.text, fontWeight: 600 }}>
-          {def?.name ?? ""}
-        </span>
-        {next ? (
-          <Link href={`/components/${next.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>
-            {next.name} →
-          </Link>
-        ) : <span style={{ width: 60 }} />}
-      </div>
-
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <Badge variant="accent" size="sm">✦ LLM-ready</Badge>
-      </div>
-    </div>
-  );
-
   return (
     <LucentProvider theme={pg.theme} tokens={tokenOverrides}>
       <PageLayout
         style={{ background: shell.bg, color: shell.text, minHeight: "100vh" }}
-        header={header}
+        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} />}
         sidebar={sidebar}
         headerHeight={56}
         sidebarWidth={240}
@@ -204,7 +241,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
               <span style={{ fontSize: 12, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", flex: 1 }}>
                 All components — adjust appearance settings to preview changes across the system
               </span>
-              <Button variant="ghost" size="sm" onClick={() => setGenerateUI(false)} style={{ color: shell.muted, borderColor: shell.border }}>
+              <Button variant="ghost" size="sm" onClick={dismissGenerateUI} style={{ color: shell.muted, borderColor: shell.border }}>
                 ← Back to docs
               </Button>
             </div>
