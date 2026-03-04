@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LucentProvider, useLucent } from "lucent-ui";
+import { LucentProvider, useLucent, Badge, Button, Text } from "lucent-ui";
 import type { LucentTokens } from "lucent-ui";
 
 import { getShell } from "@/lib/shellColors";
@@ -180,20 +180,7 @@ function PageShell({
         </div>
 
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span
-            style={{
-              fontSize: 11,
-              color: shell.gold,
-              fontFamily: "var(--font-dm-sans), sans-serif",
-              border: `1px solid ${shell.goldBorder}`,
-              background: shell.goldBg,
-              padding: "3px 8px",
-              borderRadius: 5,
-              fontWeight: 600,
-            }}
-          >
-            ✦ LLM-ready
-          </span>
+          <Badge variant="accent" size="sm">✦ LLM-ready</Badge>
         </div>
       </header>
 
@@ -372,21 +359,14 @@ function PageShell({
               >
                 All components — adjust appearance settings to preview changes across the system
               </span>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setGenerateUI(false)}
-                style={{
-                  padding: "5px 14px",
-                  border: `1px solid ${shell.border}`,
-                  borderRadius: 6,
-                  background: "transparent",
-                  color: shell.muted,
-                  fontFamily: "var(--font-dm-sans), sans-serif",
-                  fontSize: 12,
-                  cursor: "pointer",
-                }}
+                style={{ color: shell.muted, borderColor: shell.border }}
               >
                 ← Back to docs
-              </button>
+              </Button>
             </div>
             <BentoGrid previewStyle={previewContainerStyle} />
           </div>
@@ -410,46 +390,25 @@ function PageShell({
           {/* Component header */}
           <div style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-              <h1
-                style={{
-                  fontFamily: "var(--font-unbounded), sans-serif",
-                  fontSize: 32,
-                  fontWeight: 700,
-                  color: shell.text,
-                  margin: 0,
-                  letterSpacing: "-0.02em",
-                }}
+              <Text
+                as="h1"
+                family="display"
+                size="3xl"
+                weight="bold"
+                style={{ color: shell.text, margin: 0, letterSpacing: "-0.02em" }}
               >
                 {def.name}
-              </h1>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: shell.muted,
-                  background: shell.surface,
-                  border: `1px solid ${shell.border}`,
-                  borderRadius: 5,
-                  padding: "3px 8px",
-                  fontFamily: "var(--font-dm-sans), sans-serif",
-                  textTransform: "lowercase",
-                }}
-              >
-                {def.category === "Atoms" ? "atom" : "molecule"}
-              </span>
+              </Text>
+              <Badge variant="neutral" size="sm">{def.category === "Atoms" ? "atom" : "molecule"}</Badge>
             </div>
-            <p
-              style={{
-                margin: "0 0 16px",
-                fontSize: 14,
-                lineHeight: 1.65,
-                color: shell.muted,
-                fontFamily: "var(--font-dm-sans), sans-serif",
-                maxWidth: 620,
-              }}
+            <Text
+              as="p"
+              size="sm"
+              lineHeight="relaxed"
+              style={{ margin: "0 0 16px", color: shell.muted, maxWidth: 620 }}
             >
               {def.description}
-            </p>
+            </Text>
 
             {/* Copy import */}
             <CopyImportButton importStatement={def.importStatement} shell={shell} />
@@ -561,9 +520,9 @@ function PageShell({
           {/* API Reference */}
           <SectionTitle shell={shell}>API Reference</SectionTitle>
           <div style={{ marginBottom: 64 }}>
-            <p style={{ fontSize: 13, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", marginTop: 0, marginBottom: 16 }}>
+            <Text as="p" size="sm" style={{ color: shell.muted, marginTop: 0, marginBottom: 16 }}>
               {def.name} props — <span style={{ color: shell.subtle }}>* required</span>
-            </p>
+            </Text>
             <PropsTable props={def.props} shell={shell} />
           </div>
 
@@ -618,19 +577,15 @@ function PageShell({
 function SectionTitle({ children, shell }: { children: React.ReactNode; shell: ReturnType<typeof getShell> }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
-      <h2
-        style={{
-          fontFamily: "var(--font-unbounded), sans-serif",
-          fontSize: 20,
-          fontWeight: 600,
-          color: shell.text,
-          margin: 0,
-          letterSpacing: "-0.01em",
-          whiteSpace: "nowrap",
-        }}
+      <Text
+        as="h2"
+        family="display"
+        size="xl"
+        weight="semibold"
+        style={{ color: shell.text, margin: 0, letterSpacing: "-0.01em", whiteSpace: "nowrap" }}
       >
         {children}
-      </h2>
+      </Text>
       <div style={{ flex: 1, height: 1, background: shell.border }} />
     </div>
   );
