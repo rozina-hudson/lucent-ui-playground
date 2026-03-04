@@ -10,7 +10,6 @@ import {
   Text,
   PageLayout,
   Collapsible,
-  NavLink,
   Breadcrumb,
   Tabs,
 } from "lucent-ui";
@@ -18,9 +17,10 @@ import type { LucentTokens } from "lucent-ui";
 
 import { getShell } from "@/lib/shellColors";
 import { deriveAccentTokens } from "@/lib/colorUtils";
+import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, componentRegistry, type ComponentDef } from "@/lib/componentData";
 import { componentPreviews } from "@/lib/componentPreviews";
-import { PlaygroundPanel, defaultPlaygroundState, type PlaygroundState } from "./PlaygroundPanel";
+import { PlaygroundPanel, type PlaygroundState } from "./PlaygroundPanel";
 import { BentoGrid } from "./BentoGrid";
 import { CodeBlock } from "./CodeBlock";
 import { InstallTabs } from "./InstallTabs";
@@ -37,7 +37,7 @@ type Props = {
 // ─── Root — holds playground state ───────────────────────────────────────────
 
 export function DocLayout({ def, prev, next }: Props) {
-  const [pg, setPg] = useState<PlaygroundState>(defaultPlaygroundState);
+  const { pg, setPg } = usePlayground();
 
   const shell = getShell(pg.theme);
 
@@ -117,7 +117,6 @@ function PageShell({
       display: "flex",
       flexDirection: "column",
       background: shell.bg,
-      borderRight: `1px solid ${shell.border}`,
     }}>
       {/* ── Components panel ── */}
       <Collapsible
@@ -145,10 +144,25 @@ function PageShell({
               <nav>
                 {cat.slugs.map((slug) => {
                   const comp = componentRegistry.find((c) => c.slug === slug);
+                  const isActive = slug === def.slug;
                   return (
-                    <NavLink key={slug} href={`/components/${slug}`} as={Link} isActive={slug === def.slug}>
+                    <Link
+                      key={slug}
+                      href={`/components/${slug}`}
+                      style={{
+                        display: "block",
+                        padding: "5px 20px",
+                        fontSize: 13,
+                        color: isActive ? shell.gold : shell.muted,
+                        textDecoration: "none",
+                        fontFamily: "var(--font-dm-sans), sans-serif",
+                        fontWeight: isActive ? 600 : 400,
+                        background: isActive ? shell.goldBg : "transparent",
+                        borderLeft: isActive ? `2px solid ${shell.gold}` : "2px solid transparent",
+                      }}
+                    >
                       {comp?.name ?? slug}
-                    </NavLink>
+                    </Link>
                   );
                 })}
               </nav>
@@ -203,7 +217,6 @@ function PageShell({
       justifyContent: "space-between",
       padding: "0 24px",
       height: "100%",
-      borderBottom: `1px solid ${shell.border}`,
       background: shell.bg,
       gap: 12,
     }}>
