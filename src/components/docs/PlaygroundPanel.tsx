@@ -175,7 +175,7 @@ export function PlaygroundPanel({ state, onChange, shell }: Props) {
         {/* Spacing scale */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           <Row>
-            <Label shell={shell}>Spacing</Label>
+            <Label shell={shell}>Padding / Gap</Label>
             <span style={{ fontSize: 11, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>{state.spacingScale}×</span>
           </Row>
           <input

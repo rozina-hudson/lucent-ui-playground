@@ -57,14 +57,33 @@ function PageShell({
 }) {
   const { tokens } = useLucent();
   const [tab, setTab] = useState<"preview" | "code">("preview");
+  const [navOpen, setNavOpen] = useState(true);
+  const [appearanceOpen, setAppearanceOpen] = useState(true);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const a = (v: string | number) => v as any;
   const previewContainerStyle: React.CSSProperties = {
-    fontSize: `${pg.fontScale}em`,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ["--lucent-radius-sm" as any]: `${Math.max(0, pg.borderRadius - 4)}px`,
-    ["--lucent-radius-md" as any]: `${pg.borderRadius}px`,
-    ["--lucent-radius-lg" as any]: `${pg.borderRadius + 4}px`,
-    ["--spacing-scale" as any]: `${pg.spacingScale}`,
+    // Font scale — override the actual CSS vars lucent-ui reads (rem-based, not inherited)
+    [a("--lucent-font-size-xs")]: `${0.75 * pg.fontScale}rem`,
+    [a("--lucent-font-size-sm")]: `${0.875 * pg.fontScale}rem`,
+    [a("--lucent-font-size-md")]: `${1 * pg.fontScale}rem`,
+    [a("--lucent-font-size-lg")]: `${1.125 * pg.fontScale}rem`,
+    [a("--lucent-font-size-xl")]: `${1.25 * pg.fontScale}rem`,
+    [a("--lucent-font-size-2xl")]: `${1.5 * pg.fontScale}rem`,
+    [a("--lucent-font-size-3xl")]: `${1.875 * pg.fontScale}rem`,
+    // Spacing scale — override the actual space tokens (affects padding/gap, not fixed heights)
+    [a("--lucent-space-1")]: `${0.25 * pg.spacingScale}rem`,
+    [a("--lucent-space-2")]: `${0.5 * pg.spacingScale}rem`,
+    [a("--lucent-space-3")]: `${0.75 * pg.spacingScale}rem`,
+    [a("--lucent-space-4")]: `${1 * pg.spacingScale}rem`,
+    [a("--lucent-space-5")]: `${1.25 * pg.spacingScale}rem`,
+    [a("--lucent-space-6")]: `${1.5 * pg.spacingScale}rem`,
+    [a("--lucent-space-8")]: `${2 * pg.spacingScale}rem`,
+    [a("--lucent-space-10")]: `${2.5 * pg.spacingScale}rem`,
+    // Border radius
+    [a("--lucent-radius-sm")]: `${Math.max(0, pg.borderRadius - 4)}px`,
+    [a("--lucent-radius-md")]: `${pg.borderRadius}px`,
+    [a("--lucent-radius-lg")]: `${pg.borderRadius + 4}px`,
   };
 
   // First example becomes the top preview
@@ -193,56 +212,110 @@ function PageShell({
             flexDirection: "column",
           }}
         >
-          {/* Navigation */}
-          <div style={{ padding: "20px 0", flex: 1 }}>
-            {CATEGORIES.map((cat) => (
-              <div key={cat.label} style={{ marginBottom: 20 }}>
-                <p
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: shell.subtle,
-                    padding: "0 20px",
-                    margin: "0 0 6px",
-                    fontFamily: "var(--font-dm-sans), sans-serif",
-                  }}
-                >
-                  {cat.label}
-                </p>
-                <nav>
-                  {cat.slugs.map((slug) => {
-                    const comp = componentRegistry.find((c) => c.slug === slug);
-                    const isActive = slug === def.slug;
-                    return (
-                      <Link
-                        key={slug}
-                        href={`/components/${slug}`}
-                        style={{
-                          display: "block",
-                          padding: "5px 20px",
-                          fontSize: 13,
-                          color: isActive ? shell.gold : shell.muted,
-                          textDecoration: "none",
-                          fontFamily: "var(--font-dm-sans), sans-serif",
-                          fontWeight: isActive ? 600 : 400,
-                          background: isActive ? shell.goldBg : "transparent",
-                          borderLeft: isActive ? `2px solid ${shell.gold}` : "2px solid transparent",
-                        }}
-                      >
-                        {comp?.name ?? slug}
-                      </Link>
-                    );
-                  })}
-                </nav>
+          {/* ── Components panel ── */}
+          <div style={{ borderBottom: `1px solid ${shell.border}` }}>
+            <button
+              onClick={() => setNavOpen((v) => !v)}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 16px",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: shell.text,
+                fontFamily: "var(--font-dm-sans), sans-serif",
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              Components
+              <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>
+                {navOpen ? "▲" : "▼"}
+              </span>
+            </button>
+            {navOpen && (
+              <div style={{ paddingBottom: 12 }}>
+                {CATEGORIES.map((cat) => (
+                  <div key={cat.label} style={{ marginBottom: 16 }}>
+                    <p
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: shell.subtle,
+                        padding: "0 20px",
+                        margin: "0 0 6px",
+                        fontFamily: "var(--font-dm-sans), sans-serif",
+                      }}
+                    >
+                      {cat.label}
+                    </p>
+                    <nav>
+                      {cat.slugs.map((slug) => {
+                        const comp = componentRegistry.find((c) => c.slug === slug);
+                        const isActive = slug === def.slug;
+                        return (
+                          <Link
+                            key={slug}
+                            href={`/components/${slug}`}
+                            style={{
+                              display: "block",
+                              padding: "5px 20px",
+                              fontSize: 13,
+                              color: isActive ? shell.gold : shell.muted,
+                              textDecoration: "none",
+                              fontFamily: "var(--font-dm-sans), sans-serif",
+                              fontWeight: isActive ? 600 : 400,
+                              background: isActive ? shell.goldBg : "transparent",
+                              borderLeft: isActive ? `2px solid ${shell.gold}` : "2px solid transparent",
+                            }}
+                          >
+                            {comp?.name ?? slug}
+                          </Link>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
 
-          {/* Appearance panel */}
-          <div style={{ borderTop: `1px solid ${shell.border}` }}>
-            <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
+          {/* ── Appearance panel ── */}
+          <div>
+            <button
+              onClick={() => setAppearanceOpen((v) => !v)}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 16px",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: shell.text,
+                fontFamily: "var(--font-dm-sans), sans-serif",
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              Appearance
+              <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>
+                {appearanceOpen ? "▲" : "▼"}
+              </span>
+            </button>
+            {appearanceOpen && (
+              <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
+            )}
           </div>
         </aside>
 
@@ -407,6 +480,7 @@ function PageShell({
                 previews={componentPreviews}
                 shell={shell}
                 previewBg={tokens.bgBase}
+                previewStyle={previewContainerStyle}
               />
             ))}
           </div>
