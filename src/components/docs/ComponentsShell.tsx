@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState, useCallback } from "react";
+import { memo, useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import Link from "next/link";
 import {
@@ -19,6 +19,7 @@ import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { PlaygroundPanel } from "@/components/docs/PlaygroundPanel";
 import { BentoGrid } from "@/components/docs/BentoGrid";
+import { LucentSpinner } from "@/components/brand";
 
 type Shell = ReturnType<typeof getShell>;
 
@@ -166,6 +167,9 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const [navOpen, setNavOpen] = useState(true);
   const [appearanceOpen, setAppearanceOpen] = useState(true);
   const [generateUI, setGenerateUI] = useState(false);
+  // "idle" | "loading" | "done"
+  const [genPhase, setGenPhase] = useState<"idle" | "loading" | "done">("idle");
+  const genTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const segment = useSelectedLayoutSegment();
   const def = segment ? getComponent(segment) : null;
@@ -203,8 +207,26 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   };
 
   // Stable callbacks so memoized components don't re-render on pg changes
-  const toggleGenerateUI = useCallback(() => setGenerateUI((v) => !v), []);
-  const dismissGenerateUI = useCallback(() => setGenerateUI(false), []);
+  const toggleGenerateUI = useCallback(() => {
+    setGenerateUI((v) => {
+      if (v) return false; // turning off — no animation needed
+      // Turning on: start generation sequence
+      genTimers.current.forEach(clearTimeout);
+      setGenPhase("loading");
+      const t1 = setTimeout(() => setGenPhase("done"), 2000);
+      const t2 = setTimeout(() => setGenPhase("idle"), 2600);
+      genTimers.current = [t1, t2];
+      return true;
+    });
+  }, []);
+  const dismissGenerateUI = useCallback(() => {
+    genTimers.current.forEach(clearTimeout);
+    setGenPhase("idle");
+    setGenerateUI(false);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => () => genTimers.current.forEach(clearTimeout), []);
 
   const sidebar = (
     <div style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
@@ -235,7 +257,14 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
         headerHeight={56}
         sidebarWidth={240}
       >
-        {generateUI ? (
+        {generateUI && genPhase !== "idle" ? (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, minHeight: "calc(100vh - 56px)" }}>
+            <LucentSpinner size={120} done={genPhase === "done"} />
+            <span style={{ fontSize: 13, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>
+              {genPhase === "done" ? "Done" : "Generating UI…"}
+            </span>
+          </div>
+        ) : generateUI ? (
           <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 48px 0" }}>
               <span style={{ fontSize: 12, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", flex: 1 }}>
