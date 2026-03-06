@@ -13,6 +13,7 @@ import { InstallTabs } from "./InstallTabs";
 import { AiUsageSection } from "./AiUsageSection";
 import { ExampleCard } from "./ExampleCard";
 import { PropsTable } from "./PropsTable";
+import { PlaygroundPanel } from "./PlaygroundPanel";
 
 type Props = {
   def: ComponentDef;
@@ -21,7 +22,7 @@ type Props = {
 };
 
 export function DocLayout({ def, prev, next }: Props) {
-  const { pg } = usePlayground();
+  const { pg, setPg } = usePlayground();
   const { tokens } = useLucent();
   const shell = getShell(pg.theme);
 
@@ -46,6 +47,8 @@ export function DocLayout({ def, prev, next }: Props) {
     [a("--lucent-radius-sm")]: `${Math.max(0, pg.borderRadius - 4)}px`,
     [a("--lucent-radius-md")]: `${pg.borderRadius}px`,
     [a("--lucent-radius-lg")]: `${pg.borderRadius + 4}px`,
+    [a("--lucent-font-family-base")]: `"${pg.fontFamily}", sans-serif`,
+    fontFamily: `"${pg.fontFamily}", sans-serif`,
   };
 
   const firstExample = def.examples[0];
@@ -87,8 +90,13 @@ export function DocLayout({ def, prev, next }: Props) {
             value: "preview",
             label: "Preview",
             content: (
-              <div style={{ border: `1px solid ${shell.border}`, borderRadius: 12, background: tokens.bgBase, padding: "32px 28px", minHeight: 120, ...previewContainerStyle }}>
-                {TopPreview ? <TopPreview /> : null}
+              <div style={{ display: "flex", border: `1px solid ${shell.border}`, borderRadius: 12, overflow: "hidden" }}>
+                <div style={{ flex: 1, background: tokens.bgBase, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", ...previewContainerStyle }}>
+                  {TopPreview ? <TopPreview /> : null}
+                </div>
+                <div style={{ width: 220, flexShrink: 0, borderLeft: `1px solid ${shell.border}`, background: shell.surface, overflowY: "auto" }}>
+                  <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
+                </div>
               </div>
             ),
           },

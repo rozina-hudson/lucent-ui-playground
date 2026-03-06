@@ -1,13 +1,14 @@
-import type { Theme } from "lucent-ui";
+import { useEffect } from "react";
 import type { ShellColors } from "@/lib/shellColors";
 
 export type PlaygroundState = {
-  theme: Theme;
+  theme: "light" | "dark";
   primaryColor: string;
   borderColor: string;
   borderRadius: number;
   fontScale: number;
   spacingScale: number;
+  fontFamily: string;
 };
 
 export const defaultPlaygroundState: PlaygroundState = {
@@ -17,7 +18,31 @@ export const defaultPlaygroundState: PlaygroundState = {
   fontScale: 1,
   borderRadius: 8,
   spacingScale: 1,
+  fontFamily: "Inter",
 };
+
+export const PLAYGROUND_FONTS = [
+  "Inter",
+  "DM Sans",
+  "Geist",
+  "Sora",
+  "Plus Jakarta Sans",
+  "IBM Plex Sans",
+  "Nunito",
+] as const;
+
+function useGoogleFont(family: string) {
+  useEffect(() => {
+    const id = `gfont-${family.replace(/\s+/g, "-")}`;
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;500;600;700&display=swap`;
+      document.head.appendChild(link);
+    }
+  }, [family]);
+}
 
 type Props = {
   state: PlaygroundState;
@@ -52,6 +77,7 @@ function Row({ children }: { children: React.ReactNode }) {
 
 export function PlaygroundPanel({ state, onChange, shell }: Props) {
   const set = (patch: Partial<PlaygroundState>) => onChange({ ...state, ...patch });
+  useGoogleFont(state.fontFamily);
 
   const sliderStyle: React.CSSProperties = {
     flex: 1,
@@ -84,36 +110,8 @@ export function PlaygroundPanel({ state, onChange, shell }: Props) {
 
   return (
     <div style={{ paddingBottom: 20 }}>
-      <p style={sectionHead}>Appearance</p>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "0 20px" }}>
-        {/* Theme */}
-        <Row>
-          <Label shell={shell}>Theme</Label>
-          <div style={{ display: "flex", gap: 4 }}>
-            {(["light", "dark"] as Theme[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => set({ theme: t })}
-                style={{
-                  padding: "3px 9px",
-                  borderRadius: 5,
-                  border: `1px solid ${state.theme === t ? shell.gold : shell.border}`,
-                  background: state.theme === t ? shell.goldBg : "transparent",
-                  color: state.theme === t ? shell.gold : shell.muted,
-                  fontFamily: "var(--font-dm-sans), sans-serif",
-                  fontSize: 11,
-                  fontWeight: state.theme === t ? 600 : 400,
-                  cursor: "pointer",
-                  textTransform: "capitalize",
-                }}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        </Row>
-
+      
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "20px 20px" }}>
         {/* Primary colour */}
         <Row>
           <Label shell={shell}>Accent</Label>
@@ -137,6 +135,30 @@ export function PlaygroundPanel({ state, onChange, shell }: Props) {
             title="Border colour"
           />
         </Row>
+
+        {/* Font family */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <Label shell={shell}>Font</Label>
+          <select
+            value={state.fontFamily}
+            onChange={(e) => set({ fontFamily: e.target.value })}
+            style={{
+              width: "100%",
+              padding: "5px 8px",
+              background: shell.surface,
+              border: `1px solid ${shell.border}`,
+              borderRadius: 6,
+              color: shell.text,
+              fontSize: 12,
+              fontFamily: "var(--font-dm-sans), sans-serif",
+              cursor: "pointer",
+            }}
+          >
+            {PLAYGROUND_FONTS.map((f) => (
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
+        </div>
 
         {/* Border radius */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -199,6 +221,7 @@ export function PlaygroundPanel({ state, onChange, shell }: Props) {
               borderRadius: 8,
               fontScale: 1,
               spacingScale: 1,
+              fontFamily: "Inter",
             })
           }
           style={{

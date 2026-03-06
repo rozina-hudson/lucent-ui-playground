@@ -1,39 +1,55 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { usePlayground } from "@/lib/playgroundContext";
+import { getShell } from "@/lib/shellColors";
 
 export default function Home() {
+  const { pg, setPg } = usePlayground();
+  const shell = getShell(pg.theme);
+  const isDark = pg.theme === "dark";
+
+  const goldBadgeBg = isDark ? "#1a1a1a" : "#fefce8";
+  const goldBadgeBorder = isDark ? "#2a2a1a" : "#fde68a";
+
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#0a0a0a", color: "#f5f5f5" }}>
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: shell.bg, color: shell.text, transition: "background 0.2s, color 0.2s" }}
+    >
       {/* Nav */}
       <header
         className="flex items-center justify-between px-6 py-4 border-b"
-        style={{ borderColor: "#1f1f1f" }}
+        style={{ borderColor: shell.border }}
       >
         <span
           className="text-lg font-semibold tracking-tight"
-          style={{ fontFamily: "var(--font-unbounded)", color: "#f5f5f5" }}
+          style={{ fontFamily: "var(--font-unbounded)", color: shell.text }}
         >
           Lucent UI
         </span>
-        <nav className="flex items-center gap-6 text-sm" style={{ color: "#a3a3a3" }}>
-          <Link href="/components" className="hover:text-white transition-colors">
-            Components
-          </Link>
-          <a
-            href="https://www.npmjs.com/package/lucent-ui"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
+        <nav className="flex items-center gap-6 text-sm" style={{ color: shell.muted }}>
+          <NavLink href="/components" shell={shell}>Components</NavLink>
+          <NavLink href="https://www.npmjs.com/package/lucent-ui" external shell={shell}>npm</NavLink>
+          <NavLink href="https://github.com/rozina-hudson/lucent-ui" external shell={shell}>GitHub</NavLink>
+          <button
+            onClick={() => setPg({ ...pg, theme: isDark ? "light" : "dark" })}
+            aria-label="Toggle theme"
+            style={{
+              background: "none",
+              border: `1px solid ${shell.border}`,
+              borderRadius: 8,
+              padding: "5px 10px",
+              cursor: "pointer",
+              color: shell.muted,
+              fontSize: 13,
+              lineHeight: 1,
+              transition: "border-color 0.15s, color 0.15s",
+            }}
           >
-            npm
-          </a>
-          <a
-            href="https://github.com/rozina-hudson/lucent-ui"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
-          >
-            GitHub
-          </a>
+            {isDark ? "☀︎" : "☽"}
+          </button>
         </nav>
       </header>
 
@@ -42,14 +58,14 @@ export default function Home() {
         <div className="max-w-3xl mx-auto">
           <div
             className="inline-block text-xs font-semibold tracking-widest uppercase px-3 py-1 rounded-full mb-8"
-            style={{ background: "#1a1a1a", color: "#e9c96b", border: "1px solid #2a2a1a" }}
+            style={{ background: goldBadgeBg, color: "#e9c96b", border: `1px solid ${goldBadgeBorder}` }}
           >
             v0.1.0 — now on npm
           </div>
 
           <h1
             className="text-5xl sm:text-6xl font-bold leading-tight mb-6"
-            style={{ fontFamily: "var(--font-unbounded)", lineHeight: 1.15 }}
+            style={{ fontFamily: "var(--font-unbounded)", lineHeight: 1.15, color: shell.text }}
           >
             Build beautiful React apps.{" "}
             <span style={{ color: "#e9c96b" }}>AI-ready</span> from day one.
@@ -57,7 +73,7 @@ export default function Home() {
 
           <p
             className="text-lg mb-10"
-            style={{ color: "#a3a3a3", maxWidth: 560, margin: "0 auto 2.5rem" }}
+            style={{ color: shell.muted, maxWidth: 560, margin: "0 auto 2.5rem" }}
           >
             Lucent UI ships every component with a machine-readable manifest and an MCP server —
             so your AI agents understand your design system as well as your developers do.
@@ -67,16 +83,16 @@ export default function Home() {
           <div
             className="inline-flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-mono mb-10 mx-auto"
             style={{
-              background: "#141414",
-              border: "1px solid #2a2a2a",
-              color: "#e5e7eb",
+              background: shell.codeBg,
+              border: `1px solid ${shell.border}`,
+              color: shell.codeText,
               display: "flex",
               width: "fit-content",
               gap: "1.5rem",
             }}
           >
             <span>
-              <span style={{ color: "#6b7280" }}>$</span> npm install lucent-ui
+              <span style={{ color: shell.muted }}>$</span> npm install lucent-ui
             </span>
           </div>
 
@@ -92,8 +108,8 @@ export default function Home() {
               href="https://github.com/rozina-hudson/lucent-ui"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-lg text-sm font-semibold transition-colors hover:bg-white/10"
-              style={{ border: "1px solid #2a2a2a", color: "#a3a3a3" }}
+              className="px-6 py-3 rounded-lg text-sm font-semibold"
+              style={{ border: `1px solid ${shell.border}`, color: shell.muted }}
             >
               View on GitHub
             </a>
@@ -106,16 +122,19 @@ export default function Home() {
             icon="◎"
             title="AI-first manifests"
             description="Every component ships with a COMPONENT_MANIFEST — a machine-readable schema of props, variants, and usage examples."
+            shell={shell}
           />
           <FeatureCard
             icon="⬡"
             title="MCP server"
             description="Run lucent-mcp and let AI assistants discover, inspect, and compose components via the Model Context Protocol."
+            shell={shell}
           />
           <FeatureCard
             icon="◈"
             title="Design tokens"
             description="Fully customizable via CSS custom properties. Override any token per-provider without touching component source."
+            shell={shell}
           />
         </div>
       </main>
@@ -123,7 +142,7 @@ export default function Home() {
       {/* Footer */}
       <footer
         className="flex items-center justify-between px-6 py-5 border-t text-xs"
-        style={{ borderColor: "#1f1f1f", color: "#525252" }}
+        style={{ borderColor: shell.border, color: shell.subtle }}
       >
         <span>© {new Date().getFullYear()} Lucent UI</span>
         <span>MIT License</span>
@@ -132,27 +151,59 @@ export default function Home() {
   );
 }
 
+function NavLink({
+  href,
+  children,
+  external,
+  shell,
+}: {
+  href: string;
+  children: React.ReactNode;
+  external?: boolean;
+  shell: ReturnType<typeof getShell>;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const props = external
+    ? { href, target: "_blank" as const, rel: "noopener noreferrer" }
+    : { href };
+
+  const Tag = external ? "a" : Link;
+
+  return (
+    <Tag
+      {...(props as Parameters<typeof Tag>[0])}
+      style={{ color: hovered ? shell.text : shell.muted, transition: "color 0.15s" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {children}
+    </Tag>
+  );
+}
+
 function FeatureCard({
   icon,
   title,
   description,
+  shell,
 }: {
   icon: string;
   title: string;
   description: string;
+  shell: ReturnType<typeof getShell>;
 }) {
   return (
     <div
       className="rounded-xl p-6 flex flex-col gap-3"
-      style={{ background: "#111", border: "1px solid #1f1f1f" }}
+      style={{ background: shell.surface, border: `1px solid ${shell.border}` }}
     >
       <span className="text-2xl" style={{ color: "#e9c96b" }}>
         {icon}
       </span>
-      <h3 className="font-semibold text-sm" style={{ color: "#f5f5f5" }}>
+      <h3 className="font-semibold text-sm" style={{ color: shell.text }}>
         {title}
       </h3>
-      <p className="text-sm leading-relaxed" style={{ color: "#6b7280" }}>
+      <p className="text-sm leading-relaxed" style={{ color: shell.muted }}>
         {description}
       </p>
     </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Unbounded } from "next/font/google";
+import { AppProviders } from "@/components/AppProviders";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -48,7 +49,7 @@ export default function RootLayout({
         className={`${dmSans.variable} ${unbounded.variable} antialiased`}
         style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
       >
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

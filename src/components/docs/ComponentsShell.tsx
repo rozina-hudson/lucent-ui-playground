@@ -17,7 +17,6 @@ import { getShell } from "@/lib/shellColors";
 import { deriveAccentTokens } from "@/lib/colorUtils";
 import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
-import { PlaygroundPanel } from "@/components/docs/PlaygroundPanel";
 import { BentoGrid } from "@/components/docs/BentoGrid";
 import { LucentSpinner } from "@/components/brand";
 
@@ -133,11 +132,15 @@ const HeaderContent = memo(function HeaderContent({
   prev,
   next,
   defName,
+  isDark,
+  onThemeToggle,
 }: {
   shell: Shell;
   prev: ComponentDef | null;
   next: ComponentDef | null;
   defName: string;
+  isDark: boolean;
+  onThemeToggle: () => void;
 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: shell.bg, gap: 12 }}>
@@ -154,6 +157,23 @@ const HeaderContent = memo(function HeaderContent({
           : <span style={{ width: 60 }} />}
       </div>
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <button
+          onClick={onThemeToggle}
+          aria-label="Toggle theme"
+          style={{
+            background: "none",
+            border: `1px solid ${shell.border}`,
+            borderRadius: 8,
+            padding: "5px 10px",
+            cursor: "pointer",
+            color: shell.muted,
+            fontSize: 13,
+            lineHeight: 1,
+            transition: "border-color 0.15s, color 0.15s",
+          }}
+        >
+          {isDark ? "☀︎" : "☽"}
+        </button>
         <Badge variant="accent" size="sm">✦ LLM-ready</Badge>
       </div>
     </div>
@@ -165,7 +185,6 @@ const HeaderContent = memo(function HeaderContent({
 export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const { pg, setPg } = usePlayground();
   const [navOpen, setNavOpen] = useState(true);
-  const [appearanceOpen, setAppearanceOpen] = useState(true);
   const [generateUI, setGenerateUI] = useState(false);
   // "idle" | "loading" | "done"
   const [genPhase, setGenPhase] = useState<"idle" | "loading" | "done">("idle");
@@ -232,19 +251,6 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     <div style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
       <SidebarNav shell={shell} segment={segment} navOpen={navOpen} onOpenChange={setNavOpen} />
       <GenerateUIToggle shell={shell} active={generateUI} onToggle={toggleGenerateUI} />
-      {/* Appearance panel intentionally not memoized — needs to update with every pg change */}
-      <Collapsible
-        open={appearanceOpen}
-        onOpenChange={setAppearanceOpen}
-        trigger={
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...SIDEBAR_LABEL }}>
-            Appearance
-            <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>{appearanceOpen ? "▲" : "▼"}</span>
-          </div>
-        }
-      >
-        <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
-      </Collapsible>
     </div>
   );
 
@@ -252,7 +258,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     <LucentProvider theme={pg.theme} tokens={tokenOverrides}>
       <PageLayout
         style={{ background: shell.bg, color: shell.text, minHeight: "100vh" }}
-        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} />}
+        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark" })} />}
         sidebar={sidebar}
         headerHeight={56}
         sidebarWidth={240}
