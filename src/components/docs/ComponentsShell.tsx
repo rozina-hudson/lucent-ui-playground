@@ -7,9 +7,9 @@ import {
   LucentProvider,
   Badge,
   Button,
-  Text,
   PageLayout,
   Collapsible,
+  NavLink,
 } from "lucent-ui";
 import type { LucentTokens } from "lucent-ui";
 
@@ -35,61 +35,48 @@ const SIDEBAR_LABEL: React.CSSProperties = {
 const SidebarNav = memo(function SidebarNav({
   shell,
   segment,
-  navOpen,
-  onOpenChange,
 }: {
   shell: Shell;
   segment: string | null;
-  navOpen: boolean;
-  onOpenChange: (v: boolean) => void;
 }) {
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(CATEGORIES.map((cat) => [cat.label, true]))
+  );
+
   return (
-    <Collapsible
-      open={navOpen}
-      onOpenChange={onOpenChange}
-      style={{ borderBottom: `1px solid ${shell.border}` }}
-      trigger={
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", color: shell.text, ...SIDEBAR_LABEL }}>
-          Components
-          <span style={{ color: shell.subtle, fontSize: 10, lineHeight: 1 }}>{navOpen ? "▲" : "▼"}</span>
-        </div>
-      }
-    >
-      <div style={{ paddingBottom: 12 }}>
-        {CATEGORIES.map((cat) => (
-          <div key={cat.label} style={{ marginBottom: 16 }}>
-            <Text as="p" size="xs" weight="bold" style={{ letterSpacing: "0.1em", textTransform: "uppercase", color: shell.subtle, padding: "0 20px", margin: "0 0 6px" }}>
+    <div>
+      {CATEGORIES.map((cat) => (
+        <Collapsible
+          key={cat.label}
+          open={openMap[cat.label]}
+          onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [cat.label]: v }))}
+          style={{ padding: "0 4px", borderBottom: `1px solid ${shell.border}` }}
+          trigger={
+            <div style={{  color: shell.text, ...SIDEBAR_LABEL }}>
               {cat.label}
-            </Text>
+            </div>
+          }
+        >
+          <div style={{ paddingBottom: 12 }}>
             <nav>
               {cat.slugs.map((slug) => {
                 const comp = componentRegistry.find((c) => c.slug === slug);
-                const isActive = slug === segment;
                 return (
-                  <Link
+                  <NavLink
                     key={slug}
+                    as={Link}
                     href={`/components/${slug}`}
-                    style={{
-                      display: "block",
-                      padding: "5px 20px",
-                      fontSize: 13,
-                      color: isActive ? shell.gold : shell.muted,
-                      textDecoration: "none",
-                      fontFamily: "var(--font-dm-sans), sans-serif",
-                      fontWeight: isActive ? 600 : 400,
-                      background: isActive ? shell.goldBg : "transparent",
-                      borderLeft: isActive ? `2px solid ${shell.gold}` : "2px solid transparent",
-                    }}
+                    isActive={slug === segment}
                   >
                     {comp?.name ?? slug}
-                  </Link>
+                  </NavLink>
                 );
               })}
             </nav>
           </div>
-        ))}
-      </div>
-    </Collapsible>
+        </Collapsible>
+      ))}
+    </div>
   );
 });
 
@@ -184,7 +171,6 @@ const HeaderContent = memo(function HeaderContent({
 
 export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const { pg, setPg } = usePlayground();
-  const [navOpen, setNavOpen] = useState(true);
   const [generateUI, setGenerateUI] = useState(false);
   // "idle" | "loading" | "done"
   const [genPhase, setGenPhase] = useState<"idle" | "loading" | "done">("idle");
@@ -249,7 +235,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
 
   const sidebar = (
     <div style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
-      <SidebarNav shell={shell} segment={segment} navOpen={navOpen} onOpenChange={setNavOpen} />
+      <SidebarNav shell={shell} segment={segment} />
       <GenerateUIToggle shell={shell} active={generateUI} onToggle={toggleGenerateUI} />
     </div>
   );
