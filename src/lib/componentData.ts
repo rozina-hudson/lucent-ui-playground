@@ -43,11 +43,16 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "button", "input", "textarea", "select", "searchinput",
       "checkbox", "radio", "toggle", "tag", "badge",
       "formfield", "text", "icon", "divider", "spinner", "avatar", "skeleton",
+      "breadcrumb", "navlink", "datepicker", "daterangepicker", "multiselect",
     ],
   },
   {
     label: "Molecules",
-    slugs: ["alert", "card", "emptystate", "tooltip"],
+    slugs: [
+      "alert", "card", "emptystate", "tooltip",
+      "tabs", "collapsible", "commandpalette", "datatable",
+      "fileupload", "pagelayout", "timeline",
+    ],
   },
 ];
 
@@ -1224,6 +1229,711 @@ const results = allItems
         code: `<Tooltip content="Instant tooltip" delay={0}>
   <Button variant="ghost" size="sm">Hover me</Button>
 </Tooltip>`,
+      },
+    ],
+  },
+
+  // ── Breadcrumb ───────────────────────────────────────────────────────────────
+  {
+    slug: "breadcrumb",
+    name: "Breadcrumb",
+    category: "Atoms",
+    description:
+      "Horizontal trail of navigational links showing the user's location within a hierarchy. Supports custom separators and click handlers.",
+    importStatement: "import { Breadcrumb } from 'lucent-ui'",
+    usageCode: `<Breadcrumb
+  items={[
+    { label: "Home", href: "/" },
+    { label: "Components", href: "/components" },
+    { label: "Breadcrumb" },
+  ]}
+/>`,
+    aiPrompts: {
+      claude: `"Add a Breadcrumb from lucent-ui showing a three-level navigation path: Home → Components → current page."`,
+      cursor: `@lucent-ui Add a Breadcrumb with three items showing Home, Components, and the current page.`,
+      vscode: `Using lucent-ui, add a Breadcrumb component with items array containing href and label.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Breadcrumb from lucent-ui for page navigation"`,
+    },
+    props: [
+      { name: "items", type: "BreadcrumbItem[]", description: "Array of breadcrumb items. Each item has label, optional href and onClick.", required: true },
+      { name: "separator", type: "React.ReactNode", description: "Custom separator between items. Defaults to \"/\".", defaultValue: '"/>"' },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the breadcrumb container." },
+    ],
+    examples: [
+      {
+        title: "Basic breadcrumb",
+        description: "Three-level navigation path with links.",
+        previewKey: "breadcrumb-basic",
+        code: `<Breadcrumb
+  items={[
+    { label: "Home", href: "/" },
+    { label: "Components", href: "/components" },
+    { label: "Breadcrumb" },
+  ]}
+/>`,
+      },
+      {
+        title: "Custom separator",
+        description: "Using a › arrow as separator.",
+        previewKey: "breadcrumb-separator",
+        code: `<Breadcrumb
+  separator="›"
+  items={[
+    { label: "Dashboard", href: "/" },
+    { label: "Settings", href: "/settings" },
+    { label: "Profile" },
+  ]}
+/>`,
+      },
+    ],
+  },
+
+  // ── NavLink ──────────────────────────────────────────────────────────────────
+  {
+    slug: "navlink",
+    name: "NavLink",
+    category: "Atoms",
+    description:
+      "Styled navigation anchor with active, disabled, and icon states. Renders as an <a> by default but accepts a custom `as` prop for framework routers.",
+    importStatement: "import { NavLink } from 'lucent-ui'",
+    usageCode: `<NavLink href="/dashboard" isActive>
+  Dashboard
+</NavLink>`,
+    aiPrompts: {
+      claude: `"Build a sidebar navigation using NavLink from lucent-ui. Include Dashboard, Settings, and Profile links, marking the current route as active."`,
+      cursor: `@lucent-ui Create a vertical nav list with NavLink components, one marked isActive.`,
+      vscode: `Using lucent-ui, build a sidebar using NavLink with href, isActive, and icon props.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a NavLink from lucent-ui to a sidebar"`,
+    },
+    props: [
+      { name: "children", type: "React.ReactNode", description: "Link label text or content.", required: true },
+      { name: "href", type: "string", description: "URL the link points to." },
+      { name: "isActive", type: "boolean", description: "Applies the active visual style.", defaultValue: "false" },
+      { name: "icon", type: "React.ReactNode", description: "Optional icon rendered before the label." },
+      { name: "disabled", type: "boolean", description: "Prevents interaction and dims the link.", defaultValue: "false" },
+      { name: "onClick", type: "() => void", description: "Click handler." },
+      { name: "as", type: "React.ElementType", description: "Override rendered element — e.g. a Next.js Link.", defaultValue: '"a"' },
+    ],
+    examples: [
+      {
+        title: "States",
+        description: "Default, active, and disabled nav links.",
+        previewKey: "navlink-states",
+        code: `<NavLink href="#">Home</NavLink>
+<NavLink href="#" isActive>Dashboard</NavLink>
+<NavLink href="#" disabled>Admin</NavLink>`,
+      },
+      {
+        title: "Vertical sidebar",
+        description: "Stacked nav links mimicking a sidebar.",
+        previewKey: "navlink-sidebar",
+        code: `<div style={{ display: "flex", flexDirection: "column", gap: 4, width: 200 }}>
+  <NavLink href="#" isActive>Dashboard</NavLink>
+  <NavLink href="#">Components</NavLink>
+  <NavLink href="#">Settings</NavLink>
+</div>`,
+      },
+    ],
+  },
+
+  // ── DatePicker ───────────────────────────────────────────────────────────────
+  {
+    slug: "datepicker",
+    name: "DatePicker",
+    category: "Atoms",
+    description:
+      "Controlled date input that opens a calendar popover. Supports min/max constraints and a placeholder.",
+    importStatement: "import { DatePicker } from 'lucent-ui'",
+    usageCode: `const [date, setDate] = useState<Date | undefined>(undefined);
+
+<DatePicker
+  value={date}
+  onChange={setDate}
+  placeholder="Pick a date"
+/>`,
+    aiPrompts: {
+      claude: `"Add a controlled DatePicker from lucent-ui bound to a useState hook. Include min/max constraints and a clear placeholder."`,
+      cursor: `@lucent-ui Add a DatePicker with controlled value, onChange, and optional min/max props.`,
+      vscode: `Using lucent-ui, add a DatePicker component with controlled value and onChange handler.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a DatePicker from lucent-ui to a form"`,
+    },
+    props: [
+      { name: "value", type: "Date", description: "Controlled Date object." },
+      { name: "defaultValue", type: "Date", description: "Uncontrolled initial Date value." },
+      { name: "onChange", type: "(date: Date) => void", description: "Called with the selected Date object." },
+      { name: "placeholder", type: "string", description: "Placeholder text when no date is selected.", defaultValue: '"Select date"' },
+      { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
+      { name: "min", type: "Date", description: "Minimum selectable date." },
+      { name: "max", type: "Date", description: "Maximum selectable date." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Controlled",
+        description: "DatePicker bound to state.",
+        previewKey: "datepicker-controlled",
+        code: `const [date, setDate] = useState<Date | undefined>(undefined);
+
+<DatePicker value={date} onChange={setDate} placeholder="Pick a date" />`,
+      },
+      {
+        title: "With constraints",
+        description: "Min and max restrict selectable range.",
+        previewKey: "datepicker-constrained",
+        code: `<DatePicker
+  defaultValue={new Date("2025-06-15")}
+  min={new Date("2025-01-01")}
+  max={new Date("2025-12-31")}
+  placeholder="Select a 2025 date"
+/>`,
+      },
+    ],
+  },
+
+  // ── DateRangePicker ──────────────────────────────────────────────────────────
+  {
+    slug: "daterangepicker",
+    name: "DateRangePicker",
+    category: "Atoms",
+    description:
+      "Selects a start and end date from a calendar popover. Returns a DateRange object with from/to ISO strings.",
+    importStatement: "import { DateRangePicker } from 'lucent-ui'",
+    usageCode: `const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
+
+<DateRangePicker
+  value={range}
+  onChange={setRange}
+  placeholder="Select date range"
+/>`,
+    aiPrompts: {
+      claude: `"Add a DateRangePicker from lucent-ui to a filter bar. Bind it to a DateRange state and display the selected from/to dates below."`,
+      cursor: `@lucent-ui Add a DateRangePicker with controlled value and onChange returning a DateRange object.`,
+      vscode: `Using lucent-ui, add a DateRangePicker with value and onChange props for a date range filter.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a DateRangePicker from lucent-ui to a filter form"`,
+    },
+    props: [
+      { name: "value", type: "DateRange", description: "Controlled range with { start: Date; end: Date }." },
+      { name: "defaultValue", type: "DateRange", description: "Uncontrolled initial range." },
+      { name: "onChange", type: "(range: DateRange) => void", description: "Called with the selected range." },
+      { name: "placeholder", type: "string", description: "Placeholder when no range is selected.", defaultValue: '"Select range"' },
+      { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
+      { name: "min", type: "Date", description: "Minimum selectable date." },
+      { name: "max", type: "Date", description: "Maximum selectable date." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Controlled",
+        description: "DateRangePicker bound to state.",
+        previewKey: "daterangepicker-controlled",
+        code: `const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
+
+<DateRangePicker
+  value={range}
+  onChange={setRange}
+  placeholder="Select date range"
+/>`,
+      },
+      {
+        title: "Disabled",
+        description: "Non-interactive state.",
+        previewKey: "daterangepicker-disabled",
+        code: `<DateRangePicker disabled placeholder="Unavailable" />`,
+      },
+    ],
+  },
+
+  // ── MultiSelect ──────────────────────────────────────────────────────────────
+  {
+    slug: "multiselect",
+    name: "MultiSelect",
+    category: "Atoms",
+    description:
+      "Dropdown that allows selecting multiple options with tags for selected values. Supports max selection and disabled options.",
+    importStatement: "import { MultiSelect } from 'lucent-ui'",
+    usageCode: `const [values, setValues] = useState<string[]>([]);
+
+<MultiSelect
+  options={[
+    { value: "react", label: "React" },
+    { value: "vue", label: "Vue" },
+    { value: "svelte", label: "Svelte" },
+  ]}
+  value={values}
+  onChange={setValues}
+  placeholder="Select frameworks"
+/>`,
+    aiPrompts: {
+      claude: `"Add a MultiSelect from lucent-ui for selecting multiple tags or categories. Bind to a string[] state and show selected values as chips."`,
+      cursor: `@lucent-ui Add a MultiSelect with options array and controlled string[] value.`,
+      vscode: `Using lucent-ui, add a MultiSelect component with options, value, and onChange props.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a MultiSelect from lucent-ui to a filter form"`,
+    },
+    props: [
+      { name: "options", type: "MultiSelectOption[]", description: "Array of { value, label, disabled? } options.", required: true },
+      { name: "value", type: "string[]", description: "Controlled array of selected values." },
+      { name: "defaultValue", type: "string[]", description: "Uncontrolled initial selection.", defaultValue: "[]" },
+      { name: "onChange", type: "(values: string[]) => void", description: "Called with updated selection array." },
+      { name: "placeholder", type: "string", description: "Placeholder when nothing is selected.", defaultValue: '"Select..."' },
+      { name: "disabled", type: "boolean", description: "Disables the entire control.", defaultValue: "false" },
+      { name: "max", type: "number", description: "Maximum number of selectable items." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Controlled",
+        description: "MultiSelect bound to state.",
+        previewKey: "multiselect-controlled",
+        code: `const [values, setValues] = useState<string[]>(["react"]);
+
+<MultiSelect
+  options={[
+    { value: "react", label: "React" },
+    { value: "vue", label: "Vue" },
+    { value: "svelte", label: "Svelte" },
+    { value: "angular", label: "Angular" },
+  ]}
+  value={values}
+  onChange={setValues}
+  placeholder="Select frameworks"
+/>`,
+      },
+      {
+        title: "With max",
+        description: "Limit selection to 2 items.",
+        previewKey: "multiselect-max",
+        code: `<MultiSelect
+  options={[
+    { value: "a", label: "Option A" },
+    { value: "b", label: "Option B" },
+    { value: "c", label: "Option C" },
+    { value: "d", label: "Option D" },
+  ]}
+  defaultValue={["a"]}
+  max={2}
+  placeholder="Pick up to 2"
+/>`,
+      },
+    ],
+  },
+
+  // ── Tabs ─────────────────────────────────────────────────────────────────────
+  {
+    slug: "tabs",
+    name: "Tabs",
+    category: "Molecules",
+    description:
+      "Horizontal tab bar with associated content panels. Supports controlled and uncontrolled modes and disabled tabs.",
+    importStatement: "import { Tabs } from 'lucent-ui'",
+    usageCode: `<Tabs
+  defaultValue="overview"
+  tabs={[
+    { value: "overview", label: "Overview", content: <p>Overview content</p> },
+    { value: "details", label: "Details", content: <p>Details content</p> },
+    { value: "settings", label: "Settings", content: <p>Settings content</p> },
+  ]}
+/>`,
+    aiPrompts: {
+      claude: `"Add a Tabs component from lucent-ui with three panels: Overview, Details, and Settings. Use defaultValue to set the initial active tab."`,
+      cursor: `@lucent-ui Add a Tabs component with tabs array containing value, label, and content.`,
+      vscode: `Using lucent-ui, add a Tabs component with multiple tab panels and defaultValue.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Tabs component from lucent-ui with multiple panels"`,
+    },
+    props: [
+      { name: "tabs", type: "TabItem[]", description: "Array of { value, label, content, disabled? } tab definitions.", required: true },
+      { name: "defaultValue", type: "string", description: "Uncontrolled initial active tab value." },
+      { name: "value", type: "string", description: "Controlled active tab value." },
+      { name: "onChange", type: "(value: string) => void", description: "Called when the active tab changes." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the tabs wrapper." },
+    ],
+    examples: [
+      {
+        title: "Basic",
+        description: "Three tabs with content panels.",
+        previewKey: "tabs-basic",
+        code: `<Tabs
+  defaultValue="overview"
+  tabs={[
+    { value: "overview", label: "Overview", content: <Text>Overview content here.</Text> },
+    { value: "details", label: "Details", content: <Text>Details content here.</Text> },
+    { value: "settings", label: "Settings", content: <Text>Settings content here.</Text> },
+  ]}
+/>`,
+      },
+      {
+        title: "With disabled tab",
+        description: "A tab can be disabled to prevent selection.",
+        previewKey: "tabs-disabled",
+        code: `<Tabs
+  defaultValue="active"
+  tabs={[
+    { value: "active", label: "Active", content: <Text>Active panel.</Text> },
+    { value: "preview", label: "Preview", content: <Text>Preview panel.</Text> },
+    { value: "locked", label: "Locked", content: <Text>Locked.</Text>, disabled: true },
+  ]}
+/>`,
+      },
+    ],
+  },
+
+  // ── Collapsible ───────────────────────────────────────────────────────────────
+  {
+    slug: "collapsible",
+    name: "Collapsible",
+    category: "Molecules",
+    description:
+      "Expandable/collapsible content section with a trigger. Supports controlled and uncontrolled open state with smooth animation.",
+    importStatement: "import { Collapsible } from 'lucent-ui'",
+    usageCode: `<Collapsible trigger="Advanced options">
+  <Text>Hidden content revealed on expand.</Text>
+</Collapsible>`,
+    aiPrompts: {
+      claude: `"Add a Collapsible from lucent-ui to reveal advanced settings. Pass a string as trigger and nest form fields as children."`,
+      cursor: `@lucent-ui Add a Collapsible with a trigger label and children content that expands on click.`,
+      vscode: `Using lucent-ui, add a Collapsible component with trigger and children props.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Collapsible from lucent-ui for expandable content"`,
+    },
+    props: [
+      { name: "trigger", type: "React.ReactNode", description: "The always-visible trigger element (string or JSX).", required: true },
+      { name: "children", type: "React.ReactNode", description: "Content shown when expanded.", required: true },
+      { name: "defaultOpen", type: "boolean", description: "Uncontrolled initial open state.", defaultValue: "false" },
+      { name: "open", type: "boolean", description: "Controlled open state." },
+      { name: "onOpenChange", type: "(open: boolean) => void", description: "Called when open state changes." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Uncontrolled",
+        description: "Self-managed open state with defaultOpen.",
+        previewKey: "collapsible-basic",
+        code: `<Collapsible trigger="Show advanced options">
+  <Text color="secondary">Hidden until expanded. Place any content here.</Text>
+</Collapsible>`,
+      },
+      {
+        title: "Default open",
+        description: "Starts in the expanded state.",
+        previewKey: "collapsible-open",
+        code: `<Collapsible trigger="Release notes" defaultOpen>
+  <Text>v0.4.0 — Added Tabs, Collapsible, DataTable, and more.</Text>
+</Collapsible>`,
+      },
+    ],
+  },
+
+  // ── CommandPalette ────────────────────────────────────────────────────────────
+  {
+    slug: "commandpalette",
+    name: "CommandPalette",
+    category: "Molecules",
+    description:
+      "Keyboard-accessible command launcher with search filtering and grouped commands. Opens via a configurable keyboard shortcut.",
+    importStatement: "import { CommandPalette } from 'lucent-ui'",
+    usageCode: `const [open, setOpen] = useState(false);
+
+<CommandPalette
+  open={open}
+  onOpenChange={setOpen}
+  commands={[
+    { id: "new", label: "New file", group: "File", onSelect: () => {} },
+    { id: "save", label: "Save", group: "File", onSelect: () => {} },
+    { id: "find", label: "Find in project", group: "Edit", onSelect: () => {} },
+  ]}
+/>`,
+    aiPrompts: {
+      claude: `"Add a CommandPalette from lucent-ui with grouped commands for navigation, file actions, and settings. Bind open state to a keyboard shortcut handler."`,
+      cursor: `@lucent-ui Add a CommandPalette with grouped commands and open/onOpenChange props.`,
+      vscode: `Using lucent-ui, add a CommandPalette component with controlled open state and commands array.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a CommandPalette from lucent-ui to the app"`,
+    },
+    props: [
+      { name: "commands", type: "CommandItem[]", description: "Array of { id, label, description?, icon?, group?, onSelect, disabled? } commands.", required: true },
+      { name: "open", type: "boolean", description: "Controlled open state.", required: true },
+      { name: "onOpenChange", type: "(open: boolean) => void", description: "Called when the palette is opened or closed.", required: true },
+      { name: "placeholder", type: "string", description: "Search input placeholder.", defaultValue: '"Search commands..."' },
+      { name: "shortcutKey", type: "string", description: "Keyboard key that toggles the palette (with Cmd/Ctrl)." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the dialog." },
+    ],
+    examples: [
+      {
+        title: "Grouped commands",
+        description: "Commands organised into File and Edit groups.",
+        previewKey: "commandpalette-groups",
+        code: `const [open, setOpen] = useState(false);
+
+<>
+  <Button onClick={() => setOpen(true)}>Open palette</Button>
+  <CommandPalette
+    open={open}
+    onOpenChange={setOpen}
+    commands={[
+      { id: "new", label: "New file", group: "File", onSelect: () => setOpen(false) },
+      { id: "save", label: "Save", group: "File", onSelect: () => setOpen(false) },
+      { id: "find", label: "Find in project", group: "Edit", onSelect: () => setOpen(false) },
+      { id: "replace", label: "Replace", group: "Edit", onSelect: () => setOpen(false) },
+    ]}
+  />
+</>`,
+      },
+    ],
+  },
+
+  // ── DataTable ─────────────────────────────────────────────────────────────────
+  {
+    slug: "datatable",
+    name: "DataTable",
+    category: "Molecules",
+    description:
+      "Feature-rich table with sortable columns, pagination, and a custom empty state. Accepts typed row data via generics.",
+    importStatement: "import { DataTable } from 'lucent-ui'",
+    usageCode: `<DataTable
+  columns={[
+    { key: "name", header: "Name", sortable: true },
+    { key: "role", header: "Role" },
+    { key: "status", header: "Status" },
+  ]}
+  rows={[
+    { name: "Alice", role: "Engineer", status: "Active" },
+    { name: "Bob", role: "Designer", status: "Away" },
+  ]}
+  pageSize={10}
+/>`,
+    aiPrompts: {
+      claude: `"Add a DataTable from lucent-ui to display a list of users. Include sortable Name and Role columns, pagination set to 10 rows per page, and an empty state."`,
+      cursor: `@lucent-ui Add a DataTable with typed columns, rows array, and pageSize.`,
+      vscode: `Using lucent-ui, add a DataTable component with columns, rows, and pagination props.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a DataTable from lucent-ui to display tabular data"`,
+    },
+    props: [
+      { name: "columns", type: "DataTableColumn<T>[]", description: "Column definitions with key, header, optional render, sortable, width, and align.", required: true },
+      { name: "rows", type: "T[]", description: "Array of row data objects.", required: true },
+      { name: "pageSize", type: "number", description: "Number of rows per page.", defaultValue: "10" },
+      { name: "page", type: "number", description: "Controlled current page (1-indexed)." },
+      { name: "onPageChange", type: "(page: number) => void", description: "Called when the user changes the page." },
+      { name: "emptyState", type: "React.ReactNode", description: "Content rendered when rows is empty." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the table wrapper." },
+    ],
+    examples: [
+      {
+        title: "Basic table",
+        description: "Sortable columns with pagination.",
+        previewKey: "datatable-basic",
+        code: `<DataTable
+  columns={[
+    { key: "name", header: "Name", sortable: true },
+    { key: "role", header: "Role", sortable: true },
+    { key: "status", header: "Status" },
+  ]}
+  rows={[
+    { name: "Alice", role: "Engineer", status: "Active" },
+    { name: "Bob", role: "Designer", status: "Away" },
+    { name: "Carol", role: "Manager", status: "Active" },
+    { name: "Dave", role: "QA", status: "Inactive" },
+  ]}
+  pageSize={3}
+/>`,
+      },
+      {
+        title: "Empty state",
+        description: "Custom message when there are no rows.",
+        previewKey: "datatable-empty",
+        code: `<DataTable
+  columns={[
+    { key: "name", header: "Name" },
+    { key: "role", header: "Role" },
+  ]}
+  rows={[]}
+  emptyState={<Text color="secondary">No results found.</Text>}
+/>`,
+      },
+    ],
+  },
+
+  // ── FileUpload ────────────────────────────────────────────────────────────────
+  {
+    slug: "fileupload",
+    name: "FileUpload",
+    category: "Molecules",
+    description:
+      "Drag-and-drop file upload zone with file list, progress tracking, error display, and size validation.",
+    importStatement: "import { FileUpload } from 'lucent-ui'",
+    usageCode: `const [files, setFiles] = useState([]);
+
+<FileUpload
+  value={files}
+  onChange={setFiles}
+  accept="image/*"
+  multiple
+  maxSize={5 * 1024 * 1024}
+/>`,
+    aiPrompts: {
+      claude: `"Add a FileUpload from lucent-ui that accepts images up to 5 MB. Show progress bars and allow multiple files. Handle onError for size validation feedback."`,
+      cursor: `@lucent-ui Add a FileUpload with accept, multiple, maxSize, and controlled value/onChange.`,
+      vscode: `Using lucent-ui, add a FileUpload component with drag-and-drop, maxSize validation, and onChange.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a FileUpload from lucent-ui to a form"`,
+    },
+    props: [
+      { name: "value", type: "UploadFile[]", description: "Controlled list of UploadFile objects.", required: true },
+      { name: "onChange", type: "(files: UploadFile[]) => void", description: "Called when the file list changes.", required: true },
+      { name: "accept", type: "string", description: "Accepted MIME types, e.g. \"image/*\" or \".pdf\"." },
+      { name: "multiple", type: "boolean", description: "Allow multiple file selection.", defaultValue: "false" },
+      { name: "maxSize", type: "number", description: "Maximum file size in bytes." },
+      { name: "onError", type: "(error: string) => void", description: "Called when a file exceeds maxSize." },
+      { name: "disabled", type: "boolean", description: "Disables the upload zone.", defaultValue: "false" },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Image upload",
+        description: "Accepts images up to 5 MB, multiple files.",
+        previewKey: "fileupload-images",
+        code: `const [files, setFiles] = useState([]);
+
+<FileUpload
+  value={files}
+  onChange={setFiles}
+  accept="image/*"
+  multiple
+  maxSize={5 * 1024 * 1024}
+/>`,
+      },
+      {
+        title: "Disabled",
+        description: "Upload zone in disabled state.",
+        previewKey: "fileupload-disabled",
+        code: `<FileUpload value={[]} onChange={() => {}} disabled />`,
+      },
+    ],
+  },
+
+  // ── PageLayout ────────────────────────────────────────────────────────────────
+  {
+    slug: "pagelayout",
+    name: "PageLayout",
+    category: "Molecules",
+    description:
+      "Full-page shell with a fixed header, collapsible sidebar, and scrollable main content area. Designed as a top-level layout wrapper.",
+    importStatement: "import { PageLayout } from 'lucent-ui'",
+    usageCode: `<PageLayout
+  header={<div>App header</div>}
+  sidebar={<nav>Sidebar nav</nav>}
+  sidebarWidth={240}
+>
+  <p>Main page content</p>
+</PageLayout>`,
+    aiPrompts: {
+      claude: `"Wrap the app in a PageLayout from lucent-ui. Pass a header with a logo and nav, a sidebar with NavLink items, and the page content as children."`,
+      cursor: `@lucent-ui Add a PageLayout with header, sidebar, and children props.`,
+      vscode: `Using lucent-ui, add a PageLayout component as the root shell with header, sidebar, and content area.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a PageLayout from lucent-ui as the app shell"`,
+    },
+    props: [
+      { name: "children", type: "React.ReactNode", description: "Main content area.", required: true },
+      { name: "header", type: "React.ReactNode", description: "Content for the fixed top header bar." },
+      { name: "sidebar", type: "React.ReactNode", description: "Content for the left sidebar." },
+      { name: "sidebarWidth", type: "number", description: "Sidebar width in pixels.", defaultValue: "240" },
+      { name: "headerHeight", type: "number", description: "Header height in pixels.", defaultValue: "56" },
+      { name: "sidebarCollapsed", type: "boolean", description: "Collapses the sidebar when true.", defaultValue: "false" },
+      { name: "mainStyle", type: "React.CSSProperties", description: "Inline styles for the main content area." },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the outer wrapper." },
+    ],
+    examples: [
+      {
+        title: "With header and sidebar",
+        description: "Full app shell layout.",
+        previewKey: "pagelayout-full",
+        code: `<PageLayout
+  header={<Text weight="semibold">My App</Text>}
+  sidebar={
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: 8 }}>
+      <NavLink href="#" isActive>Dashboard</NavLink>
+      <NavLink href="#">Settings</NavLink>
+    </div>
+  }
+  sidebarWidth={200}
+  style={{ height: 400 }}
+>
+  <Text>Main content area</Text>
+</PageLayout>`,
+      },
+      {
+        title: "Collapsed sidebar",
+        description: "Sidebar hidden via sidebarCollapsed.",
+        previewKey: "pagelayout-collapsed",
+        code: `<PageLayout
+  header={<Text weight="semibold">My App</Text>}
+  sidebar={<NavLink href="#">Dashboard</NavLink>}
+  sidebarCollapsed
+  style={{ height: 300 }}
+>
+  <Text>Full-width content when sidebar is hidden.</Text>
+</PageLayout>`,
+      },
+    ],
+  },
+
+  // ── Timeline ──────────────────────────────────────────────────────────────────
+  {
+    slug: "timeline",
+    name: "Timeline",
+    category: "Molecules",
+    description:
+      "Vertical list of timestamped events with status indicators, icons, and descriptions. Ideal for activity feeds and progress trackers.",
+    importStatement: "import { Timeline } from 'lucent-ui'",
+    usageCode: `<Timeline
+  items={[
+    { id: "1", title: "Order placed", date: "Mar 1", status: "success" },
+    { id: "2", title: "Processing", date: "Mar 2", status: "info" },
+    { id: "3", title: "Shipped", date: "Mar 3", status: "default" },
+  ]}
+/>`,
+    aiPrompts: {
+      claude: `"Add a Timeline from lucent-ui showing an order status history. Include timestamps, status indicators (success, info, warning, danger), and short descriptions."`,
+      cursor: `@lucent-ui Add a Timeline with items array containing id, title, date, and status.`,
+      vscode: `Using lucent-ui, add a Timeline component with status-coloured items and optional descriptions.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Timeline from lucent-ui to show event history"`,
+    },
+    props: [
+      { name: "items", type: "TimelineItem[]", description: "Array of { id, title, description?, date?, status?, icon? } items.", required: true },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the timeline wrapper." },
+    ],
+    examples: [
+      {
+        title: "Status variants",
+        description: "Items with different status indicators.",
+        previewKey: "timeline-statuses",
+        code: `<Timeline
+  items={[
+    { id: "1", title: "Deployed to production", date: "Mar 1", status: "success" },
+    { id: "2", title: "Build running", date: "Mar 1", status: "info" },
+    { id: "3", title: "Tests warning", date: "Feb 28", status: "warning" },
+    { id: "4", title: "Deploy failed", date: "Feb 27", status: "danger" },
+  ]}
+/>`,
+      },
+      {
+        title: "With descriptions",
+        description: "Each item has a title and longer description.",
+        previewKey: "timeline-descriptions",
+        code: `<Timeline
+  items={[
+    { id: "1", title: "Account created", description: "Welcome to the platform!", date: "Jan 10", status: "success" },
+    { id: "2", title: "Profile updated", description: "Added avatar and bio.", date: "Jan 12" },
+    { id: "3", title: "First project", description: "Created project 'Lucent UI'.", date: "Jan 15", status: "info" },
+  ]}
+/>`,
       },
     ],
   },

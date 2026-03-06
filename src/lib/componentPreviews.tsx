@@ -25,7 +25,20 @@ import {
   EmptyState,
   Tooltip,
   useLucent,
+  Breadcrumb,
+  NavLink,
+  DatePicker,
+  DateRangePicker,
+  MultiSelect,
+  Tabs,
+  Collapsible,
+  CommandPalette,
+  DataTable,
+  FileUpload,
+  PageLayout,
+  Timeline,
 } from "lucent-ui";
+import type { UploadFile } from "lucent-ui";
 
 // ─── Type ─────────────────────────────────────────────────────────────────────
 
@@ -602,6 +615,287 @@ const TooltipNoDelay: PreviewFC = () => (
   </Tooltip>
 );
 
+// ─── Breadcrumb ───────────────────────────────────────────────────────────────
+
+const BreadcrumbBasic: PreviewFC = () => (
+  <Breadcrumb
+    items={[
+      { label: "Home", href: "/" },
+      { label: "Components", href: "/components" },
+      { label: "Breadcrumb" },
+    ]}
+  />
+);
+
+const BreadcrumbSeparator: PreviewFC = () => (
+  <Breadcrumb
+    separator="›"
+    items={[
+      { label: "Dashboard", href: "/" },
+      { label: "Settings", href: "/settings" },
+      { label: "Profile" },
+    ]}
+  />
+);
+
+// ─── NavLink ──────────────────────────────────────────────────────────────────
+
+const NavLinkStates: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+    <NavLink href="#">Home</NavLink>
+    <NavLink href="#" isActive>Dashboard</NavLink>
+    <NavLink href="#" disabled>Admin</NavLink>
+  </div>
+);
+
+const NavLinkSidebar: PreviewFC = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 200 }}>
+    <NavLink href="#" isActive>Dashboard</NavLink>
+    <NavLink href="#">Components</NavLink>
+    <NavLink href="#">Settings</NavLink>
+  </div>
+);
+
+// ─── DatePicker ───────────────────────────────────────────────────────────────
+
+const DatePickerControlled: PreviewFC = () => {
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  return (
+    <div style={{ width: 280 }}>
+      <DatePicker value={date} onChange={setDate} placeholder="Pick a date" />
+    </div>
+  );
+};
+
+const DatePickerConstrained: PreviewFC = () => (
+  <div style={{ width: 280 }}>
+    <DatePicker
+      defaultValue={new Date("2025-06-15")}
+      min={new Date("2025-01-01")}
+      max={new Date("2025-12-31")}
+      placeholder="Select a 2025 date"
+    />
+  </div>
+);
+
+// ─── DateRangePicker ──────────────────────────────────────────────────────────
+
+const DateRangePickerControlled: PreviewFC = () => {
+  const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
+  return (
+    <div style={{ width: 320 }}>
+      <DateRangePicker value={range} onChange={setRange} placeholder="Select date range" />
+    </div>
+  );
+};
+
+const DateRangePickerDisabled: PreviewFC = () => (
+  <div style={{ width: 320 }}>
+    <DateRangePicker disabled placeholder="Unavailable" />
+  </div>
+);
+
+// ─── MultiSelect ──────────────────────────────────────────────────────────────
+
+const MultiSelectControlled: PreviewFC = () => {
+  const [values, setValues] = useState<string[]>(["react"]);
+  return (
+    <div style={{ width: 300 }}>
+      <MultiSelect
+        options={[
+          { value: "react", label: "React" },
+          { value: "vue", label: "Vue" },
+          { value: "svelte", label: "Svelte" },
+          { value: "angular", label: "Angular" },
+        ]}
+        value={values}
+        onChange={setValues}
+        placeholder="Select frameworks"
+      />
+    </div>
+  );
+};
+
+const MultiSelectMax: PreviewFC = () => (
+  <div style={{ width: 300 }}>
+    <MultiSelect
+      options={[
+        { value: "a", label: "Option A" },
+        { value: "b", label: "Option B" },
+        { value: "c", label: "Option C" },
+        { value: "d", label: "Option D" },
+      ]}
+      defaultValue={["a"]}
+      max={2}
+      placeholder="Pick up to 2"
+    />
+  </div>
+);
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
+const TabsBasic: PreviewFC = () => (
+  <Tabs
+    defaultValue="overview"
+    tabs={[
+      { value: "overview", label: "Overview", content: <Text>Overview content here.</Text> },
+      { value: "details", label: "Details", content: <Text>Details content here.</Text> },
+      { value: "settings", label: "Settings", content: <Text>Settings content here.</Text> },
+    ]}
+  />
+);
+
+const TabsDisabled: PreviewFC = () => (
+  <Tabs
+    defaultValue="active"
+    tabs={[
+      { value: "active", label: "Active", content: <Text>Active panel.</Text> },
+      { value: "preview", label: "Preview", content: <Text>Preview panel.</Text> },
+      { value: "locked", label: "Locked", content: <Text>Locked.</Text>, disabled: true },
+    ]}
+  />
+);
+
+// ─── Collapsible ──────────────────────────────────────────────────────────────
+
+const CollapsibleBasic: PreviewFC = () => (
+  <div style={{ width: 360 }}>
+    <Collapsible trigger="Show advanced options">
+      <Text color="secondary">Hidden until expanded. Place any content here.</Text>
+    </Collapsible>
+  </div>
+);
+
+const CollapsibleOpen: PreviewFC = () => (
+  <div style={{ width: 360 }}>
+    <Collapsible trigger="Release notes" defaultOpen>
+      <Text>v0.4.0 — Added Tabs, Collapsible, DataTable, and more.</Text>
+    </Collapsible>
+  </div>
+);
+
+// ─── CommandPalette ───────────────────────────────────────────────────────────
+
+const CommandPaletteGroups: PreviewFC = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <Button onClick={() => setOpen(true)}>Open palette</Button>
+      <CommandPalette
+        open={open}
+        onOpenChange={setOpen}
+        commands={[
+          { id: "new", label: "New file", group: "File", onSelect: () => setOpen(false) },
+          { id: "save", label: "Save", group: "File", onSelect: () => setOpen(false) },
+          { id: "find", label: "Find in project", group: "Edit", onSelect: () => setOpen(false) },
+          { id: "replace", label: "Replace", group: "Edit", onSelect: () => setOpen(false) },
+        ]}
+      />
+    </div>
+  );
+};
+
+// ─── DataTable ────────────────────────────────────────────────────────────────
+
+const DataTableBasic: PreviewFC = () => (
+  <DataTable
+    columns={[
+      { key: "name", header: "Name", sortable: true },
+      { key: "role", header: "Role", sortable: true },
+      { key: "status", header: "Status" },
+    ]}
+    rows={[
+      { name: "Alice", role: "Engineer", status: "Active" },
+      { name: "Bob", role: "Designer", status: "Away" },
+      { name: "Carol", role: "Manager", status: "Active" },
+      { name: "Dave", role: "QA", status: "Inactive" },
+    ]}
+    pageSize={3}
+  />
+);
+
+const DataTableEmpty: PreviewFC = () => (
+  <DataTable
+    columns={[
+      { key: "name", header: "Name" },
+      { key: "role", header: "Role" },
+    ]}
+    rows={[]}
+    emptyState={<Text color="secondary">No results found.</Text>}
+  />
+);
+
+// ─── FileUpload ───────────────────────────────────────────────────────────────
+
+const FileUploadImages: PreviewFC = () => {
+  const [files, setFiles] = useState<UploadFile[]>([]);
+  return (
+    <FileUpload
+      value={files}
+      onChange={setFiles}
+      accept="image/*"
+      multiple
+      maxSize={5 * 1024 * 1024}
+    />
+  );
+};
+
+const FileUploadDisabled: PreviewFC = () => (
+  <FileUpload value={[]} onChange={() => {}} disabled />
+);
+
+// ─── PageLayout ───────────────────────────────────────────────────────────────
+
+const PageLayoutFull: PreviewFC = () => (
+  <PageLayout
+    header={<Text weight="semibold">My App</Text>}
+    sidebar={
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: 8 }}>
+        <NavLink href="#" isActive>Dashboard</NavLink>
+        <NavLink href="#">Settings</NavLink>
+      </div>
+    }
+    sidebarWidth={200}
+    style={{ height: 400 }}
+  >
+    <Text>Main content area</Text>
+  </PageLayout>
+);
+
+const PageLayoutCollapsed: PreviewFC = () => (
+  <PageLayout
+    header={<Text weight="semibold">My App</Text>}
+    sidebar={<NavLink href="#">Dashboard</NavLink>}
+    sidebarCollapsed
+    style={{ height: 300 }}
+  >
+    <Text>Full-width content when sidebar is hidden.</Text>
+  </PageLayout>
+);
+
+// ─── Timeline ─────────────────────────────────────────────────────────────────
+
+const TimelineStatuses: PreviewFC = () => (
+  <Timeline
+    items={[
+      { id: "1", title: "Deployed to production", date: "Mar 1", status: "success" },
+      { id: "2", title: "Build running", date: "Mar 1", status: "info" },
+      { id: "3", title: "Tests warning", date: "Feb 28", status: "warning" },
+      { id: "4", title: "Deploy failed", date: "Feb 27", status: "danger" },
+    ]}
+  />
+);
+
+const TimelineDescriptions: PreviewFC = () => (
+  <Timeline
+    items={[
+      { id: "1", title: "Account created", description: "Welcome to the platform!", date: "Jan 10", status: "success" },
+      { id: "2", title: "Profile updated", description: "Added avatar and bio.", date: "Jan 12" },
+      { id: "3", title: "First project", description: "Created project 'Lucent UI'.", date: "Jan 15", status: "info" },
+    ]}
+  />
+);
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const componentPreviews: Record<string, PreviewFC> = {
@@ -680,4 +974,39 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // Tooltip
   "tooltip-placements": TooltipPlacements,
   "tooltip-nodelay": TooltipNoDelay,
+  // Breadcrumb
+  "breadcrumb-basic": BreadcrumbBasic,
+  "breadcrumb-separator": BreadcrumbSeparator,
+  // NavLink
+  "navlink-states": NavLinkStates,
+  "navlink-sidebar": NavLinkSidebar,
+  // DatePicker
+  "datepicker-controlled": DatePickerControlled,
+  "datepicker-constrained": DatePickerConstrained,
+  // DateRangePicker
+  "daterangepicker-controlled": DateRangePickerControlled,
+  "daterangepicker-disabled": DateRangePickerDisabled,
+  // MultiSelect
+  "multiselect-controlled": MultiSelectControlled,
+  "multiselect-max": MultiSelectMax,
+  // Tabs
+  "tabs-basic": TabsBasic,
+  "tabs-disabled": TabsDisabled,
+  // Collapsible
+  "collapsible-basic": CollapsibleBasic,
+  "collapsible-open": CollapsibleOpen,
+  // CommandPalette
+  "commandpalette-groups": CommandPaletteGroups,
+  // DataTable
+  "datatable-basic": DataTableBasic,
+  "datatable-empty": DataTableEmpty,
+  // FileUpload
+  "fileupload-images": FileUploadImages,
+  "fileupload-disabled": FileUploadDisabled,
+  // PageLayout
+  "pagelayout-full": PageLayoutFull,
+  "pagelayout-collapsed": PageLayoutCollapsed,
+  // Timeline
+  "timeline-statuses": TimelineStatuses,
+  "timeline-descriptions": TimelineDescriptions,
 };
