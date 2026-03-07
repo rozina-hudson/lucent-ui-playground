@@ -163,21 +163,20 @@ function NavLink({
   shell: ReturnType<typeof getShell>;
 }) {
   const [hovered, setHovered] = useState(false);
-  const props = external
-    ? { href, target: "_blank" as const, rel: "noopener noreferrer" }
-    : { href };
+  const sharedProps = {
+    style: { color: hovered ? shell.text : shell.muted, transition: "color 0.15s" },
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+  };
 
-  const Tag = external ? "a" : Link;
-
-  return (
-    <Tag
-      {...(props as Parameters<typeof Tag>[0])}
-      style={{ color: hovered ? shell.text : shell.muted, transition: "color 0.15s" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+  return external ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" {...sharedProps}>
       {children}
-    </Tag>
+    </a>
+  ) : (
+    <Link href={href} {...sharedProps}>
+      {children}
+    </Link>
   );
 }
 
