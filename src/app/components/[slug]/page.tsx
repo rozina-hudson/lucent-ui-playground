@@ -1,4 +1,8 @@
 import { notFound } from "next/navigation";
+
+// this page renders a client-heavy playground; turn off static prerendering to
+// avoid unexpected runtime errors during the build (see customizer additions).
+export const dynamic = "force-dynamic";
 import { getComponent, getAllSlugs, getPrevNext } from "@/lib/componentData";
 import { DocLayout } from "@/components/docs/DocLayout";
 

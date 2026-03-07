@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useLucent, Badge, Text, Breadcrumb, Tabs, Divider } from "lucent-ui";
 
@@ -14,6 +14,7 @@ import { AiUsageSection } from "./AiUsageSection";
 import { ExampleCard } from "./ExampleCard";
 import { PropsTable } from "./PropsTable";
 import { PlaygroundPanel, generateCode } from "./PlaygroundPanel";
+import { ComponentCustomizer } from "./ComponentCustomizer";
 
 type Props = {
   def: ComponentDef;
@@ -25,6 +26,40 @@ export function DocLayout({ def, prev, next }: Props) {
   const { pg, setPg } = usePlayground();
   const { tokens } = useLucent();
   const shell = getShell(pg.theme);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const [compValues, setCompValues] = useState<Record<string, any>>(() => {
+    const obj: Record<string, any> = {};
+    def.props.forEach((p) => {
+      if (p.name === "children") return;
+      if (p.type.includes("=>") || p.type.includes("CSSProperties")) return;
+      if (p.defaultValue !== undefined) {
+        let v: any = p.defaultValue;
+        if (v === "true" || v === "false") v = v === "true";
+        else if (v !== "" && !isNaN(Number(v))) v = Number(v);
+        // strip surrounding quotes stored in componentData: '"md"' → 'md'
+        else if (typeof v === "string" && v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1);
+        obj[p.name] = v;
+      } else if (p.type === "string" && ["label", "placeholder", "title", "description"].includes(p.name)) {
+        // seed common text props with the component name so the preview isn't blank
+        obj[p.name] = def.name;
+      }
+    });
+    return obj;
+  });
+
+  const compPropsAsString = useMemo(() => {
+    return Object.entries(compValues)
+      .filter(([k]) => k !== "children")
+      .map(([k, v]) => {
+        if (typeof v === "string") return `${k}={"${v}"}`;
+        if (typeof v === "boolean") return v ? k : "";
+        return `${k}={${JSON.stringify(v)}}`;
+      })
+      .filter(Boolean)
+      .join(" ");
+  }, [compValues]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const a = (v: string | number) => v as any;
@@ -82,36 +117,49 @@ export function DocLayout({ def, prev, next }: Props) {
       <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>Preview</SectionTitle>
-      <Tabs
-        defaultValue="preview"
-        style={{ marginBottom: 40 }}
-        tabs={[
-          {
-            value: "preview",
-            label: "Preview",
-            content: (
-              <div style={{ display: "flex", border: `1px solid ${shell.border}`, borderRadius: 12, overflow: "hidden" }}>
-                <div style={{ flex: 1, background: tokens.bgBase, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", ...previewContainerStyle }}>
-                  {TopPreview ? <TopPreview /> : null}
+      <div style={{ marginBottom: 40 }}>
+        <Tabs
+          defaultValue="preview"
+          style={{ marginBottom: 16 }}
+          tabs={[
+            {
+              value: "preview",
+              label: "Preview",
+              content: (
+                <div style={{ display: "flex", border: `1px solid ${shell.border}`, borderRadius: 12, overflow: "hidden" }}>
+                  <div style={{ flex: 1, background: tokens.bgBase, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", ...previewContainerStyle }}>
+                    {mounted && TopPreview ? <TopPreview /> : null}
+                  </div>
+                  <div style={{ width: 220, flexShrink: 0, borderLeft: `1px solid ${shell.border}`, background: shell.surface, overflowY: "auto" }}>
+                    <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
+                  </div>
                 </div>
-                <div style={{ width: 220, flexShrink: 0, borderLeft: `1px solid ${shell.border}`, background: shell.surface, overflowY: "auto" }}>
-                  <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
-                </div>
-              </div>
-            ),
-          },
-          {
-            value: "code",
-            label: "Code",
-            content: (
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <CodeBlock code={firstExample?.code ?? ""} shell={shell} />
-                <CodeBlock code={generateCode(pg)} shell={shell} />
-              </div>
-            ),
-          },
-        ]}
-      />
+              ),
+            },
+            {
+              value: "playground",
+              label: "Playground",
+              content: (
+                <ComponentCustomizer
+                  def={def}
+                  shell={shell}
+                  values={compValues}
+                  onValuesChange={(name, v) => setCompValues((prev) => ({ ...prev, [name]: v }))}
+                  previewStyle={previewContainerStyle}
+                  previewBg={tokens.bgBase}
+                />
+              ),
+            },
+          ]}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <CodeBlock
+            code={`<${def.name}${compPropsAsString ? " " + compPropsAsString : ""} />`}
+            shell={shell}
+          />
+          <CodeBlock code={generateCode(pg)} shell={shell} />
+        </div>
+      </div>
 
       <Divider style={{ margin: "0 0 36px" }} />
 

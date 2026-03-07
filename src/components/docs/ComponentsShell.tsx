@@ -13,7 +13,7 @@ import {
 import type { LucentTokens } from "lucent-ui";
 
 import { getShell } from "@/lib/shellColors";
-import { deriveAccentTokens } from "@/lib/colorUtils";
+import { deriveAccentTokens, adjustBorderForTheme } from "@/lib/colorUtils";
 import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
@@ -193,7 +193,8 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
 
   const tokenOverrides: Partial<LucentTokens> = {
     ...deriveAccentTokens(pg.primaryColor),
-    borderDefault: pg.borderColor,
+    // nudge the border for legibility depending on the current theme
+    borderDefault: adjustBorderForTheme(pg.borderColor, pg.theme),
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

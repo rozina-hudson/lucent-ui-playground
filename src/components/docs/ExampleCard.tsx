@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Collapsible } from "lucent-ui";
 import { CodeBlock } from "./CodeBlock";
 import type { ExampleDef } from "@/lib/componentData";
@@ -16,6 +17,8 @@ type Props = {
 
 export function ExampleCard({ example, previews, shell, previewBg, previewStyle }: Props) {
   const PreviewComponent = previews[example.previewKey];
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
     <div style={{ border: `1px solid ${shell.border}`, borderRadius: 12, overflow: "hidden" }}>
@@ -62,10 +65,10 @@ export function ExampleCard({ example, previews, shell, previewBg, previewStyle 
           ...previewStyle,
         }}
       >
-        {PreviewComponent ? (
+        {mounted && PreviewComponent ? (
           <PreviewComponent />
         ) : (
-          <span style={{ fontSize: 12, color: shell.muted }}>Preview unavailable</span>
+          <span style={{ fontSize: 12, color: shell.muted }}>{mounted ? "Preview unavailable" : ""}</span>
         )}
       </div>
 

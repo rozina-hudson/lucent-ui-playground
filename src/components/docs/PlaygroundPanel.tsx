@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Tabs, Select } from "lucent-ui";
+import { Tabs, Select, Slider, CodeBlock } from "lucent-ui";
 import type { ShellColors } from "@/lib/shellColors";
-import { deriveAccentTokens } from "@/lib/colorUtils";
+import { adjustBorderForTheme } from "@/lib/colorUtils";
 
 export type PlaygroundState = {
   theme: "light" | "dark";
@@ -81,19 +81,46 @@ function Row({ children }: { children: React.ReactNode }) {
 }
 
 export function generateCode(state: PlaygroundState): string {
-  const tokens = { ...deriveAccentTokens(state.primaryColor), borderDefault: state.borderColor };
+  // In Lucent UI 0.5 the provider will happily derive all of the "extra"
+  // accent tokens (hover/active/subtle, textOnAccent, accentBorder) from
+  // `accentDefault`.  We show the minimal overrides here, with a comment
+  // explaining the automatic behaviour so users know they don't need to
+  // paste a big object.
+  const baseTokens: Record<string, string> = {
+    accentDefault: state.primaryColor,
+  };
+
+  // still handle an explicit border override since the library doesn't
+  // nudge it for us yet
+  if (state.borderColor !== defaultPlaygroundState.borderColor) {
+    baseTokens.borderDefault = adjustBorderForTheme(state.borderColor, state.theme);
+  }
+
   const lines = [
     `import { LucentProvider } from 'lucent-ui';`,
     ``,
     `<LucentProvider`,
     `  theme="${state.theme}"`,
     `  tokens={{`,
-    ...Object.entries(tokens).map(([k, v]) => `    ${k}: "${v}",`),
+    ...Object.entries(baseTokens).map(([k, v]) => `    ${k}: "${v}",`),
     `  }}`,
     `>`,
     `  {/* your app */}`,
     `</LucentProvider>`,
   ];
+
+  lines.push(
+    ``,
+    `/*
+     * LucentProvider (0.5+) automatically derives from accentDefault:
+     *   textOnAccent  — black or white for WCAG AA contrast
+     *   accentBorder  — lightness-shifted per theme
+     *
+     * accentHover, accentActive, accentSubtle, and focusRing are NOT
+     * auto-derived; omitting them leaves the base-theme defaults in place.
+     * Supply them in tokens={{}} if you need precise hover/focus colours.
+     */`
+  );
   if (state.borderRadius !== 8 || state.fontScale !== 1 || state.spacingScale !== 1) {
     lines.push(``, `/* CSS custom properties (apply to a wrapper div) */`);
     if (state.borderRadius !== 8) {
@@ -112,23 +139,11 @@ export function generateCode(state: PlaygroundState): string {
 export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }: Props) {
   const set = (patch: Partial<PlaygroundState>) => onChange({ ...state, ...patch });
   useGoogleFont(state.fontFamily);
-  const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
 
   const code = generateCode(state);
-
-  function copyCode() {
-    navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
-  }
-
-  const sliderStyle: React.CSSProperties = {
-    flex: 1,
-    height: 4,
-    cursor: "pointer",
-    accentColor: shell.gold,
-  };
 
   const colorInputStyle: React.CSSProperties = {
     width: 28,
@@ -138,18 +153,6 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
     padding: 2,
     cursor: "pointer",
     background: "transparent",
-  };
-
-  const sectionHead: React.CSSProperties = {
-    fontSize: 10,
-    fontWeight: 700,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: shell.subtle,
-    fontFamily: "var(--font-dm-sans), sans-serif",
-    padding: "12px 20px 6px",
-    borderTop: `1px solid ${shell.border}`,
-    marginTop: 12,
   };
 
   const customizeContent = (
@@ -171,18 +174,9 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
           options={PLAYGROUND_FONTS.map((f) => ({ value: f, label: f }))}
         />
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <Row><Label shell={shell}>Radius</Label><span style={{ fontSize: 11, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>{state.borderRadius}px</span></Row>
-        <input type="range" min={0} max={20} step={1} value={state.borderRadius} onChange={(e) => set({ borderRadius: Number(e.target.value) })} style={sliderStyle} />
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <Row><Label shell={shell}>Font scale</Label><span style={{ fontSize: 11, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>{state.fontScale}×</span></Row>
-        <input type="range" min={0.75} max={1.5} step={0.05} value={state.fontScale} onChange={(e) => set({ fontScale: Number(e.target.value) })} style={sliderStyle} />
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <Row><Label shell={shell}>Padding / Gap</Label><span style={{ fontSize: 11, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>{state.spacingScale}×</span></Row>
-        <input type="range" min={0.5} max={2} step={0.1} value={state.spacingScale} onChange={(e) => set({ spacingScale: Number(e.target.value) })} style={sliderStyle} />
-      </div>
+      <Slider size="sm" label={`Radius — ${state.borderRadius}px`} min={0} max={20} step={1} value={state.borderRadius} onChange={(e) => set({ borderRadius: Number(e.target.value) })} />
+      <Slider size="sm" label={`Font scale — ${state.fontScale}×`} min={0.75} max={1.5} step={0.05} value={state.fontScale} onChange={(e) => set({ fontScale: Number(e.target.value) })} />
+      <Slider size="sm" label={`Padding / Gap — ${state.spacingScale}×`} min={0.5} max={2} step={0.1} value={state.spacingScale} onChange={(e) => set({ spacingScale: Number(e.target.value) })} />
       <button onClick={() => onChange({ theme: "light", primaryColor: "#6366f1", borderColor: "#e5e7eb", borderRadius: 8, fontScale: 1, spacingScale: 1, fontFamily: "Inter" })} style={{ marginTop: 4, padding: "5px 0", background: "transparent", border: `1px solid ${shell.border}`, borderRadius: 6, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 11, cursor: "pointer" }}>
         Reset defaults
       </button>
@@ -191,12 +185,7 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
 
   const codeContent = (
     <div style={{ padding: "0 12px 20px" }}>
-      <div style={{ position: "relative" }}>
-        <pre style={{ margin: 0, padding: "12px 14px", background: shell.surface, border: `1px solid ${shell.border}`, borderRadius: 8, fontSize: 11, lineHeight: 1.7, color: shell.text, fontFamily: "ui-monospace, 'Cascadia Code', 'Fira Code', monospace", overflowX: "auto", whiteSpace: "pre" }}>{code}</pre>
-        <button onClick={copyCode} style={{ position: "absolute", top: 8, right: 8, background: shell.bg, border: `1px solid ${shell.border}`, borderRadius: 5, padding: "3px 8px", fontSize: 10, fontWeight: 600, cursor: "pointer", color: copied ? shell.gold : shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", transition: "color 0.15s" }}>
-          {copied ? "Copied!" : "Copy"}
-        </button>
-      </div>
+      <CodeBlock code={code} />
     </div>
   );
 
