@@ -6,7 +6,6 @@ import Link from "next/link";
 import {
   LucentProvider,
   Badge,
-  Button,
   PageLayout,
   Collapsible,
   NavLink,
@@ -81,39 +80,6 @@ const SidebarNav = memo(function SidebarNav({
   );
 });
 
-const GenerateUIToggle = memo(function GenerateUIToggle({
-  shell,
-  active,
-  onToggle,
-}: {
-  shell: Shell;
-  active: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div style={{ borderBottom: `1px solid ${shell.border}` }}>
-      <button
-        onClick={onToggle}
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "10px 16px",
-          background: active ? shell.goldBg : "transparent",
-          border: "none",
-          cursor: "pointer",
-          color: active ? shell.gold : shell.text,
-          transition: "all 0.15s",
-          ...SIDEBAR_LABEL,
-        }}
-      >
-        ✦ Generate UI
-        {active && <span style={{ fontSize: 10, color: shell.gold }}>ON</span>}
-      </button>
-    </div>
-  );
-});
 
 const HeaderContent = memo(function HeaderContent({
   shell,
@@ -122,6 +88,9 @@ const HeaderContent = memo(function HeaderContent({
   defName,
   isDark,
   onThemeToggle,
+  generateUI,
+  onToggleGenerateUI,
+  onDismissGenerateUI,
 }: {
   shell: Shell;
   prev: ComponentDef | null;
@@ -129,22 +98,59 @@ const HeaderContent = memo(function HeaderContent({
   defName: string;
   isDark: boolean;
   onThemeToggle: () => void;
+  generateUI: boolean;
+  onToggleGenerateUI: () => void;
+  onDismissGenerateUI: () => void;
 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: shell.bg, gap: 12 }}>
       <Link href="/" style={{ fontFamily: "var(--font-unbounded), sans-serif", fontWeight: 600, fontSize: 13, color: shell.gold, textDecoration: "none", letterSpacing: "-0.01em", flexShrink: 0 }}>
         Lucent UI
       </Link>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        {prev
-          ? <Link href={`/components/${prev.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>← {prev.name}</Link>
-          : <span style={{ width: 60 }} />}
-        <span style={{ fontFamily: "var(--font-unbounded), sans-serif", fontSize: 12, color: shell.text, fontWeight: 600 }}>{defName}</span>
-        {next
-          ? <Link href={`/components/${next.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>{next.name} →</Link>
-          : <span style={{ width: 60 }} />}
-      </div>
+      {generateUI ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={onDismissGenerateUI}
+            style={{ background: "none", border: "none", cursor: "pointer", color: shell.muted, fontSize: 12, fontFamily: "var(--font-dm-sans), sans-serif", display: "flex", alignItems: "center", gap: 4, padding: 0 }}
+          >
+            ← Back to docs
+          </button>
+          <span style={{ fontFamily: "var(--font-unbounded), sans-serif", fontSize: 12, color: shell.gold, fontWeight: 600 }}>✦ Generated UI</span>
+        </div>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {prev
+            ? <Link href={`/components/${prev.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>← {prev.name}</Link>
+            : <span style={{ width: 60 }} />}
+          <span style={{ fontFamily: "var(--font-unbounded), sans-serif", fontSize: 12, color: shell.text, fontWeight: 600 }}>{defName}</span>
+          {next
+            ? <Link href={`/components/${next.slug}`} style={{ fontSize: 12, color: shell.muted, textDecoration: "none", display: "flex", alignItems: "center", gap: 4, fontFamily: "var(--font-dm-sans), sans-serif" }}>{next.name} →</Link>
+            : <span style={{ width: 60 }} />}
+        </div>
+      )}
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        {!generateUI && (
+          <button
+            onClick={onToggleGenerateUI}
+            style={{
+              background: "none",
+              border: `1px solid ${shell.border}`,
+              borderRadius: 8,
+              padding: "5px 10px",
+              cursor: "pointer",
+              color: shell.gold,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              fontFamily: "var(--font-dm-sans), sans-serif",
+              lineHeight: 1,
+              transition: "border-color 0.15s, background 0.15s",
+            }}
+          >
+            ✦ Generate UI
+          </button>
+        )}
         <button
           onClick={onThemeToggle}
           aria-label="Toggle theme"
@@ -239,9 +245,14 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const sidebar = (
     <div style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
       <SidebarNav shell={shell} segment={segment} />
-      <GenerateUIToggle shell={shell} active={generateUI} onToggle={toggleGenerateUI} />
     </div>
   );
+
+  const rightSidebarContent = generateUI ? (
+    <div style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden" }}>
+      <PlaygroundPanel state={pg} onChange={setPg} shell={shell} showCodeTab />
+    </div>
+  ) : undefined;
 
   const generateUIContent = generateUI && genPhase !== "idle" ? (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, minHeight: "calc(100vh - 56px)" }}>
@@ -251,70 +262,22 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       </span>
     </div>
   ) : generateUI ? (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 48px 0", flexShrink: 0 }}>
-        <span style={{ fontSize: 12, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", flex: 1 }}>
-          All components — adjust appearance settings to preview changes across the system
-        </span>
-        <Button variant="ghost" size="sm" onClick={() => setCustomizerOpen((v) => !v)} style={{ color: customizerOpen ? shell.gold : shell.muted, borderColor: customizerOpen ? shell.gold : shell.border }}>
-          ✦ Customize
-        </Button>
-        <Button variant="ghost" size="sm" onClick={dismissGenerateUI} style={{ color: shell.muted, borderColor: shell.border }}>
-          ← Back to docs
-        </Button>
-      </div>
-      <BentoGrid previewStyle={previewContainerStyle} />
-    </div>
+    <BentoGrid previewStyle={previewContainerStyle} />
   ) : children;
 
   return (
     <LucentProvider theme={pg.theme} tokens={tokenOverrides}>
-      {/* Outer flex row: PageLayout + right sidebar as true siblings */}
-      <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: shell.bg, color: shell.text }}>
-        <PageLayout
-          style={{ flex: 1, minWidth: 0, background: shell.bg, color: shell.text }}
-          header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark" })} />}
-          sidebar={sidebar}
-          sidebarCollapsed={generateUI}
-          headerHeight={56}
-          sidebarWidth={240}
-        >
-          {generateUIContent}
-        </PageLayout>
-
-        {/* Right appearance sidebar — true sibling of PageLayout, offset below header */}
-        {generateUI && (
-          <div
-            style={{
-              width: customizerOpen ? 280 : 0,
-              minWidth: customizerOpen ? 280 : 0,
-              flexShrink: 0,
-              height: "100vh",
-              paddingTop: 56,
-              overflowY: "auto",
-              overflowX: "hidden",
-              transition: "width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-              borderLeft: customizerOpen ? `1px solid ${shell.border}` : "none",
-              background: shell.bg,
-              boxSizing: "border-box",
-            }}
-          >
-            <div style={{ width: 280 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: `1px solid ${shell.border}` }}>
-                <span style={{ ...SIDEBAR_LABEL, color: shell.text }}>Appearance</span>
-                <button
-                  onClick={() => setCustomizerOpen(false)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: shell.muted, fontSize: 18, lineHeight: 1, padding: 2 }}
-                  aria-label="Close customizer"
-                >
-                  ×
-                </button>
-              </div>
-              <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
-            </div>
-          </div>
-        )}
-      </div>
+      <PageLayout
+        style={{ height: "100vh", background: shell.bg, color: shell.text }}
+        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark" })} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
+        sidebar={sidebar}
+        headerHeight={56}
+        sidebarWidth={generateUI ? 10 : 240}
+        rightSidebar={rightSidebarContent}
+        rightSidebarWidth={customizerOpen ? 280 : 10}
+      >
+        {generateUIContent}
+      </PageLayout>
     </LucentProvider>
   );
 }

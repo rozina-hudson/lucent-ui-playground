@@ -876,6 +876,28 @@ const PageLayoutCollapsed: PreviewFC = () => (
   </PageLayout>
 );
 
+const PageLayoutRightSidebar: PreviewFC = () => (
+  <PageLayout
+    header={<Text weight="semibold">My App</Text>}
+    sidebar={
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: 8 }}>
+        <NavLink href="#" isActive>Dashboard</NavLink>
+        <NavLink href="#">Settings</NavLink>
+      </div>
+    }
+    rightSidebar={
+      <div style={{ padding: 12 }}>
+        <Text size="sm" weight="semibold">Details</Text>
+        <Text size="sm">Contextual info panel</Text>
+      </div>
+    }
+    rightSidebarWidth={200}
+    style={{ height: 400 }}
+  >
+    <Text>Main content area</Text>
+  </PageLayout>
+);
+
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 
 const TimelineStatuses: PreviewFC = () => (
@@ -1009,6 +1031,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // PageLayout
   "pagelayout-full": PageLayoutFull,
   "pagelayout-collapsed": PageLayoutCollapsed,
+  "pagelayout-right-sidebar": PageLayoutRightSidebar,
   // Timeline
   "timeline-statuses": TimelineStatuses,
   "timeline-descriptions": TimelineDescriptions,

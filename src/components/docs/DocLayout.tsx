@@ -13,7 +13,7 @@ import { InstallTabs } from "./InstallTabs";
 import { AiUsageSection } from "./AiUsageSection";
 import { ExampleCard } from "./ExampleCard";
 import { PropsTable } from "./PropsTable";
-import { PlaygroundPanel } from "./PlaygroundPanel";
+import { PlaygroundPanel, generateCode } from "./PlaygroundPanel";
 
 type Props = {
   def: ComponentDef;
@@ -103,7 +103,12 @@ export function DocLayout({ def, prev, next }: Props) {
           {
             value: "code",
             label: "Code",
-            content: <CodeBlock code={firstExample?.code ?? ""} shell={shell} />,
+            content: (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <CodeBlock code={firstExample?.code ?? ""} shell={shell} />
+                <CodeBlock code={generateCode(pg)} shell={shell} />
+              </div>
+            ),
           },
         ]}
       />

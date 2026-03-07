@@ -1822,7 +1822,7 @@ const results = allItems
     name: "PageLayout",
     category: "Molecules",
     description:
-      "Full-page shell with a fixed header, collapsible sidebar, and scrollable main content area. Designed as a top-level layout wrapper.",
+      "Full-page shell with a fixed header, collapsible left sidebar, optional right sidebar, and scrollable main content area. Designed as a top-level layout wrapper.",
     importStatement: "import { PageLayout } from 'lucent-ui'",
     usageCode: `<PageLayout
   header={<div>App header</div>}
@@ -1832,11 +1832,11 @@ const results = allItems
   <p>Main page content</p>
 </PageLayout>`,
     aiPrompts: {
-      claude: `"Wrap the app in a PageLayout from lucent-ui. Pass a header with a logo and nav, a sidebar with NavLink items, and the page content as children."`,
-      cursor: `@lucent-ui Add a PageLayout with header, sidebar, and children props.`,
-      vscode: `Using lucent-ui, add a PageLayout component as the root shell with header, sidebar, and content area.`,
+      claude: `"Wrap the app in a PageLayout from lucent-ui. Pass a header with a logo and nav, a sidebar with NavLink items, an optional rightSidebar for a details panel, and the page content as children."`,
+      cursor: `@lucent-ui Add a PageLayout with header, sidebar, rightSidebar, and children props.`,
+      vscode: `Using lucent-ui, add a PageLayout component as the root shell with header, left sidebar, right sidebar, and content area.`,
       mcp: `// lucent-ui MCP
-// Ask: "Add a PageLayout from lucent-ui as the app shell"`,
+// Ask: "Add a PageLayout from lucent-ui as the app shell with a right sidebar"`,
     },
     props: [
       { name: "children", type: "React.ReactNode", description: "Main content area.", required: true },
@@ -1844,7 +1844,12 @@ const results = allItems
       { name: "sidebar", type: "React.ReactNode", description: "Content for the left sidebar." },
       { name: "sidebarWidth", type: "number", description: "Sidebar width in pixels.", defaultValue: "240" },
       { name: "headerHeight", type: "number", description: "Header height in pixels.", defaultValue: "56" },
-      { name: "sidebarCollapsed", type: "boolean", description: "Collapses the sidebar when true.", defaultValue: "false" },
+      { name: "sidebarCollapsed", type: "boolean", description: "Collapses the left sidebar when true.", defaultValue: "false" },
+      { name: "rightSidebar", type: "React.ReactNode", description: "Content for the right sidebar panel." },
+      { name: "rightSidebarWidth", type: "number | string", description: "Right sidebar width in px or any CSS value.", defaultValue: "240" },
+      { name: "rightSidebarCollapsed", type: "boolean", description: "Collapses the right sidebar when true.", defaultValue: "false" },
+      { name: "footer", type: "React.ReactNode", description: "Content for the footer bar rendered below the body row." },
+      { name: "footerHeight", type: "number | string", description: "Footer height in px or any CSS value.", defaultValue: "48" },
       { name: "mainStyle", type: "React.CSSProperties", description: "Inline styles for the main content area." },
       { name: "style", type: "React.CSSProperties", description: "Inline styles for the outer wrapper." },
     ],
@@ -1878,6 +1883,30 @@ const results = allItems
   style={{ height: 300 }}
 >
   <Text>Full-width content when sidebar is hidden.</Text>
+</PageLayout>`,
+      },
+      {
+        title: "With right sidebar",
+        description: "Optional right panel for contextual info or tools.",
+        previewKey: "pagelayout-right-sidebar",
+        code: `<PageLayout
+  header={<Text weight="semibold">My App</Text>}
+  sidebar={
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: 8 }}>
+      <NavLink href="#" isActive>Dashboard</NavLink>
+      <NavLink href="#">Settings</NavLink>
+    </div>
+  }
+  rightSidebar={
+    <div style={{ padding: 12 }}>
+      <Text size="sm" weight="semibold">Details</Text>
+      <Text size="sm">Contextual info panel</Text>
+    </div>
+  }
+  rightSidebarWidth={200}
+  style={{ height: 400 }}
+>
+  <Text>Main content area</Text>
 </PageLayout>`,
       },
     ],
