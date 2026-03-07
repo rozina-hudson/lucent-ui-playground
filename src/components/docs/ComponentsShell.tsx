@@ -249,7 +249,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   );
 
   const rightSidebarContent = generateUI ? (
-    <div style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden" }}>
+    <div style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden", background: "transparent" }}>
       <PlaygroundPanel state={pg} onChange={setPg} shell={shell} showCodeTab />
     </div>
   ) : undefined;
