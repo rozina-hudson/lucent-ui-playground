@@ -25,7 +25,7 @@ export function BentoGrid({ previewStyle }: Props) {
             style={{
               breakInside: "avoid",
               marginBottom: 12,
-              overflow: "hidden",
+              overflow: "visible",
               ...previewStyle,
             }}
           >
