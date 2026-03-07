@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Input,
@@ -777,7 +777,10 @@ const CollapsibleOpen: PreviewFC = () => (
 // ─── CommandPalette ───────────────────────────────────────────────────────────
 
 const CommandPaletteGroups: PreviewFC = () => {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
   return (
     <div>
       <Button onClick={() => setOpen(true)}>Open palette</Button>
