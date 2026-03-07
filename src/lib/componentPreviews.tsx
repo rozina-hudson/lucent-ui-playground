@@ -37,6 +37,9 @@ import {
   FileUpload,
   PageLayout,
   Timeline,
+  Slider,
+  CodeBlock,
+  Table,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -921,6 +924,151 @@ const TimelineDescriptions: PreviewFC = () => (
   />
 );
 
+// ─── Slider ───────────────────────────────────────────────────────────────────
+
+const SliderSizes: PreviewFC = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 16, width: 320 }}>
+    <Slider size="sm" label="Small" defaultValue={40} />
+    <Slider size="md" label="Medium" defaultValue={60} />
+    <Slider size="lg" label="Large" defaultValue={75} />
+  </div>
+);
+
+const SliderControlled: PreviewFC = () => {
+  const [val, setVal] = useState(40);
+  return (
+    <div style={{ width: 320 }}>
+      <Slider
+        label="Opacity"
+        value={val}
+        onChange={(e) => setVal(Number(e.target.value))}
+        showValue
+      />
+    </div>
+  );
+};
+
+const SliderDisabled: PreviewFC = () => (
+  <div style={{ width: 320 }}>
+    <Slider label="Locked" disabled defaultValue={40} />
+  </div>
+);
+
+// ─── CodeBlock ────────────────────────────────────────────────────────────────
+
+const CodeBlockSingle: PreviewFC = () => (
+  <div style={{ width: "100%", maxWidth: 520 }}>
+    <CodeBlock language="tsx" code={`<Button variant="primary">Save</Button>`} />
+  </div>
+);
+
+const CodeBlockTabs: PreviewFC = () => (
+  <div style={{ width: "100%", maxWidth: 520 }}>
+    <CodeBlock
+      tabs={[
+        { label: "pnpm", code: "pnpm add lucent-ui", language: "bash" },
+        { label: "npm", code: "npm install lucent-ui", language: "bash" },
+        { label: "yarn", code: "yarn add lucent-ui", language: "bash" },
+      ]}
+    />
+  </div>
+);
+
+const CodeBlockPrompt: PreviewFC = () => (
+  <div style={{ width: "100%", maxWidth: 520 }}>
+    <CodeBlock
+      variant="prompt"
+      helperText="Paste into Claude:"
+      code={'Add a Button with variant="primary".'}
+    />
+  </div>
+);
+
+// ─── Table ────────────────────────────────────────────────────────────────────
+
+const TableBasic: PreviewFC = () => (
+  <Table>
+    <Table.Head>
+      <Table.Row>
+        <Table.Cell as="th">Name</Table.Cell>
+        <Table.Cell as="th">Role</Table.Cell>
+        <Table.Cell as="th">Status</Table.Cell>
+      </Table.Row>
+    </Table.Head>
+    <Table.Body>
+      <Table.Row>
+        <Table.Cell>Alice</Table.Cell>
+        <Table.Cell>Engineer</Table.Cell>
+        <Table.Cell>Active</Table.Cell>
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Bob</Table.Cell>
+        <Table.Cell>Designer</Table.Cell>
+        <Table.Cell>Away</Table.Cell>
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Carol</Table.Cell>
+        <Table.Cell>Manager</Table.Cell>
+        <Table.Cell>Active</Table.Cell>
+      </Table.Row>
+    </Table.Body>
+  </Table>
+);
+
+const TableStriped: PreviewFC = () => (
+  <Table striped>
+    <Table.Head>
+      <Table.Row>
+        <Table.Cell as="th">Name</Table.Cell>
+        <Table.Cell as="th">Role</Table.Cell>
+        <Table.Cell as="th">Status</Table.Cell>
+      </Table.Row>
+    </Table.Head>
+    <Table.Body>
+      <Table.Row>
+        <Table.Cell>Alice</Table.Cell>
+        <Table.Cell>Engineer</Table.Cell>
+        <Table.Cell>Active</Table.Cell>
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Bob</Table.Cell>
+        <Table.Cell>Designer</Table.Cell>
+        <Table.Cell>Away</Table.Cell>
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Carol</Table.Cell>
+        <Table.Cell>Manager</Table.Cell>
+        <Table.Cell>Active</Table.Cell>
+      </Table.Row>
+    </Table.Body>
+  </Table>
+);
+
+const TableRichCells: PreviewFC = () => (
+  <Table>
+    <Table.Head>
+      <Table.Row>
+        <Table.Cell as="th">User</Table.Cell>
+        <Table.Cell as="th">Status</Table.Cell>
+      </Table.Row>
+    </Table.Head>
+    <Table.Body>
+      <Table.Row>
+        <Table.Cell>Alice</Table.Cell>
+        <Table.Cell><Badge variant="success">Active</Badge></Table.Cell>
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Bob</Table.Cell>
+        <Table.Cell><Badge variant="warning">Away</Badge></Table.Cell>
+      </Table.Row>
+      <Table.Row>
+        <Table.Cell>Carol</Table.Cell>
+        <Table.Cell><Badge variant="danger">Inactive</Badge></Table.Cell>
+      </Table.Row>
+    </Table.Body>
+  </Table>
+);
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const componentPreviews: Record<string, PreviewFC> = {
@@ -1035,4 +1183,16 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // Timeline
   "timeline-statuses": TimelineStatuses,
   "timeline-descriptions": TimelineDescriptions,
+  // Slider
+  "slider-sizes": SliderSizes,
+  "slider-controlled": SliderControlled,
+  "slider-disabled": SliderDisabled,
+  // CodeBlock
+  "codeblock-single": CodeBlockSingle,
+  "codeblock-tabs": CodeBlockTabs,
+  "codeblock-prompt": CodeBlockPrompt,
+  // Table
+  "table-basic": TableBasic,
+  "table-striped": TableStriped,
+  "table-rich-cells": TableRichCells,
 };

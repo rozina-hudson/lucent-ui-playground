@@ -25,6 +25,8 @@ export type AiPrompts = {
 export type ComponentDef = {
   slug: string;
   name: string;
+  /** Override the component rendered in the Playground customizer (e.g. "RadioGroup" for the radio page) */
+  customizerName?: string;
   category: "Atoms" | "Molecules";
   description: string;
   importStatement: string;
@@ -44,6 +46,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "checkbox", "radio", "toggle", "tag", "badge",
       "formfield", "text", "icon", "divider", "spinner", "avatar", "skeleton",
       "breadcrumb", "navlink", "datepicker", "daterangepicker", "multiselect",
+      "slider", "codeblock", "table",
     ],
   },
   {
@@ -421,6 +424,7 @@ const results = allItems
   {
     slug: "radio",
     name: "Radio",
+    customizerName: "RadioGroup",
     category: "Atoms",
     description:
       "Radio button used inside a RadioGroup for mutually exclusive selection. Supports vertical and horizontal orientation and a group-level disabled state.",
@@ -1963,6 +1967,274 @@ const results = allItems
     { id: "3", title: "First project", description: "Created project 'Lucent UI'.", date: "Jan 15", status: "info" },
   ]}
 />`,
+      },
+    ],
+  },
+
+  // ── Slider ──────────────────────────────────────────────────────────────────
+  {
+    slug: "slider",
+    name: "Slider",
+    category: "Atoms",
+    description:
+      "Range input styled with Lucent tokens for selecting a numeric value within a bounded range. Supports controlled and uncontrolled usage, three sizes, and an inline value display.",
+    importStatement: "import { Slider } from 'lucent-ui'",
+    usageCode: `<Slider label="Volume" showValue />`,
+    aiPrompts: {
+      claude: `"Add a Slider from lucent-ui with a label and showValue. Range 0–100, step 1."`,
+      cursor: `@lucent-ui Add a Slider with label and showValue. Make it controlled with a useState hook.`,
+      vscode: `Using the lucent-ui component library, add a Slider with label and showValue props.`,
+      mcp: `// lucent-ui MCP — add to your tools config:
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["-y", "lucent-ui-mcp"]
+    }
+  }
+}
+// Then ask: "Add a Slider from lucent-ui with label and showValue"`,
+    },
+    props: [
+      { name: "min", type: "number", description: "Minimum value.", defaultValue: "0" },
+      { name: "max", type: "number", description: "Maximum value.", defaultValue: "100" },
+      { name: "step", type: "number", description: "Increment step between values.", defaultValue: "1" },
+      { name: "value", type: "number", description: "Controlled current value. Pair with onChange." },
+      { name: "defaultValue", type: "number", description: "Initial value for uncontrolled usage. Defaults to the midpoint of min/max." },
+      { name: "onChange", type: "(e: React.ChangeEvent<HTMLInputElement>) => void", description: "Called on every value change." },
+      { name: "label", type: "string", description: "Visible label rendered above the track." },
+      { name: "showValue", type: "boolean", description: "Displays the current numeric value beside the label.", defaultValue: "false" },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Controls track thickness and thumb diameter.", defaultValue: `"md"` },
+      { name: "disabled", type: "boolean", description: "Prevents interaction and dims the control.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Sizes",
+        description: "Three track sizes — sm, md, and lg.",
+        previewKey: "slider-sizes",
+        code: `<Slider size="sm" label="Small" />
+<Slider size="md" label="Medium" />
+<Slider size="lg" label="Large" />`,
+      },
+      {
+        title: "Controlled with value display",
+        description: "Controlled slider with live numeric readout.",
+        previewKey: "slider-controlled",
+        code: `const [val, setVal] = useState(40);
+<Slider
+  label="Opacity"
+  value={val}
+  onChange={e => setVal(Number(e.target.value))}
+  showValue
+/>`,
+      },
+      {
+        title: "Disabled",
+        description: "Disabled state prevents interaction.",
+        previewKey: "slider-disabled",
+        code: `<Slider label="Locked" disabled defaultValue={40} />`,
+      },
+    ],
+  },
+
+  // ── CodeBlock ────────────────────────────────────────────────────────────────
+  {
+    slug: "codeblock",
+    name: "CodeBlock",
+    category: "Atoms",
+    description:
+      "Styled code display with optional tabs, a language label, copy-to-clipboard, and an AI prompt variant. Zero-dependency — no syntax highlighting library bundled.",
+    importStatement: "import { CodeBlock } from 'lucent-ui'",
+    usageCode: `<CodeBlock language="tsx" code={\`<Button variant="primary">Save</Button>\`} />`,
+    aiPrompts: {
+      claude: `"Add a CodeBlock from lucent-ui to display a code snippet. Show a language label and copy-to-clipboard button."`,
+      cursor: `@lucent-ui Add a CodeBlock with language label and code prop for displaying a snippet.`,
+      vscode: `Using the lucent-ui component library, add a CodeBlock component to display a formatted code snippet.`,
+      mcp: `// lucent-ui MCP — add to your tools config:
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["-y", "lucent-ui-mcp"]
+    }
+  }
+}
+// Then ask: "Add a CodeBlock from lucent-ui"`,
+    },
+    props: [
+      { name: "code", type: "string", description: "Code string — used in single (non-tabbed) mode." },
+      { name: "language", type: "string", description: "Language label shown in the header. Purely cosmetic." },
+      { name: "tabs", type: "{ label: string; code: string; language?: string; icon?: string }[]", description: "Tabbed mode. Each entry has label, code, optional language and icon. Switching tabs resets copy state." },
+      { name: "variant", type: `"code" | "prompt"`, description: `"code" renders a scrollable pre/code block. "prompt" renders a single-line truncated span suited to AI tool prompts.`, defaultValue: `"code"` },
+      { name: "helperText", type: "string", description: "Descriptive text rendered between the tab bar and the code area." },
+      { name: "showCopyButton", type: "boolean", description: "Renders a copy-to-clipboard button. Shows a 'Copied!' confirmation for 2s on success.", defaultValue: "true" },
+    ],
+    examples: [
+      {
+        title: "Single snippet",
+        description: "A code block with a language label.",
+        previewKey: "codeblock-single",
+        code: `<CodeBlock language="tsx" code={\`<Button variant="primary">Save</Button>\`} />`,
+      },
+      {
+        title: "Tabbed install commands",
+        description: "Multiple related snippets with tab switching.",
+        previewKey: "codeblock-tabs",
+        code: `<CodeBlock
+  tabs={[
+    { label: 'pnpm', code: 'pnpm add lucent-ui', language: 'bash' },
+    { label: 'npm',  code: 'npm install lucent-ui', language: 'bash' },
+    { label: 'yarn', code: 'yarn add lucent-ui', language: 'bash' },
+  ]}
+/>`,
+      },
+      {
+        title: "AI prompt variant",
+        description: "Single-line truncated display for AI tool prompts.",
+        previewKey: "codeblock-prompt",
+        code: `<CodeBlock
+  variant="prompt"
+  helperText="Paste into Claude:"
+  code={'Add a Button with variant="primary".'}
+/>`,
+      },
+    ],
+  },
+
+  // ── Table ────────────────────────────────────────────────────────────────────
+  {
+    slug: "table",
+    name: "Table",
+    category: "Atoms",
+    description:
+      "Lightweight token-styled HTML table with compound sub-components. Distinct from DataTable — no sorting, filtering, or pagination. Use for static reference data, props tables, and comparison grids.",
+    importStatement: "import { Table } from 'lucent-ui'",
+    usageCode: `<Table>
+  <Table.Head>
+    <Table.Row>
+      <Table.Cell as="th">Name</Table.Cell>
+      <Table.Cell as="th">Role</Table.Cell>
+    </Table.Row>
+  </Table.Head>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>Alice</Table.Cell>
+      <Table.Cell>Engineer</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>`,
+    aiPrompts: {
+      claude: `"Add a Table from lucent-ui with Table.Head, Table.Body, Table.Row, and Table.Cell sub-components. Include column headers."`,
+      cursor: `@lucent-ui Add a Table with compound sub-components for a static reference data grid with column headers.`,
+      vscode: `Using the lucent-ui component library, add a Table with Table.Head and Table.Body compound sub-components.`,
+      mcp: `// lucent-ui MCP — add to your tools config:
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["-y", "lucent-ui-mcp"]
+    }
+  }
+}
+// Then ask: "Add a Table from lucent-ui to display reference data"`,
+    },
+    props: [
+      { name: "striped", type: "boolean", description: "Applies alternating bgMuted backgrounds to even tbody rows.", defaultValue: "false" },
+      { name: "Table.Head", type: "component", description: "Renders <thead> with bgMuted background. Accepts Table.Row children." },
+      { name: "Table.Body", type: "component", description: "Renders <tbody>. Accepts Table.Row children." },
+      { name: "Table.Foot", type: "component", description: "Renders <tfoot> with bgMuted background." },
+      { name: "Table.Row", type: "component", description: "Renders <tr> with a hover highlight. Accepts Table.Cell children." },
+      { name: "Table.Cell", type: "component", description: `Renders <td> by default or <th scope="col"> when as="th". Header cells are semibold; data cells are regular weight.` },
+    ],
+    examples: [
+      {
+        title: "Basic",
+        description: "Simple table with head and body.",
+        previewKey: "table-basic",
+        code: `<Table>
+  <Table.Head>
+    <Table.Row>
+      <Table.Cell as="th">Name</Table.Cell>
+      <Table.Cell as="th">Role</Table.Cell>
+      <Table.Cell as="th">Status</Table.Cell>
+    </Table.Row>
+  </Table.Head>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>Alice</Table.Cell>
+      <Table.Cell>Engineer</Table.Cell>
+      <Table.Cell>Active</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>Bob</Table.Cell>
+      <Table.Cell>Designer</Table.Cell>
+      <Table.Cell>Away</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>Carol</Table.Cell>
+      <Table.Cell>Manager</Table.Cell>
+      <Table.Cell>Active</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>`,
+      },
+      {
+        title: "Striped",
+        description: "Alternating row backgrounds for easier scanning.",
+        previewKey: "table-striped",
+        code: `<Table striped>
+  <Table.Head>
+    <Table.Row>
+      <Table.Cell as="th">Name</Table.Cell>
+      <Table.Cell as="th">Role</Table.Cell>
+      <Table.Cell as="th">Status</Table.Cell>
+    </Table.Row>
+  </Table.Head>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>Alice</Table.Cell>
+      <Table.Cell>Engineer</Table.Cell>
+      <Table.Cell>Active</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>Bob</Table.Cell>
+      <Table.Cell>Designer</Table.Cell>
+      <Table.Cell>Away</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>Carol</Table.Cell>
+      <Table.Cell>Manager</Table.Cell>
+      <Table.Cell>Active</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>`,
+      },
+      {
+        title: "With rich cell content",
+        description: "Embed other Lucent components inside cells.",
+        previewKey: "table-rich-cells",
+        code: `<Table>
+  <Table.Head>
+    <Table.Row>
+      <Table.Cell as="th">User</Table.Cell>
+      <Table.Cell as="th">Status</Table.Cell>
+    </Table.Row>
+  </Table.Head>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>Alice</Table.Cell>
+      <Table.Cell><Badge variant="success">Active</Badge></Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>Bob</Table.Cell>
+      <Table.Cell><Badge variant="warning">Away</Badge></Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>Carol</Table.Cell>
+      <Table.Cell><Badge variant="danger">Inactive</Badge></Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>`,
       },
     ],
   },
