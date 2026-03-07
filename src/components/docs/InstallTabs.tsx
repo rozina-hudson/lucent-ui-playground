@@ -1,48 +1,19 @@
-"use client";
-
-import { useState } from "react";
+import { Tabs } from "lucent-ui";
 import { CodeBlock } from "./CodeBlock";
 import type { ShellColors } from "@/lib/shellColors";
-
-type PM = "pnpm" | "npm" | "yarn" | "bun";
-
-const commands: Record<PM, string> = {
-  pnpm: "pnpm add lucent-ui",
-  npm: "npm install lucent-ui",
-  yarn: "yarn add lucent-ui",
-  bun: "bun add lucent-ui",
-};
 
 type Props = { shell: ShellColors };
 
 export function InstallTabs({ shell }: Props) {
-  const [active, setActive] = useState<PM>("pnpm");
-
   return (
-    <div>
-      <div style={{ display: "flex", gap: 2, marginBottom: 8 }}>
-        {(["pnpm", "npm", "yarn", "bun"] as PM[]).map((pm) => (
-          <button
-            key={pm}
-            onClick={() => setActive(pm)}
-            style={{
-              padding: "5px 12px",
-              border: `1px solid ${active === pm ? shell.gold : shell.border}`,
-              borderRadius: 6,
-              background: active === pm ? shell.goldBg : "transparent",
-              color: active === pm ? shell.gold : shell.muted,
-              fontFamily: "var(--font-dm-sans), sans-serif",
-              fontSize: 12,
-              fontWeight: active === pm ? 600 : 400,
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-          >
-            {pm}
-          </button>
-        ))}
-      </div>
-      <CodeBlock code={`$ ${commands[active]}`} shell={shell} />
-    </div>
+    <Tabs
+      defaultValue="pnpm"
+      tabs={[
+        { value: "pnpm", label: "pnpm", content: <CodeBlock code="$ pnpm add lucent-ui" shell={shell} /> },
+        { value: "npm",  label: "npm",  content: <CodeBlock code="$ npm install lucent-ui" shell={shell} /> },
+        { value: "yarn", label: "yarn", content: <CodeBlock code="$ yarn add lucent-ui" shell={shell} /> },
+        { value: "bun",  label: "bun",  content: <CodeBlock code="$ bun add lucent-ui" shell={shell} /> },
+      ]}
+    />
   );
 }

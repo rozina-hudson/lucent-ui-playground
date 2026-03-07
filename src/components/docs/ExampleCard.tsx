@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Collapsible } from "lucent-ui";
 import { CodeBlock } from "./CodeBlock";
 import type { ExampleDef } from "@/lib/componentData";
 import type { ShellColors } from "@/lib/shellColors";
@@ -15,7 +15,6 @@ type Props = {
 };
 
 export function ExampleCard({ example, previews, shell, previewBg, previewStyle }: Props) {
-  const [expanded, setExpanded] = useState(false);
   const PreviewComponent = previews[example.previewKey];
 
   return (
@@ -72,42 +71,11 @@ export function ExampleCard({ example, previews, shell, previewBg, previewStyle 
 
       {/* View Code toggle */}
       <div style={{ borderTop: `1px solid ${shell.border}`, background: shell.surface }}>
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          style={{
-            width: "100%",
-            padding: "10px 20px",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            background: "transparent",
-            border: "none",
-            color: shell.muted,
-            fontFamily: "var(--font-dm-sans), sans-serif",
-            fontSize: 12,
-            fontWeight: 500,
-            cursor: "pointer",
-            textAlign: "left",
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.15s",
-              fontSize: 10,
-            }}
-          >
-            ▾
-          </span>
-          {expanded ? "Hide code" : "View code"}
-        </button>
-
-        {expanded && (
+        <Collapsible trigger="View code">
           <div style={{ padding: "0 16px 16px" }}>
             <CodeBlock code={example.code} shell={shell} />
           </div>
-        )}
+        </Collapsible>
       </div>
     </div>
   );

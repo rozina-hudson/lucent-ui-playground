@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Tabs } from "lucent-ui";
+import { Tabs, Select } from "lucent-ui";
 import type { ShellColors } from "@/lib/shellColors";
 import { deriveAccentTokens } from "@/lib/colorUtils";
 
@@ -164,9 +164,12 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
       </Row>
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <Label shell={shell}>Font</Label>
-        <select value={state.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} style={{ width: "100%", padding: "5px 8px", background: shell.surface, border: `1px solid ${shell.border}`, borderRadius: 6, color: shell.text, fontSize: 12, fontFamily: "var(--font-dm-sans), sans-serif", cursor: "pointer" }}>
-          {PLAYGROUND_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
-        </select>
+        <Select
+          size="sm"
+          value={state.fontFamily}
+          onChange={(e) => set({ fontFamily: e.target.value })}
+          options={PLAYGROUND_FONTS.map((f) => ({ value: f, label: f }))}
+        />
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <Row><Label shell={shell}>Radius</Label><span style={{ fontSize: 11, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>{state.borderRadius}px</span></Row>

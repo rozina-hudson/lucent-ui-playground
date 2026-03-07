@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useLucent, Badge, Text, Breadcrumb, Tabs } from "lucent-ui";
+import { useLucent, Badge, Text, Breadcrumb, Tabs, Divider } from "lucent-ui";
 
 import { getShell } from "@/lib/shellColors";
 import { usePlayground } from "@/lib/playgroundContext";
@@ -79,7 +79,7 @@ export function DocLayout({ def, prev, next }: Props) {
         <CopyImportButton importStatement={def.importStatement} shell={shell} />
       </div>
 
-      <Divider shell={shell} />
+      <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>Preview</SectionTitle>
       <Tabs
@@ -113,28 +113,28 @@ export function DocLayout({ def, prev, next }: Props) {
         ]}
       />
 
-      <Divider shell={shell} />
+      <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>Installation</SectionTitle>
       <div style={{ marginBottom: 40 }}>
         <InstallTabs shell={shell} />
       </div>
 
-      <Divider shell={shell} />
+      <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>Import</SectionTitle>
       <div style={{ marginBottom: 40 }}>
         <CodeBlock code={def.importStatement} shell={shell} />
       </div>
 
-      <Divider shell={shell} />
+      <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>Usage</SectionTitle>
       <div style={{ marginBottom: 40 }}>
         <CodeBlock code={def.usageCode} shell={shell} />
       </div>
 
-      <Divider shell={shell} />
+      <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>
         <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -146,7 +146,7 @@ export function DocLayout({ def, prev, next }: Props) {
         <AiUsageSection prompts={def.aiPrompts} shell={shell} />
       </div>
 
-      <Divider shell={shell} />
+      <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>Examples</SectionTitle>
       <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 40 }}>
@@ -162,7 +162,7 @@ export function DocLayout({ def, prev, next }: Props) {
         ))}
       </div>
 
-      <Divider shell={shell} />
+      <Divider style={{ margin: "0 0 36px" }} />
 
       <SectionTitle shell={shell}>API Reference</SectionTitle>
       <div style={{ marginBottom: 64 }}>
@@ -210,9 +210,6 @@ function SectionTitle({ children, shell }: { children: React.ReactNode; shell: R
   );
 }
 
-function Divider({ shell }: { shell: ReturnType<typeof getShell> }) {
-  return <div style={{ height: 1, background: shell.border, margin: "0 0 36px" }} />;
-}
 
 function CopyImportButton({ importStatement, shell }: { importStatement: string; shell: ReturnType<typeof getShell> }) {
   const [copied, setCopied] = useState(false);
