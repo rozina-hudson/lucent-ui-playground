@@ -18,6 +18,7 @@ import { deriveAccentTokens } from "@/lib/colorUtils";
 import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
+import { PlaygroundPanel } from "@/components/docs/PlaygroundPanel";
 import { LucentSpinner } from "@/components/brand";
 
 type Shell = ReturnType<typeof getShell>;
@@ -172,6 +173,7 @@ const HeaderContent = memo(function HeaderContent({
 export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const { pg, setPg } = usePlayground();
   const [generateUI, setGenerateUI] = useState(false);
+  const [customizerOpen, setCustomizerOpen] = useState(false);
   // "idle" | "loading" | "done"
   const [genPhase, setGenPhase] = useState<"idle" | "loading" | "done">("idle");
   const genTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -219,7 +221,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       genTimers.current.forEach(clearTimeout);
       setGenPhase("loading");
       const t1 = setTimeout(() => setGenPhase("done"), 2000);
-      const t2 = setTimeout(() => setGenPhase("idle"), 2600);
+      const t2 = setTimeout(() => { setGenPhase("idle"); setCustomizerOpen(true); }, 2600);
       genTimers.current = [t1, t2];
       return true;
     });
@@ -228,6 +230,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     genTimers.current.forEach(clearTimeout);
     setGenPhase("idle");
     setGenerateUI(false);
+    setCustomizerOpen(false);
   }, []);
 
   // Cleanup on unmount
@@ -240,36 +243,78 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 
+  const generateUIContent = generateUI && genPhase !== "idle" ? (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, minHeight: "calc(100vh - 56px)" }}>
+      <LucentSpinner size={120} done={genPhase === "done"} />
+      <span style={{ fontSize: 13, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>
+        {genPhase === "done" ? "Done" : "Generating UI…"}
+      </span>
+    </div>
+  ) : generateUI ? (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 48px 0", flexShrink: 0 }}>
+        <span style={{ fontSize: 12, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", flex: 1 }}>
+          All components — adjust appearance settings to preview changes across the system
+        </span>
+        <Button variant="ghost" size="sm" onClick={() => setCustomizerOpen((v) => !v)} style={{ color: customizerOpen ? shell.gold : shell.muted, borderColor: customizerOpen ? shell.gold : shell.border }}>
+          ✦ Customize
+        </Button>
+        <Button variant="ghost" size="sm" onClick={dismissGenerateUI} style={{ color: shell.muted, borderColor: shell.border }}>
+          ← Back to docs
+        </Button>
+      </div>
+      <BentoGrid previewStyle={previewContainerStyle} />
+    </div>
+  ) : children;
+
   return (
     <LucentProvider theme={pg.theme} tokens={tokenOverrides}>
-      <PageLayout
-        style={{ background: shell.bg, color: shell.text, minHeight: "100vh" }}
-        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark" })} />}
-        sidebar={sidebar}
-        headerHeight={56}
-        sidebarWidth={240}
-      >
-        {generateUI && genPhase !== "idle" ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, minHeight: "calc(100vh - 56px)" }}>
-            <LucentSpinner size={120} done={genPhase === "done"} />
-            <span style={{ fontSize: 13, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif" }}>
-              {genPhase === "done" ? "Done" : "Generating UI…"}
-            </span>
-          </div>
-        ) : generateUI ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 48px 0" }}>
-              <span style={{ fontSize: 12, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", flex: 1 }}>
-                All components — adjust appearance settings to preview changes across the system
-              </span>
-              <Button variant="ghost" size="sm" onClick={dismissGenerateUI} style={{ color: shell.muted, borderColor: shell.border }}>
-                ← Back to docs
-              </Button>
+      {/* Outer flex row: PageLayout + right sidebar as true siblings */}
+      <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: shell.bg, color: shell.text }}>
+        <PageLayout
+          style={{ flex: 1, minWidth: 0, background: shell.bg, color: shell.text }}
+          header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark" })} />}
+          sidebar={sidebar}
+          sidebarCollapsed={generateUI}
+          headerHeight={56}
+          sidebarWidth={240}
+        >
+          {generateUIContent}
+        </PageLayout>
+
+        {/* Right appearance sidebar — true sibling of PageLayout, offset below header */}
+        {generateUI && (
+          <div
+            style={{
+              width: customizerOpen ? 280 : 0,
+              minWidth: customizerOpen ? 280 : 0,
+              flexShrink: 0,
+              height: "100vh",
+              paddingTop: 56,
+              overflowY: "auto",
+              overflowX: "hidden",
+              transition: "width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+              borderLeft: customizerOpen ? `1px solid ${shell.border}` : "none",
+              background: shell.bg,
+              boxSizing: "border-box",
+            }}
+          >
+            <div style={{ width: 280 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: `1px solid ${shell.border}` }}>
+                <span style={{ ...SIDEBAR_LABEL, color: shell.text }}>Appearance</span>
+                <button
+                  onClick={() => setCustomizerOpen(false)}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: shell.muted, fontSize: 18, lineHeight: 1, padding: 2 }}
+                  aria-label="Close customizer"
+                >
+                  ×
+                </button>
+              </div>
+              <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
             </div>
-            <BentoGrid previewStyle={previewContainerStyle} />
           </div>
-        ) : children}
-      </PageLayout>
+        )}
+      </div>
     </LucentProvider>
   );
 }
