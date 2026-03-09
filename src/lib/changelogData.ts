@@ -12,6 +12,43 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.9.0",
+    date: "March 2026",
+    title: "New components & Input enhancements",
+    items: [
+      {
+        label: "ColorPicker",
+        description:
+          "Fully-featured color selection popover with a spectrum panel, hue/alpha sliders, four input formats (Hex, RGB, HSL, HSB), eyedropper support, and multi-group preset palettes switchable via dropdown.",
+      },
+      {
+        label: "ColorSwatch",
+        description:
+          "Standalone color swatch atom. Circle or square shape, six sizes (xs–2xl), selected state with inset ring, and checkerboard background for transparent colors. Forwards ref and accepts any button attribute.",
+      },
+      {
+        label: "SegmentedControl",
+        description:
+          "Pill-style toggle group with a smooth sliding selection indicator. Fills its container by default — use it for format switchers, view mode toggles, or filter bars.",
+      },
+      {
+        label: "Input — prefix, suffix, sizes",
+        description:
+          "Input now accepts prefix and suffix addons flush inside the field border, plus a size prop (sm / md / lg) for height and font control. Icon slots (leftElement, rightElement) also available.",
+      },
+      {
+        label: "Select — style prop consistency",
+        description:
+          "The style prop on Select now applies to the outer wrapper div, matching Input behavior for easier width and layout control.",
+      },
+      {
+        label: "Breaking: ColorPicker presets API",
+        description:
+          "ColorPicker's presets and presetsLabel props replaced by presetGroups: ColorPresetGroup[]. Each group has a label and colors array; single group hides the switcher, multiple groups show a dropdown.",
+      },
+    ],
+  },
+  {
     version: "0.8.0",
     date: "March 2026",
     title: "Token derivation system",
