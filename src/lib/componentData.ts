@@ -46,7 +46,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "checkbox", "radio", "toggle", "tag", "badge",
       "formfield", "text", "icon", "divider", "spinner", "avatar", "skeleton",
       "breadcrumb", "navlink", "datepicker", "daterangepicker", "multiselect",
-      "slider", "codeblock", "table",
+      "slider", "codeblock", "table", "colorpicker", "colorswatch", "segmentedcontrol",
     ],
   },
   {
@@ -2235,6 +2235,187 @@ const results = allItems
     </Table.Row>
   </Table.Body>
 </Table>`,
+      },
+    ],
+  },
+
+  // ── ColorPicker ───────────────────────────────────────────────────────────────
+  {
+    slug: "colorpicker",
+    name: "ColorPicker",
+    category: "Atoms",
+    description:
+      "Fully-featured color selection component. Opens a popover with a spectrum panel, hue and alpha sliders, four input formats (Hex, RGB, HSL, HSB), eyedropper support, and multi-group preset palettes switchable via dropdown.",
+    importStatement: "import { ColorPicker } from 'lucent-ui'",
+    usageCode: `<ColorPicker value={color} onChange={setColor} label="Brand color" />`,
+    aiPrompts: {
+      claude: `"Add a ColorPicker from lucent-ui with a label and preset color groups. Handle state with useState."`,
+      cursor: `@lucent-ui Add a ColorPicker with preset brand and semantic color groups. Use controlled state.`,
+      vscode: `Using the lucent-ui component library, add a ColorPicker with label and presetGroups for brand colors.`,
+      mcp: `// lucent-ui MCP — add to your tools config:
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["-y", "lucent-ui-mcp"]
+    }
+  }
+}
+// Then ask: "Add a ColorPicker from lucent-ui with preset groups"`,
+    },
+    props: [
+      { name: "value", type: "string", description: "Current color value (any CSS color string).", required: true },
+      { name: "onChange", type: "(color: string) => void", description: "Callback fired when the color changes.", required: true },
+      { name: "label", type: "string", description: "Label displayed above the trigger swatch." },
+      { name: "presetGroups", type: "ColorPresetGroup[]", description: "Array of { label, colors } groups. Single group hides the switcher; multiple groups show a dropdown." },
+      { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Default",
+        description: "Basic color picker with label.",
+        previewKey: "colorpicker-default",
+        code: `const [color, setColor] = useState("#3b82f6");
+
+<ColorPicker value={color} onChange={setColor} label="Brand color" />`,
+      },
+      {
+        title: "With preset groups",
+        description: "Multiple preset palettes switchable via dropdown.",
+        previewKey: "colorpicker-presets",
+        code: `const [color, setColor] = useState("#111827");
+
+<ColorPicker
+  value={color}
+  onChange={setColor}
+  label="Theme color"
+  presetGroups={[
+    { label: "Brand", colors: ["#111827", "#3b82f6", "#8b5cf6"] },
+    { label: "Semantic", colors: ["#22c55e", "#f59e0b", "#ef4444"] },
+  ]}
+/>`,
+      },
+    ],
+  },
+
+  // ── ColorSwatch ───────────────────────────────────────────────────────────────
+  {
+    slug: "colorswatch",
+    name: "ColorSwatch",
+    category: "Atoms",
+    description:
+      "Standalone color swatch atom. Supports circle and square shapes, six sizes (xs–2xl), a selected state with an inset ring, and a checkerboard background for colors with transparency. Fully interactive as a button.",
+    importStatement: "import { ColorSwatch } from 'lucent-ui'",
+    usageCode: `<ColorSwatch color="#3b82f6" size="lg" />`,
+    aiPrompts: {
+      claude: `"Add a ColorSwatch from lucent-ui with a selected state and square shape. Use size="lg"."`,
+      cursor: `@lucent-ui Add a ColorSwatch with selected state, square shape, and lg size.`,
+      vscode: `Using the lucent-ui component library, add a ColorSwatch with square shape, selected state, and onClick handler.`,
+      mcp: `// lucent-ui MCP — add to your tools config:
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["-y", "lucent-ui-mcp"]
+    }
+  }
+}
+// Then ask: "Add a ColorSwatch from lucent-ui"`,
+    },
+    props: [
+      { name: "color", type: "string", description: "CSS color value to display.", required: true },
+      { name: "size", type: `"xs" | "sm" | "md" | "lg" | "xl" | "2xl"`, description: "Swatch diameter / side length.", defaultValue: `"md"` },
+      { name: "shape", type: `"circle" | "square"`, description: "Swatch shape.", defaultValue: `"circle"` },
+      { name: "selected", type: "boolean", description: "Shows an inset ring to indicate selection.", defaultValue: "false" },
+      { name: "showCheckerboard", type: "boolean", description: "Shows a checkerboard pattern behind transparent colors.", defaultValue: "false" },
+      { name: "onClick", type: "() => void", description: "Click handler — makes the swatch interactive." },
+    ],
+    examples: [
+      {
+        title: "Shapes and sizes",
+        description: "Circle and square shapes across different sizes.",
+        previewKey: "colorswatch-shapes",
+        code: `<ColorSwatch color="#3b82f6" size="sm" />
+<ColorSwatch color="#8b5cf6" size="md" />
+<ColorSwatch color="#ef4444" size="lg" shape="square" />
+<ColorSwatch color="#22c55e" size="xl" shape="square" />`,
+      },
+      {
+        title: "Selected and transparency",
+        description: "Selected state with inset ring and checkerboard for alpha colors.",
+        previewKey: "colorswatch-selected",
+        code: `<ColorSwatch color="#3b82f6" size="lg" selected />
+<ColorSwatch color="rgba(59,130,246,0.4)" size="lg" showCheckerboard />`,
+      },
+    ],
+  },
+
+  // ── SegmentedControl ──────────────────────────────────────────────────────────
+  {
+    slug: "segmentedcontrol",
+    name: "SegmentedControl",
+    category: "Atoms",
+    description:
+      "Pill-style toggle group with a smooth sliding selection indicator. Fills its container by default. Use for format switchers, view mode toggles, or filter bars.",
+    importStatement: "import { SegmentedControl } from 'lucent-ui'",
+    usageCode: `<SegmentedControl
+  defaultValue="grid"
+  options={[
+    { value: "grid", label: "Grid" },
+    { value: "list", label: "List" },
+  ]}
+/>`,
+    aiPrompts: {
+      claude: `"Add a SegmentedControl from lucent-ui with three options for switching between view modes. Use defaultValue."`,
+      cursor: `@lucent-ui Add a SegmentedControl with grid/list/table options and a defaultValue.`,
+      vscode: `Using the lucent-ui component library, add a SegmentedControl for view mode switching with three options.`,
+      mcp: `// lucent-ui MCP — add to your tools config:
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["-y", "lucent-ui-mcp"]
+    }
+  }
+}
+// Then ask: "Add a SegmentedControl from lucent-ui for view mode toggling"`,
+    },
+    props: [
+      { name: "options", type: "{ value: string; label: string }[]", description: "The available options.", required: true },
+      { name: "defaultValue", type: "string", description: "Initially selected value (uncontrolled)." },
+      { name: "value", type: "string", description: "Selected value (controlled)." },
+      { name: "onChange", type: "(value: string) => void", description: "Callback fired when the selection changes." },
+      { name: "disabled", type: "boolean", description: "Disables all options.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Default",
+        description: "Three-option toggle with a sliding indicator.",
+        previewKey: "segmentedcontrol-default",
+        code: `<SegmentedControl
+  defaultValue="grid"
+  options={[
+    { value: "grid", label: "Grid" },
+    { value: "list", label: "List" },
+    { value: "table", label: "Table" },
+  ]}
+/>`,
+      },
+      {
+        title: "Controlled",
+        description: "Controlled value with onChange callback.",
+        previewKey: "segmentedcontrol-controlled",
+        code: `const [view, setView] = useState("overview");
+
+<SegmentedControl
+  value={view}
+  onChange={setView}
+  options={[
+    { value: "overview", label: "Overview" },
+    { value: "details", label: "Details" },
+    { value: "activity", label: "Activity" },
+  ]}
+/>`,
       },
     ],
   },

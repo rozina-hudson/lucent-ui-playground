@@ -300,7 +300,9 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       </span>
     </div>
   ) : generateUI ? (
-    <BentoGrid previewStyle={previewContainerStyle} />
+    <div style={{ flex: 1, minHeight: "100%", background: resolvedBg }}>
+      <BentoGrid previewStyle={previewContainerStyle} />
+    </div>
   ) : children;
 
   return (
