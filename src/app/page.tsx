@@ -1,15 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { LUCENT_UI_VERSION } from "lucent-ui";
+import { useState, useEffect } from "react";
 import { usePlayground } from "@/lib/playgroundContext";
 import { getShell } from "@/lib/shellColors";
+import { CHANGELOG } from "@/lib/changelogData";
 
 export default function Home() {
   const { pg, setPg } = usePlayground();
   const shell = getShell(pg.theme);
   const isDark = pg.theme === "dark";
+
+  const [npmVersion, setNpmVersion] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("https://registry.npmjs.org/lucent-ui/latest")
+      .then((r) => r.json())
+      .then((d) => setNpmVersion(d.version))
+      .catch(() => {});
+  }, []);
 
   const goldBadgeBg = isDark ? "#1a1a1a" : "#fefce8";
   const goldBadgeBorder = isDark ? "#2a2a1a" : "#fde68a";
@@ -32,6 +40,7 @@ export default function Home() {
         </span>
         <nav className="flex items-center gap-6 text-sm" style={{ color: shell.muted }}>
           <NavLink href="/components" shell={shell}>Components</NavLink>
+          <NavLink href="/components/changelog" shell={shell}>Changelog</NavLink>
           <NavLink href="https://www.npmjs.com/package/lucent-ui" external shell={shell}>npm</NavLink>
           <NavLink href="https://github.com/rozina-hudson/lucent-ui" external shell={shell}>GitHub</NavLink>
           <button
@@ -61,7 +70,7 @@ export default function Home() {
             className="inline-block text-xs font-semibold tracking-widest uppercase px-3 py-1 rounded-full mb-8"
             style={{ background: goldBadgeBg, color: "#e9c96b", border: `1px solid ${goldBadgeBorder}` }}
           >
-            v{LUCENT_UI_VERSION} — now on npm
+            {npmVersion ? `v${npmVersion} — now on npm` : "now on npm"}
           </div>
 
           <h1
@@ -137,6 +146,83 @@ export default function Home() {
             description="Fully customizable via CSS custom properties. Override any token per-provider without touching component source."
             shell={shell}
           />
+        </div>
+
+        {/* Changelog preview */}
+        <div className="mt-24 max-w-4xl w-full mx-auto text-left">
+          <div className="flex items-baseline justify-between mb-8">
+            <h2
+              className="text-lg font-semibold tracking-tight"
+              style={{ fontFamily: "var(--font-unbounded)", color: shell.text }}
+            >
+              What&rsquo;s new
+            </h2>
+            <Link
+              href="/components/changelog"
+              className="text-xs"
+              style={{ color: shell.subtle, textDecoration: "none" }}
+            >
+              Full changelog →
+            </Link>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {CHANGELOG.slice(0, 3).map((entry, i) => (
+              <div
+                key={entry.version}
+                className="flex gap-8 text-left"
+                style={{
+                  paddingBottom: 32,
+                  marginBottom: i < 2 ? 0 : 0,
+                  borderBottom: i < 2 ? `1px solid ${shell.border}` : "none",
+                  paddingTop: i > 0 ? 32 : 0,
+                }}
+              >
+                {/* Version label */}
+                <div style={{ width: 96, flexShrink: 0 }}>
+                  <span
+                    className="text-xs font-mono font-medium"
+                    style={{
+                      color: shell.subtle,
+                      display: "block",
+                      paddingTop: 2,
+                    }}
+                  >
+                    {entry.version}
+                  </span>
+                  {entry.date && (
+                    <span className="text-xs" style={{ color: shell.subtle, opacity: 0.6 }}>
+                      {entry.date}
+                    </span>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div style={{ flex: 1 }}>
+                  <p
+                    className="text-sm font-medium mb-3"
+                    style={{ color: shell.text, margin: "0 0 10px" }}
+                  >
+                    {entry.title}
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {entry.items.slice(0, 3).map((item) => (
+                      <div key={item.label} className="flex gap-3 items-start">
+                        <span style={{ color: shell.subtle, fontSize: 10, marginTop: 4, flexShrink: 0 }}>—</span>
+                        <span className="text-sm" style={{ color: shell.muted, lineHeight: 1.6 }}>
+                          <span className="font-mono text-xs" style={{ color: shell.text }}>
+                            {item.label}
+                          </span>
+                          {" "}
+                          {item.description}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
 

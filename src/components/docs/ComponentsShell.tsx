@@ -31,6 +31,10 @@ const SIDEBAR_LABEL: React.CSSProperties = {
 
 // ─── Stable sub-components — only re-render on theme/slug/toggle changes ─────
 
+const RESOURCES = [
+  { slug: "changelog", label: "Changelog" },
+];
+
 const SidebarNav = memo(function SidebarNav({
   shell,
   segment,
@@ -44,6 +48,25 @@ const SidebarNav = memo(function SidebarNav({
 
   return (
     <div>
+      {/* Resources section */}
+      <div style={{ padding: "12px 4px", borderBottom: `1px solid ${shell.border}` }}>
+        <div style={{ color: shell.text, ...SIDEBAR_LABEL, padding: "8px 12px 4px" }}>
+          Resources
+        </div>
+        <nav>
+          {RESOURCES.map(({ slug, label }) => (
+            <NavLink
+              key={slug}
+              as={Link}
+              href={`/components/${slug}`}
+              isActive={slug === segment}
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
+
       {CATEGORIES.map((cat) => (
         <Collapsible
           key={cat.label}
