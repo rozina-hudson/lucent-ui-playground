@@ -558,42 +558,142 @@ const EventBooking: React.FC = () => {
   );
 };
 
-// ─── 8. Command center (1×1) ─────────────────────────────────────────────────
+// ─── 8. App overview dashboard (2×2) ─────────────────────────────────────────
 
-const CommandCenter: React.FC = () => {
-  const [open, setOpen] = useState(false);
+const STATUS_DOT: Record<string, string> = {
+  success: "#22c55e",
+  warning: "#f59e0b",
+  danger:  "#ef4444",
+  info:    "#3b82f6",
+};
 
-  const recents = [
-    { label: "New component",      group: "Create" },
-    { label: "Switch to dark mode", group: "Appearance" },
-    { label: "Copy design token",   group: "Edit" },
+const AppOverview: React.FC = () => {
+  const [activeNav, setActiveNav] = useState("dashboard");
+  const [taskName,  setTaskName]  = useState("");
+  const [saved,     setSaved]     = useState(false);
+  const [cmdOpen,   setCmdOpen]   = useState(false);
+
+  const stats = [
+    { value: "12", label: "Projects", accent: true },
+    { value: "48", label: "Tasks",    accent: false },
+    { value: "6",  label: "Members",  accent: false },
   ];
 
+  const activity = [
+    { title: "Design review completed", time: "2 min ago",  status: "success" as const },
+    { title: "API keys rotated",        time: "1 hr ago",   status: "warning" as const },
+    { title: "Deploy failed on staging",time: "3 hr ago",   status: "danger"  as const },
+    { title: "New member joined",       time: "yesterday",  status: "info"    as const },
+  ];
+
+  const handleSave = () => {
+    if (!taskName.trim()) return;
+    setSaved(true);
+    setTaskName("");
+    setTimeout(() => setSaved(false), 2000);
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Text size="sm" weight="semibold">Command palette</Text>
-        <Tag variant="neutral" size="sm">⌘ K</Tag>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+      {/* App header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ width: 28, height: 28, borderRadius: 7, background: "var(--lucent-accent-default)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Text size="xs" weight="bold" style={{ color: "var(--lucent-text-on-accent)", lineHeight: 1 }}>A</Text>
+        </div>
+        <Text size="sm" weight="semibold">Acme</Text>
+        <div style={{ display: "flex", gap: 2, marginLeft: 4 }}>
+          {(["Dashboard", "Projects", "Team"] as const).map((nav) => (
+            <button
+              key={nav}
+              onClick={() => setActiveNav(nav.toLowerCase())}
+              style={{
+                padding: "3px 10px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12,
+                fontWeight: activeNav === nav.toLowerCase() ? 500 : 400,
+                background: activeNav === nav.toLowerCase() ? "var(--lucent-surface-raised)" : "transparent",
+                color: activeNav === nav.toLowerCase() ? "var(--lucent-text-primary)" : "var(--lucent-text-secondary)",
+              }}
+            >
+              {nav}
+            </button>
+          ))}
+        </div>
+        <div style={{ flex: 1 }} />
+        <Tooltip content="James Doe" delay={0}>
+          <Avatar alt="James Doe" size="xs" />
+        </Tooltip>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Text size="xs" color="secondary" style={{ marginBottom: 4 }}>Recent</Text>
-        {recents.map(({ label, group }) => (
-          <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 8px", borderRadius: 6, background: "var(--lucent-surface-subtle)" }}>
-            <Text size="sm">{label}</Text>
-            <Badge variant="neutral" size="sm">{group}</Badge>
+
+      {/* Overview row */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+        <div>
+          <Text size="sm" weight="semibold">Overview</Text>
+          <Text size="xs" color="secondary">Last updated just now</Text>
+        </div>
+        <Button size="sm" variant="primary" onClick={() => setCmdOpen(true)}>+ New project</Button>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "flex", gap: 8 }}>
+        {stats.map(({ value, label, accent }) => (
+          <div
+            key={label}
+            style={{
+              flex: 1, padding: "10px 12px", borderRadius: 8,
+              background: accent ? "var(--lucent-accent-default)" : "var(--lucent-surface)",
+              border: accent ? "none" : "1px solid var(--lucent-border-default)",
+            }}
+          >
+            <Text size="xl" weight="bold" style={{ color: accent ? "var(--lucent-text-on-accent)" : undefined, display: "block", lineHeight: 1.2 }}>{value}</Text>
+            <Text size="xs" style={{ color: accent ? "var(--lucent-text-on-accent)" : "var(--lucent-text-secondary)" }}>{label}</Text>
           </div>
         ))}
       </div>
-      <Button size="sm" variant="secondary" fullWidth onClick={() => setOpen(true)}>Open palette</Button>
+
+      {/* Add task */}
+      <div style={{ padding: 12, borderRadius: 8, border: "1px solid var(--lucent-border-default)", background: "var(--lucent-surface)", display: "flex", flexDirection: "column", gap: 8 }}>
+        <Text size="sm" weight="semibold">Add task</Text>
+        {saved && <Alert variant="success" title="Task added">It appeared in your backlog.</Alert>}
+        <Input placeholder="Task name…" value={taskName} onChange={(e) => setTaskName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSave()} />
+        <div style={{ display: "flex", gap: 6 }}>
+          <Button size="sm" variant="primary"  disabled={!taskName.trim()} onClick={handleSave}>Save</Button>
+          <Button size="sm" variant="ghost"    onClick={() => setTaskName("")}>Cancel</Button>
+        </div>
+      </div>
+
+      {/* Activity feed */}
+      <div style={{ padding: 12, borderRadius: 8, border: "1px solid var(--lucent-border-default)", background: "var(--lucent-surface)" }}>
+        <Text size="sm" weight="semibold" style={{ display: "block", marginBottom: 8 }}>Recent activity</Text>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {activity.map(({ title, time, status }, i) => (
+            <div
+              key={title}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "7px 0",
+                borderBottom: i < activity.length - 1 ? "1px solid var(--lucent-border-subtle)" : "none",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: STATUS_DOT[status], flexShrink: 0 }} />
+                <div style={{ minWidth: 0 }}>
+                  <Text size="sm" style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</Text>
+                  <Text size="xs" color="secondary">{time}</Text>
+                </div>
+              </div>
+              <Badge variant={status} size="sm" style={{ marginLeft: 8, flexShrink: 0 }}>{status}</Badge>
+            </div>
+          ))}
+        </div>
+        <Text size="xs" color="secondary" style={{ display: "block", marginTop: 8 }}>Showing 4 of 24 events</Text>
+      </div>
+
       <CommandPalette
-        open={open}
-        onOpenChange={setOpen}
+        open={cmdOpen}
+        onOpenChange={setCmdOpen}
         commands={[
-          { id: "new-comp", label: "New component",      group: "Create",     onSelect: () => setOpen(false) },
-          { id: "dark",     label: "Switch to dark mode", group: "Appearance", onSelect: () => setOpen(false) },
-          { id: "token",    label: "Copy design token",   group: "Edit",       onSelect: () => setOpen(false) },
-          { id: "docs",     label: "Open documentation",  group: "Navigate",   onSelect: () => setOpen(false) },
-          { id: "deploy",   label: "Trigger deploy",      group: "Actions",    onSelect: () => setOpen(false) },
+          { id: "frontend", label: "Frontend redesign", group: "Projects", onSelect: () => setCmdOpen(false) },
+          { id: "api",      label: "API v2",            group: "Projects", onSelect: () => setCmdOpen(false) },
+          { id: "mobile",   label: "Mobile app",        group: "Projects", onSelect: () => setCmdOpen(false) },
         ]}
       />
     </div>
@@ -768,7 +868,7 @@ export const BENTO_COMPOSITIONS: BentoComposition[] = [
   { id: "deploy",        colSpan: 1, rowSpan: 2, component: DeployPipeline },
   { id: "settings",      colSpan: 1, rowSpan: 2, component: SettingsPanel },
   { id: "event-booking", colSpan: 2, rowSpan: 1, component: EventBooking },
-  { id: "command-center",colSpan: 1, rowSpan: 1, component: CommandCenter },
+  { id: "app-overview",  colSpan: 2, rowSpan: 2, component: AppOverview },
   { id: "file-workspace",colSpan: 1, rowSpan: 2, component: FileWorkspace },
   { id: "team-roster",   colSpan: 2, rowSpan: 1, component: TeamRoster },
 ];

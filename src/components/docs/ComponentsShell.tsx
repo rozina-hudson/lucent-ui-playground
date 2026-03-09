@@ -9,15 +9,14 @@ import {
   PageLayout,
   Collapsible,
   NavLink,
+  lightTokens,
+  darkTokens,
 } from "lucent-ui";
-import type { LucentTokens } from "lucent-ui";
-
 import { getShell } from "@/lib/shellColors";
-import { deriveAccentTokens, adjustBorderForTheme } from "@/lib/colorUtils";
 import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
-import { PlaygroundPanel } from "@/components/docs/PlaygroundPanel";
+import { PlaygroundPanel, defaultPlaygroundState } from "@/components/docs/PlaygroundPanel";
 import { LucentSpinner } from "@/components/brand";
 
 type Shell = ReturnType<typeof getShell>;
@@ -191,10 +190,25 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   // Only recomputes when theme changes, not on every color picker drag
   const shell = useMemo(() => getShell(pg.theme), [pg.theme]);
 
-  const tokenOverrides: Partial<LucentTokens> = {
-    ...deriveAccentTokens(pg.primaryColor),
-    // nudge the border for legibility depending on the current theme
-    borderDefault: adjustBorderForTheme(pg.borderColor, pg.theme),
+  const base = pg.theme === "dark" ? darkTokens : lightTokens;
+  const d = defaultPlaygroundState;
+  // Fall back to the base theme value when the user hasn't explicitly changed
+  // these from their light-mode defaults — prevents the dark base bg being
+  // overridden with #ffffff when theme switches to dark.
+  const resolvedBg      = pg.bgColor      !== d.bgColor      ? pg.bgColor      : base.bgBase;
+  const resolvedSurface = pg.surfaceColor !== d.surfaceColor ? pg.surfaceColor : base.surface;
+  const resolvedText    = pg.textColor    !== d.textColor    ? pg.textColor    : base.textPrimary;
+  const resolvedBorder  = pg.borderColor  !== d.borderColor  ? pg.borderColor  : base.borderDefault;
+  const anchors = {
+    bgBase:         resolvedBg,
+    surface:        resolvedSurface,
+    textPrimary:    resolvedText,
+    successDefault: base.successDefault,
+    warningDefault: base.warningDefault,
+    dangerDefault:  base.dangerDefault,
+    infoDefault:    base.infoDefault,
+    accentDefault:  pg.primaryColor,
+    borderDefault:  resolvedBorder,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -267,10 +281,10 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   ) : children;
 
   return (
-    <LucentProvider theme={pg.theme} tokens={tokenOverrides}>
+    <LucentProvider theme={pg.theme} anchors={anchors}>
       <PageLayout
-        style={{ height: "100vh", background: shell.bg, color: shell.text }}
-        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark" })} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
+        style={{ height: "100vh", background: resolvedBg, color: resolvedText }}
+        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark", borderColor: defaultPlaygroundState.borderColor, bgColor: defaultPlaygroundState.bgColor, surfaceColor: defaultPlaygroundState.surfaceColor, textColor: defaultPlaygroundState.textColor })} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
         sidebar={sidebar}
         headerHeight={56}
         sidebarWidth={generateUI ? 10 : 240}

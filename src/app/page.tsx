@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { LUCENT_UI_VERSION } from "lucent-ui";
 import { usePlayground } from "@/lib/playgroundContext";
 import { getShell } from "@/lib/shellColors";
 
@@ -60,7 +61,7 @@ export default function Home() {
             className="inline-block text-xs font-semibold tracking-widest uppercase px-3 py-1 rounded-full mb-8"
             style={{ background: goldBadgeBg, color: "#e9c96b", border: `1px solid ${goldBadgeBorder}` }}
           >
-            v0.1.0 — now on npm
+            v{LUCENT_UI_VERSION} — now on npm
           </div>
 
           <h1

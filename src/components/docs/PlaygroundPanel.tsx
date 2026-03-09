@@ -10,6 +10,9 @@ export type PlaygroundState = {
   theme: "light" | "dark";
   primaryColor: string;
   borderColor: string;
+  bgColor: string;
+  surfaceColor: string;
+  textColor: string;
   borderRadius: number;
   fontScale: number;
   spacingScale: number;
@@ -20,6 +23,9 @@ export const defaultPlaygroundState: PlaygroundState = {
   theme: "light",
   primaryColor: "#6366f1",
   borderColor: "#e5e7eb",
+  bgColor: "#ffffff",
+  surfaceColor: "#ffffff",
+  textColor: "#111827",
   fontScale: 1,
   borderRadius: 8,
   spacingScale: 1,
@@ -107,6 +113,28 @@ const BORDER_PALETTE = [
   "#F5F5DC", "#A3B18A", "#8D99AE", "#D6D3D1", "#6B705C", "#FFEDD5", "#93C5FD", "#57534E",
 ] as const;
 
+const BG_PALETTE = [
+  // Light canvas
+  "#FFFFFF", "#F9FAFB", "#F8FAFC", "#F5F5F4", "#FAFAF9", "#F0F4F8", "#FFF8F0", "#F0FFF4",
+  // Warm & tinted whites
+  "#FFFBEB", "#FFF1F2", "#F0F9FF", "#F5F3FF", "#ECFDF5", "#FDF4FF", "#FFFDE7", "#F0FDFA",
+  // Dark canvas
+  "#0A0A0A", "#0F0F11", "#101114", "#111218", "#0D1117", "#11141A", "#0F1923", "#13111A",
+  // Mid-dark
+  "#18181B", "#1A1A2E", "#1C1917", "#162032", "#1B1D22", "#191C21", "#1E1E2E", "#1A1625",
+] as const;
+
+const TEXT_PALETTE = [
+  // Near-black (light mode)
+  "#111827", "#0F172A", "#18181B", "#1C1917", "#0A0A0A", "#1A1A2E", "#1E293B", "#27272A",
+  // Dark gray
+  "#374151", "#3F3F46", "#44403C", "#334155", "#404040", "#52525B", "#57534E", "#475569",
+  // Near-white (dark mode)
+  "#F9FAFB", "#E6EBF4", "#F4F4F5", "#F5F5F4", "#E2E8F0", "#EDEDED", "#D4D4D8", "#CBD5E1",
+  // Warm & cool tints
+  "#E8E8F0", "#F0EDE8", "#E0E7FF", "#D1FAE5", "#F3E8FF", "#E0F2FE", "#FEF9C3", "#FFE4E6",
+] as const;
+
 const DROPDOWN_W = 226;
 
 function ColorPicker({ value, onChange, shell, palette = ACCENT_PALETTE }: { value: string; onChange: (hex: string) => void; shell: ShellColors; palette?: readonly string[] }) {
@@ -190,46 +218,65 @@ function ColorPicker({ value, onChange, shell, palette = ACCENT_PALETTE }: { val
 }
 
 export function generateCode(state: PlaygroundState): string {
-  // In Lucent UI 0.5 the provider will happily derive all of the "extra"
-  // accent tokens (hover/active/subtle, textOnAccent, accentBorder) from
-  // `accentDefault`.  We show the minimal overrides here, with a comment
-  // explaining the automatic behaviour so users know they don't need to
-  // paste a big object.
-  const baseTokens: Record<string, string> = {
-    accentDefault: state.primaryColor,
-  };
+  const d = defaultPlaygroundState;
+  const useAnchors =
+    state.bgColor !== d.bgColor ||
+    state.surfaceColor !== d.surfaceColor ||
+    state.textColor !== d.textColor;
 
-  // still handle an explicit border override since the library doesn't
-  // nudge it for us yet
-  if (state.borderColor !== defaultPlaygroundState.borderColor) {
-    baseTokens.borderDefault = adjustBorderForTheme(state.borderColor, state.theme);
+  let lines: string[];
+
+  if (useAnchors) {
+    lines = [
+      `import { LucentProvider } from 'lucent-ui';`,
+      ``,
+      `<LucentProvider`,
+      `  theme="${state.theme}"`,
+      `  anchors={{`,
+      `    bgBase:         "${state.bgColor}",`,
+      `    surface:        "${state.surfaceColor}",`,
+      `    borderDefault:  "${adjustBorderForTheme(state.borderColor, state.theme)}",`,
+      `    textPrimary:    "${state.textColor}",`,
+      `    accentDefault:  "${state.primaryColor}",`,
+      `    successDefault: "#16a34a",`,
+      `    warningDefault: "#d97706",`,
+      `    dangerDefault:  "#dc2626",`,
+      `    infoDefault:    "#2563eb",`,
+      `  }}`,
+      `>`,
+      `  {/* your app */}`,
+      `</LucentProvider>`,
+      ``,
+      `/*`,
+      ` * anchors mode: all 30+ variant tokens are auto-derived from these 9`,
+      ` * colors — hover/active/subtle states, WCAG-compliant textOnAccent,`,
+      ` * surface elevations, and status tints.`,
+      ` */`,
+    ];
+  } else {
+    const tokens: Record<string, string> = { accentDefault: state.primaryColor };
+    if (state.borderColor !== d.borderColor) {
+      tokens.borderDefault = adjustBorderForTheme(state.borderColor, state.theme);
+    }
+    lines = [
+      `import { LucentProvider } from 'lucent-ui';`,
+      ``,
+      `<LucentProvider`,
+      `  theme="${state.theme}"`,
+      `  tokens={{`,
+      ...Object.entries(tokens).map(([k, v]) => `    ${k}: "${v}",`),
+      `  }}`,
+      `>`,
+      `  {/* your app */}`,
+      `</LucentProvider>`,
+      ``,
+      `/*`,
+      ` * tokens mode: supply any subset of tokens — all variants are`,
+      ` * auto-derived from anchor keys (accentDefault → hover/active/subtle,`,
+      ` * textOnAccent, accentBorder). For full theming use anchors={{}} instead.`,
+      ` */`,
+    ];
   }
-
-  const lines = [
-    `import { LucentProvider } from 'lucent-ui';`,
-    ``,
-    `<LucentProvider`,
-    `  theme="${state.theme}"`,
-    `  tokens={{`,
-    ...Object.entries(baseTokens).map(([k, v]) => `    ${k}: "${v}",`),
-    `  }}`,
-    `>`,
-    `  {/* your app */}`,
-    `</LucentProvider>`,
-  ];
-
-  lines.push(
-    ``,
-    `/*
-     * LucentProvider (0.5+) automatically derives from accentDefault:
-     *   textOnAccent  — black or white for WCAG AA contrast
-     *   accentBorder  — lightness-shifted per theme
-     *
-     * accentHover, accentActive, accentSubtle, and focusRing are NOT
-     * auto-derived; omitting them leaves the base-theme defaults in place.
-     * Supply them in tokens={{}} if you need precise hover/focus colours.
-     */`
-  );
   if (state.borderRadius !== 8 || state.fontScale !== 1 || state.spacingScale !== 1) {
     lines.push(``, `/* CSS custom properties (apply to a wrapper div) */`);
     if (state.borderRadius !== 8) {
@@ -265,6 +312,18 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
         <Label shell={shell}>Border</Label>
         <ColorPicker value={state.borderColor} onChange={(hex) => set({ borderColor: hex })} shell={shell} palette={BORDER_PALETTE} />
       </Row>
+      <Row>
+        <Label shell={shell}>Background</Label>
+        <ColorPicker value={state.bgColor} onChange={(hex) => set({ bgColor: hex })} shell={shell} palette={BG_PALETTE} />
+      </Row>
+      <Row>
+        <Label shell={shell}>Surface</Label>
+        <ColorPicker value={state.surfaceColor} onChange={(hex) => set({ surfaceColor: hex })} shell={shell} palette={BG_PALETTE} />
+      </Row>
+      <Row>
+        <Label shell={shell}>Text</Label>
+        <ColorPicker value={state.textColor} onChange={(hex) => set({ textColor: hex })} shell={shell} palette={TEXT_PALETTE} />
+      </Row>
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <Label shell={shell}>Font</Label>
         <Select
@@ -277,7 +336,7 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
       <Slider size="sm" label={`Radius — ${state.borderRadius}px`} min={0} max={20} step={1} value={state.borderRadius} onChange={(e) => set({ borderRadius: Number(e.target.value) })} />
       <Slider size="sm" label={`Font scale — ${state.fontScale}×`} min={0.75} max={1.5} step={0.05} value={state.fontScale} onChange={(e) => set({ fontScale: Number(e.target.value) })} />
       <Slider size="sm" label={`Padding / Gap — ${state.spacingScale}×`} min={0.5} max={2} step={0.1} value={state.spacingScale} onChange={(e) => set({ spacingScale: Number(e.target.value) })} />
-      <button onClick={() => onChange({ theme: "light", primaryColor: "#6366f1", borderColor: "#e5e7eb", borderRadius: 8, fontScale: 1, spacingScale: 1, fontFamily: "Inter" })} style={{ marginTop: 4, padding: "5px 0", background: "transparent", border: `1px solid ${shell.border}`, borderRadius: 6, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 11, cursor: "pointer" }}>
+      <button onClick={() => onChange(defaultPlaygroundState)} style={{ marginTop: 4, padding: "5px 0", background: "transparent", border: `1px solid ${shell.border}`, borderRadius: 6, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 11, cursor: "pointer" }}>
         Reset defaults
       </button>
     </div>
