@@ -12,6 +12,40 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.9.2",
+    date: "March 2026",
+    title: "CardBleed & Tabs overflow",
+    items: [
+      {
+        label: "CardBleed",
+        description:
+          "A companion to Card that lets specific children stretch edge-to-edge, cancelling the card's horizontal padding. Text inside stays aligned with the rest of the card content. Useful for full-width dividers, bordered sections, and settings-style lists.",
+      },
+      {
+        label: "Tabs — overflow menu",
+        description:
+          "When tabs are rendered in a constrained-width container, items that don't fit are automatically collected into a \"more\" overflow menu. No configuration needed — the component measures available space and adapts.",
+      },
+    ],
+  },
+  {
+    version: "0.9.1",
+    date: "March 2026",
+    title: "Patch Changes",
+    items: [
+      {
+        label: "ColorPicker",
+        description:
+          "Fix popover opening off-viewport when the trigger is near the right edge of the screen (now right-aligns automatically).",
+      },
+      {
+        label: "Card",
+        description:
+          "Increase default padding sizes by ~1.5× (sm: space-3→4, md: space-4→6, lg: space-6→8).",
+      },
+    ],
+  },
+  {
     version: "0.9.0",
     date: "March 2026",
     title: "New components & Input enhancements",

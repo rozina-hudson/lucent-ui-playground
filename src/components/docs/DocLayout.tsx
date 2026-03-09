@@ -90,7 +90,7 @@ export function DocLayout({ def, prev, next }: Props) {
   const TopPreview = firstExample ? componentPreviews[firstExample.previewKey] : null;
 
   return (
-    <main style={{ flex: 1, padding: "40px 48px", maxWidth: 900 }}>
+    <main style={{ flex: 1, padding: "40px 48px", maxWidth: 900, overflow: "visible" }}>
       <Breadcrumb
         style={{ marginBottom: 24 }}
         items={[
@@ -126,11 +126,11 @@ export function DocLayout({ def, prev, next }: Props) {
               value: "preview",
               label: "Preview",
               content: (
-                <div style={{ display: "flex", border: `1px solid ${shell.border}`, borderRadius: 12, overflow: "hidden" }}>
-                  <div style={{ flex: 1, background: tokens.bgBase, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", ...previewContainerStyle }}>
+                <div style={{ display: "flex", gap: 16 }}>
+                  <div style={{ flex: 1, background: tokens.bgBase, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12, ...previewContainerStyle }}>
                     {mounted && TopPreview ? <TopPreview /> : null}
                   </div>
-                  <div style={{ width: 220, flexShrink: 0, borderLeft: `1px solid ${shell.border}`, background: shell.surface, overflowY: "auto" }}>
+                  <div style={{ width: 280, flexShrink: 0, border: `1px solid ${shell.border}`, borderRadius: 12, background: shell.surface }}>
                     <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
                   </div>
                 </div>
