@@ -40,6 +40,9 @@ import {
   Slider,
   CodeBlock,
   Table,
+  ColorPicker,
+  ColorSwatch,
+  SegmentedControl,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -1069,6 +1072,78 @@ const TableRichCells: PreviewFC = () => (
   </Table>
 );
 
+// ─── ColorPicker ─────────────────────────────────────────────────────────────
+
+const ColorPickerDefault: PreviewFC = () => {
+  const [color, setColor] = useState("#3b82f6");
+  return <ColorPicker value={color} onChange={setColor} label="Brand color" />;
+};
+
+const ColorPickerPresets: PreviewFC = () => {
+  const [color, setColor] = useState("#111827");
+  return (
+    <ColorPicker
+      value={color}
+      onChange={setColor}
+      label="Theme color"
+      presetGroups={[
+        { label: "Brand", colors: ["#111827", "#3b82f6", "#8b5cf6"] },
+        { label: "Semantic", colors: ["#22c55e", "#f59e0b", "#ef4444"] },
+      ]}
+    />
+  );
+};
+
+// ─── ColorSwatch ─────────────────────────────────────────────────────────────
+
+const ColorSwatchShapes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+    <ColorSwatch color="#3b82f6" size="sm" />
+    <ColorSwatch color="#8b5cf6" size="md" />
+    <ColorSwatch color="#ef4444" size="lg" shape="square" />
+    <ColorSwatch color="#22c55e" size="xl" shape="square" />
+  </div>
+);
+
+const ColorSwatchSelected: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+    <ColorSwatch color="#3b82f6" size="lg" selected />
+    <ColorSwatch color="rgba(59,130,246,0.4)" size="lg" showCheckerboard />
+  </div>
+);
+
+// ─── SegmentedControl ────────────────────────────────────────────────────────
+
+const SegmentedControlDefault: PreviewFC = () => (
+  <div style={{ width: 320 }}>
+    <SegmentedControl
+      defaultValue="grid"
+      options={[
+        { value: "grid", label: "Grid" },
+        { value: "list", label: "List" },
+        { value: "table", label: "Table" },
+      ]}
+    />
+  </div>
+);
+
+const SegmentedControlControlled: PreviewFC = () => {
+  const [view, setView] = useState("overview");
+  return (
+    <div style={{ width: 360 }}>
+      <SegmentedControl
+        value={view}
+        onChange={setView}
+        options={[
+          { value: "overview", label: "Overview" },
+          { value: "details", label: "Details" },
+          { value: "activity", label: "Activity" },
+        ]}
+      />
+    </div>
+  );
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const componentPreviews: Record<string, PreviewFC> = {
@@ -1195,4 +1270,13 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "table-basic": TableBasic,
   "table-striped": TableStriped,
   "table-rich-cells": TableRichCells,
+  // ColorPicker
+  "colorpicker-default": ColorPickerDefault,
+  "colorpicker-presets": ColorPickerPresets,
+  // ColorSwatch
+  "colorswatch-shapes": ColorSwatchShapes,
+  "colorswatch-selected": ColorSwatchSelected,
+  // SegmentedControl
+  "segmentedcontrol-default": SegmentedControlDefault,
+  "segmentedcontrol-controlled": SegmentedControlControlled,
 };

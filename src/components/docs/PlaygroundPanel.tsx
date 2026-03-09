@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { Tabs, Select, Slider, CodeBlock } from "lucent-ui";
+import { useEffect, useState } from "react";
+import { Tabs, Select, Slider, CodeBlock, ColorPicker } from "lucent-ui";
 import type { ShellColors } from "@/lib/shellColors";
 import { adjustBorderForTheme } from "@/lib/colorUtils";
 
@@ -87,135 +86,34 @@ function Row({ children }: { children: React.ReactNode }) {
   );
 }
 
-const ACCENT_PALETTE = [
-  // Core primaries
-  "#003366", "#4169E1", "#708090", "#34282C", "#FFFFFF", "#F0F0F0", "#60A5FA", "#22543D",
-  // Earth & nature
-  "#A47551", "#C05621", "#9DB2BF", "#00A86B", "#BD9B83", "#E1B382", "#4A6741", "#E97451",
-  // High-conversion accents
-  "#FF6B35", "#FF00FF", "#E53E3E", "#39FF14", "#FBBF24", "#2563EB", "#06B6D4", "#F87171",
-  // Jewel tones
-  "#4B0082", "#800020", "#065F46", "#0F172A", "#9966CC", "#D4AF37", "#1E293B", "#0D9488",
-  // Pastel & muted
-  "#D1FAE5", "#FDA4AF", "#E9D5FF", "#BFDBFE", "#FFBE98", "#FEF3C7", "#E2E8F0", "#D4E157",
-] as const;
+const ACCENT_PRESETS = [
+  { label: "Core", colors: ["#003366", "#4169E1", "#708090", "#34282C", "#60A5FA", "#22543D", "#2563EB", "#06B6D4"] },
+  { label: "Earth", colors: ["#A47551", "#C05621", "#9DB2BF", "#00A86B", "#BD9B83", "#E1B382", "#4A6741", "#E97451"] },
+  { label: "Vibrant", colors: ["#FF6B35", "#FF00FF", "#E53E3E", "#39FF14", "#FBBF24", "#F87171", "#D4E157", "#0D9488"] },
+  { label: "Jewel", colors: ["#4B0082", "#800020", "#065F46", "#0F172A", "#9966CC", "#D4AF37", "#1E293B", "#A855F7"] },
+  { label: "Pastel", colors: ["#D1FAE5", "#FDA4AF", "#E9D5FF", "#BFDBFE", "#FFBE98", "#FEF3C7", "#E2E8F0", "#F0F0F0"] },
+];
 
-const BORDER_PALETTE = [
-  // Invisible neutrals (layout & dividers)
-  "#F1F5F9", "#E2E8F0", "#D4D4D8", "#E7E5E4", "#F8F9FA", "#C0C0C0", "#EBEBEB", "#F5F5F5",
-  // Dark mode depth (#2B3040 ≈ rgba(255,255,255,0.1) on dark)
-  "#1E293B", "#2D3748", "#2B3040", "#312E81", "#0F172A", "#2A2E37", "#3F3F46", "#050505",
-  // Feedback / utility
-  "#10B981", "#EF4444", "#F59E0B", "#3B82F6", "#8B5CF6", "#94A3B8", "#D1FAE5", "#F43F5E",
-  // Trendy accent borders
-  "#A855F7", "#22D3EE", "#FDE047", "#FB7185", "#84CC16", "#5EEAD4", "#DDD6FE", "#F97316",
-  // Earthy / human-centric
-  "#F5F5DC", "#A3B18A", "#8D99AE", "#D6D3D1", "#6B705C", "#FFEDD5", "#93C5FD", "#57534E",
-] as const;
+const BORDER_PRESETS = [
+  { label: "Neutral", colors: ["#F1F5F9", "#E2E8F0", "#D4D4D8", "#E7E5E4", "#F8F9FA", "#C0C0C0", "#EBEBEB", "#F5F5F5"] },
+  { label: "Dark", colors: ["#1E293B", "#2D3748", "#2B3040", "#312E81", "#0F172A", "#2A2E37", "#3F3F46", "#050505"] },
+  { label: "Accent", colors: ["#A855F7", "#22D3EE", "#FDE047", "#FB7185", "#84CC16", "#5EEAD4", "#DDD6FE", "#F97316"] },
+  { label: "Earthy", colors: ["#F5F5DC", "#A3B18A", "#8D99AE", "#D6D3D1", "#6B705C", "#FFEDD5", "#93C5FD", "#57534E"] },
+];
 
-const BG_PALETTE = [
-  // Light canvas
-  "#FFFFFF", "#F9FAFB", "#F8FAFC", "#F5F5F4", "#FAFAF9", "#F0F4F8", "#FFF8F0", "#F0FFF4",
-  // Warm & tinted whites
-  "#FFFBEB", "#FFF1F2", "#F0F9FF", "#F5F3FF", "#ECFDF5", "#FDF4FF", "#FFFDE7", "#F0FDFA",
-  // Dark canvas
-  "#0A0A0A", "#0F0F11", "#101114", "#111218", "#0D1117", "#11141A", "#0F1923", "#13111A",
-  // Mid-dark
-  "#18181B", "#1A1A2E", "#1C1917", "#162032", "#1B1D22", "#191C21", "#1E1E2E", "#1A1625",
-] as const;
+const BG_PRESETS = [
+  { label: "Light", colors: ["#FFFFFF", "#F9FAFB", "#F8FAFC", "#F5F5F4", "#FAFAF9", "#F0F4F8", "#FFF8F0", "#F0FFF4"] },
+  { label: "Warm", colors: ["#FFFBEB", "#FFF1F2", "#F0F9FF", "#F5F3FF", "#ECFDF5", "#FDF4FF", "#FFFDE7", "#F0FDFA"] },
+  { label: "Dark", colors: ["#0A0A0A", "#0F0F11", "#101114", "#111218", "#0D1117", "#11141A", "#0F1923", "#13111A"] },
+  { label: "Mid-dark", colors: ["#18181B", "#1A1A2E", "#1C1917", "#162032", "#1B1D22", "#191C21", "#1E1E2E", "#1A1625"] },
+];
 
-const TEXT_PALETTE = [
-  // Near-black (light mode)
-  "#111827", "#0F172A", "#18181B", "#1C1917", "#0A0A0A", "#1A1A2E", "#1E293B", "#27272A",
-  // Dark gray
-  "#374151", "#3F3F46", "#44403C", "#334155", "#404040", "#52525B", "#57534E", "#475569",
-  // Near-white (dark mode)
-  "#F9FAFB", "#E6EBF4", "#F4F4F5", "#F5F5F4", "#E2E8F0", "#EDEDED", "#D4D4D8", "#CBD5E1",
-  // Warm & cool tints
-  "#E8E8F0", "#F0EDE8", "#E0E7FF", "#D1FAE5", "#F3E8FF", "#E0F2FE", "#FEF9C3", "#FFE4E6",
-] as const;
-
-const DROPDOWN_W = 226;
-
-function ColorPicker({ value, onChange, shell, palette = ACCENT_PALETTE }: { value: string; onChange: (hex: string) => void; shell: ShellColors; palette?: readonly string[] }) {
-  const [open, setOpen] = useState(false);
-  const [hexInput, setHexInput] = useState(value);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => { setHexInput(value); }, [value]);
-
-  const openDropdown = () => {
-    if (buttonRef.current) {
-      const r = buttonRef.current.getBoundingClientRect();
-      setPos({ top: r.bottom + 6, left: Math.max(8, r.right - DROPDOWN_W) });
-    }
-    setOpen(true);
-  };
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (buttonRef.current?.contains(target)) return;
-      // close if click is outside the portal dropdown (identified by data attr)
-      const dropdown = document.querySelector("[data-lucent-colorpicker]");
-      if (!dropdown?.contains(target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
-
-  const commitHex = (raw: string) => {
-    const v = raw.startsWith("#") ? raw : `#${raw}`;
-    if (/^#[0-9a-f]{6}$/i.test(v)) { onChange(v); setHexInput(v); }
-    else setHexInput(value);
-  };
-
-  const dropdown = open ? (
-    <div
-      data-lucent-colorpicker
-      style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 9999, background: shell.bg, border: `1px solid ${shell.border}`, borderRadius: 10, padding: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.18)", width: DROPDOWN_W }}
-    >
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 4 }}>
-        {palette.map((color) => (
-          <button
-            key={color}
-            onClick={() => { onChange(color); setHexInput(color); setOpen(false); }}
-            style={{
-              width: 22, height: 22, borderRadius: 5, background: color, padding: 0, cursor: "pointer",
-              border: color.toLowerCase() === value.toLowerCase() ? `2px solid ${shell.text}` : `1.5px solid ${shell.border}`,
-              outline: color.toLowerCase() === value.toLowerCase() ? `2px solid ${shell.bg}` : "none",
-              outlineOffset: -4,
-            }}
-          />
-        ))}
-      </div>
-      <input
-        type="text"
-        value={hexInput}
-        onChange={(e) => setHexInput(e.target.value)}
-        onBlur={(e) => commitHex(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter") commitHex((e.target as HTMLInputElement).value); }}
-        maxLength={7}
-        placeholder="#000000"
-        style={{ marginTop: 8, width: "100%", padding: "4px 7px", borderRadius: 5, border: `1px solid ${shell.border}`, background: "transparent", color: shell.text, fontFamily: "monospace", fontSize: 12, boxSizing: "border-box", outline: "none" }}
-      />
-    </div>
-  ) : null;
-
-  return (
-    <>
-      <button
-        ref={buttonRef}
-        onClick={openDropdown}
-        style={{ width: 28, height: 28, borderRadius: 6, background: value, border: `2px solid ${shell.border}`, cursor: "pointer", padding: 0, flexShrink: 0 }}
-        title="Pick colour"
-      />
-      {typeof document !== "undefined" && createPortal(dropdown, document.body)}
-    </>
-  );
-}
+const TEXT_PRESETS = [
+  { label: "Near-black", colors: ["#111827", "#0F172A", "#18181B", "#1C1917", "#0A0A0A", "#1A1A2E", "#1E293B", "#27272A"] },
+  { label: "Dark gray", colors: ["#374151", "#3F3F46", "#44403C", "#334155", "#404040", "#52525B", "#57534E", "#475569"] },
+  { label: "Near-white", colors: ["#F9FAFB", "#E6EBF4", "#F4F4F5", "#F5F5F4", "#E2E8F0", "#EDEDED", "#D4D4D8", "#CBD5E1"] },
+  { label: "Tinted", colors: ["#E8E8F0", "#F0EDE8", "#E0E7FF", "#D1FAE5", "#F3E8FF", "#E0F2FE", "#FEF9C3", "#FFE4E6"] },
+];
 
 export function generateCode(state: PlaygroundState): string {
   const d = defaultPlaygroundState;
@@ -306,23 +204,23 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
     <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "20px" }}>
       <Row>
         <Label shell={shell}>Accent</Label>
-        <ColorPicker value={state.primaryColor} onChange={(hex) => set({ primaryColor: hex })} shell={shell} />
+        <ColorPicker value={state.primaryColor} onChange={(hex) => set({ primaryColor: hex })} presetGroups={ACCENT_PRESETS} />
       </Row>
       <Row>
         <Label shell={shell}>Border</Label>
-        <ColorPicker value={state.borderColor} onChange={(hex) => set({ borderColor: hex })} shell={shell} palette={BORDER_PALETTE} />
+        <ColorPicker value={state.borderColor} onChange={(hex) => set({ borderColor: hex })} presetGroups={BORDER_PRESETS} />
       </Row>
       <Row>
         <Label shell={shell}>Background</Label>
-        <ColorPicker value={state.bgColor} onChange={(hex) => set({ bgColor: hex })} shell={shell} palette={BG_PALETTE} />
+        <ColorPicker value={state.bgColor} onChange={(hex) => set({ bgColor: hex })} presetGroups={BG_PRESETS} />
       </Row>
       <Row>
         <Label shell={shell}>Surface</Label>
-        <ColorPicker value={state.surfaceColor} onChange={(hex) => set({ surfaceColor: hex })} shell={shell} palette={BG_PALETTE} />
+        <ColorPicker value={state.surfaceColor} onChange={(hex) => set({ surfaceColor: hex })} presetGroups={BG_PRESETS} />
       </Row>
       <Row>
         <Label shell={shell}>Text</Label>
-        <ColorPicker value={state.textColor} onChange={(hex) => set({ textColor: hex })} shell={shell} palette={TEXT_PALETTE} />
+        <ColorPicker value={state.textColor} onChange={(hex) => set({ textColor: hex })} presetGroups={TEXT_PRESETS} />
       </Row>
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <Label shell={shell}>Font</Label>
