@@ -1127,6 +1127,17 @@ const results = allItems
   <Text size="xs">lg padding + shadow</Text>
 </Card>`,
       },
+      {
+        title: "CardBleed",
+        description: "Let children stretch edge-to-edge, cancelling the card's horizontal padding. Text stays aligned with the rest of the card content.",
+        previewKey: "card-bleed",
+        code: `<Card>
+  <Text weight="semibold">Settings</Text>
+  <CardBleed style={{ borderTop: '1px solid var(--lucent-border-default)' }}>
+    <Text size="sm" color="secondary">This row stretches to the card edges.</Text>
+  </CardBleed>
+</Card>`,
+      },
     ],
   },
 
@@ -1582,6 +1593,24 @@ const results = allItems
     { value: "locked", label: "Locked", content: <Text>Locked.</Text>, disabled: true },
   ]}
 />`,
+      },
+      {
+        title: "Overflow menu",
+        description: "When tabs exceed the container width, extra items collapse into a \"more\" overflow menu automatically.",
+        previewKey: "tabs-overflow",
+        code: `<div style={{ width: 260 }}>
+  <Tabs
+    defaultValue="home"
+    tabs={[
+      { value: "home", label: "Home", content: <Text>Home content.</Text> },
+      { value: "profile", label: "Profile", content: <Text>Profile content.</Text> },
+      { value: "settings", label: "Settings", content: <Text>Settings content.</Text> },
+      { value: "billing", label: "Billing", content: <Text>Billing content.</Text> },
+      { value: "notifications", label: "Notifications", content: <Text>Notifications content.</Text> },
+      { value: "integrations", label: "Integrations", content: <Text>Integrations content.</Text> },
+    ]}
+  />
+</div>`,
       },
     ],
   },

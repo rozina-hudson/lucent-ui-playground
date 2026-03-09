@@ -13,7 +13,6 @@ import {
   DataTable,
   DatePicker,
   DateRangePicker,
-  Divider,
   EmptyState,
   FileUpload,
   FormField,
@@ -35,6 +34,7 @@ import {
   Timeline,
   Toggle,
   Tooltip,
+  CardBleed,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -365,18 +365,19 @@ const AnalyticsReport: React.FC = () => {
           />
         </div>
       </div>
-      <Divider />
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        {stats.length === 0 ? (
-          <Text size="sm" color="secondary">Select at least one metric above.</Text>
-        ) : stats.map(({ key, label, value, change, variant }) => (
-          <div key={key} style={{ flex: "1 1 80px" }}>
-            <Text size="xs" color="secondary">{label}</Text>
-            <Text size="xl" weight="semibold">{value}</Text>
-            <Badge variant={variant} size="sm">{change}</Badge>
-          </div>
-        ))}
-      </div>
+      <CardBleed style={{ borderTop: "1px solid var(--lucent-border-default)", paddingTop: 20 }}>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          {stats.length === 0 ? (
+            <Text size="sm" color="secondary">Select at least one metric above.</Text>
+          ) : stats.map(({ key, label, value, change, variant }) => (
+            <div key={key} style={{ flex: "1 1 80px" }}>
+              <Text size="xs" color="secondary">{label}</Text>
+              <Text size="xl" weight="semibold">{value}</Text>
+              <Badge variant={variant} size="sm">{change}</Badge>
+            </div>
+          ))}
+        </div>
+      </CardBleed>
     </div>
   );
 };
@@ -457,59 +458,65 @@ const SettingsPanel: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
       <Text size="sm" weight="semibold" style={{ marginBottom: 10 }}>Settings</Text>
 
-      <Collapsible
-        defaultOpen
-        style={{ borderBottom: "1px solid var(--lucent-border-default)" }}
-        trigger={<div style={{ padding: "8px 0", cursor: "pointer" }}><Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Notifications</Text></div>}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 2, paddingBottom: 10 }}>
-          {notifRows.map(({ label, val, set }) => (
-            <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0" }}>
-              <Text size="sm">{label}</Text>
-              <Toggle size="sm" checked={val} onChange={(e) => set(e.target.checked)} />
-            </div>
-          ))}
-        </div>
-      </Collapsible>
+      <CardBleed style={{ borderBottom: "1px solid var(--lucent-border-default)", padding: 0 }}>
+        <Collapsible
+          defaultOpen
+          style={{ padding: "0 8px" }}
+          trigger={<div style={{ padding: "8px 0", cursor: "pointer" }}><Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Notifications</Text></div>}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, paddingBottom: 10 }}>
+            {notifRows.map(({ label, val, set }) => (
+              <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0" }}>
+                <Text size="sm">{label}</Text>
+                <Toggle size="sm" checked={val} onChange={(e) => set(e.target.checked)} />
+              </div>
+            ))}
+          </div>
+        </Collapsible>
+      </CardBleed>
 
-      <Collapsible
-        style={{ borderBottom: "1px solid var(--lucent-border-default)" }}
-        trigger={<div style={{ padding: "8px 0", cursor: "pointer" }}><Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Appearance</Text></div>}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingBottom: 10 }}>
-          <Select
-            options={[
-              { value: "system", label: "System default" },
-              { value: "light",  label: "Light" },
-              { value: "dark",   label: "Dark" },
-            ]}
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            size="sm"
-          />
-          <MultiSelect
-            options={[
-              { value: "ai",        label: "AI features" },
-              { value: "analytics", label: "Analytics" },
-              { value: "beta",      label: "Beta UI" },
-              { value: "devtools",  label: "Dev tools" },
-            ]}
-            value={features}
-            onChange={setFeatures}
-            placeholder="Enabled features…"
-          />
-        </div>
-      </Collapsible>
+      <CardBleed style={{ borderBottom: "1px solid var(--lucent-border-default)", padding: 0 }}>
+        <Collapsible
+          style={{ padding: "0 8px" }}
+          trigger={<div style={{ padding: "8px 0", cursor: "pointer" }}><Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Appearance</Text></div>}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingBottom: 10 }}>
+            <Select
+              options={[
+                { value: "system", label: "System default" },
+                { value: "light",  label: "Light" },
+                { value: "dark",   label: "Dark" },
+              ]}
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              size="sm"
+            />
+            <MultiSelect
+              options={[
+                { value: "ai",        label: "AI features" },
+                { value: "analytics", label: "Analytics" },
+                { value: "beta",      label: "Beta UI" },
+                { value: "devtools",  label: "Dev tools" },
+              ]}
+              value={features}
+              onChange={setFeatures}
+              placeholder="Enabled features…"
+            />
+          </div>
+        </Collapsible>
+      </CardBleed>
 
-      <Collapsible
-        style={{ borderBottom: "1px solid var(--lucent-border-default)" }}
-        trigger={<div style={{ padding: "8px 0", cursor: "pointer" }}><Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Security</Text></div>}
-      >
-        <div style={{ padding: "6px 0 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Text size="sm">Two-factor auth</Text>
-          <Toggle size="sm" checked={twofa} onChange={(e) => setTwofa(e.target.checked)} />
-        </div>
-      </Collapsible>
+      <CardBleed style={{ borderBottom: "1px solid var(--lucent-border-default)", padding: 0 }}>
+        <Collapsible
+         style={{ padding: "0 8px" }}
+          trigger={<div style={{ padding: "8px 0", cursor: "pointer" }}><Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Security</Text></div>}
+        >
+          <div style={{ padding: "6px 0 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Text size="sm">Two-factor auth</Text>
+            <Toggle size="sm" checked={twofa} onChange={(e) => setTwofa(e.target.checked)} />
+          </div>
+        </Collapsible>
+      </CardBleed>
 
       <div style={{ marginTop: "auto", paddingTop: 12, display: "flex", gap: 6, justifyContent: "flex-end" }}>
         <Button size="sm" variant="ghost">Reset</Button>
@@ -768,6 +775,24 @@ const FileWorkspace: React.FC = () => {
                     ))}
                   </div>
                 )}
+              </div>
+            ),
+          },
+          {
+            value: "videos",
+            label: "Videos",
+            content: (
+              <div style={{ paddingTop: 8 }}>
+                <EmptyState illustration={<Icon size="xl"><UploadSvg /></Icon>} title="No videos yet" description="Video uploads coming soon." />
+              </div>
+            ),
+          },
+          {
+            value: "archives",
+            label: "Archives",
+            content: (
+              <div style={{ paddingTop: 8 }}>
+                <EmptyState illustration={<Icon size="xl"><UploadSvg /></Icon>} title="No archives" description="ZIP and TAR files will appear here." />
               </div>
             ),
           },

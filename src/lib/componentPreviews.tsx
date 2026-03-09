@@ -43,6 +43,7 @@ import {
   ColorPicker,
   ColorSwatch,
   SegmentedControl,
+  CardBleed,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -570,6 +571,18 @@ const CardSizes: PreviewFC = () => (
   </div>
 );
 
+const CardBleedExample: PreviewFC = () => (
+  <Card style={{ width: 300 }}>
+    <Text weight="semibold">Settings</Text>
+    <CardBleed style={{ borderTop: "1px solid var(--lucent-border-default)", marginTop: 12 }}>
+      <Text size="sm" color="secondary">This row stretches to the card edges.</Text>
+    </CardBleed>
+    <CardBleed style={{ borderTop: "1px solid var(--lucent-border-default)" }}>
+      <Text size="sm" color="secondary">Another full-width row.</Text>
+    </CardBleed>
+  </Card>
+);
+
 // ─── EmptyState ───────────────────────────────────────────────────────────────
 
 const EmptyStateFull: PreviewFC = () => (
@@ -760,6 +773,22 @@ const TabsDisabled: PreviewFC = () => (
       { value: "locked", label: "Locked", content: <Text>Locked.</Text>, disabled: true },
     ]}
   />
+);
+
+const TabsOverflow: PreviewFC = () => (
+  <div style={{ width: 260 }}>
+    <Tabs
+      defaultValue="home"
+      tabs={[
+        { value: "home", label: "Home", content: <Text>Home content.</Text> },
+        { value: "profile", label: "Profile", content: <Text>Profile content.</Text> },
+        { value: "settings", label: "Settings", content: <Text>Settings content.</Text> },
+        { value: "billing", label: "Billing", content: <Text>Billing content.</Text> },
+        { value: "notifications", label: "Notifications", content: <Text>Notifications content.</Text> },
+        { value: "integrations", label: "Integrations", content: <Text>Integrations content.</Text> },
+      ]}
+    />
+  </div>
 );
 
 // ─── Collapsible ──────────────────────────────────────────────────────────────
@@ -1216,6 +1245,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "card-body": CardBody,
   "card-header-footer": CardHeaderFooter,
   "card-sizes": CardSizes,
+  "card-bleed": CardBleedExample,
   // EmptyState
   "emptystate-full": EmptyStateFull,
   "emptystate-minimal": EmptyStateMinimal,
@@ -1240,6 +1270,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // Tabs
   "tabs-basic": TabsBasic,
   "tabs-disabled": TabsDisabled,
+  "tabs-overflow": TabsOverflow,
   // Collapsible
   "collapsible-basic": CollapsibleBasic,
   "collapsible-open": CollapsibleOpen,
