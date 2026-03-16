@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Tabs, Select, Slider, CodeBlock, ColorPicker } from "lucent-ui";
+import { Tabs, Select, Slider, CodeBlock, ColorPicker, SegmentedControl, ColorSwatch } from "lucent-ui";
 import type { ShellColors } from "@/lib/shellColors";
 import { adjustBorderForTheme } from "@/lib/colorUtils";
 
@@ -30,6 +30,79 @@ export const defaultPlaygroundState: PlaygroundState = {
   spacingScale: 1,
   fontFamily: "Inter",
 };
+
+/* ─── Design Presets ─── */
+
+type ThemeColors = {
+  primaryColor: string;
+  borderColor: string;
+  bgColor: string;
+  surfaceColor: string;
+  textColor: string;
+};
+
+type PresetDefinition = {
+  name: string;
+  description: string;
+  light: ThemeColors;
+  dark: ThemeColors;
+  shared: { borderRadius: number; fontScale: number; spacingScale: number; fontFamily: string };
+};
+
+function resolvePreset(preset: PresetDefinition, theme: "light" | "dark"): Omit<PlaygroundState, "theme"> {
+  return { ...(theme === "dark" ? preset.dark : preset.light), ...preset.shared };
+}
+
+const COMBINED_PRESETS: PresetDefinition[] = [
+  {
+    name: "Modern",
+    description: "Clean lines, indigo accent, balanced spacing",
+    light: { primaryColor: "#6366f1", borderColor: "#e5e7eb", bgColor: "#ffffff", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#818cf8", borderColor: "#2e2e3a", bgColor: "#0f0f14", surfaceColor: "#18181f", textColor: "#f1f1f4" },
+    shared: { borderRadius: 8, fontScale: 1, spacingScale: 1, fontFamily: "Inter" },
+  },
+  {
+    name: "Enterprise",
+    description: "Conservative, compact, professional",
+    light: { primaryColor: "#2563EB", borderColor: "#D4D4D8", bgColor: "#F9FAFB", surfaceColor: "#ffffff", textColor: "#0F172A" },
+    dark: { primaryColor: "#60A5FA", borderColor: "#2a2d35", bgColor: "#0c0e14", surfaceColor: "#14161e", textColor: "#e2e8f0" },
+    shared: { borderRadius: 4, fontScale: 0.95, spacingScale: 0.85, fontFamily: "IBM Plex Sans" },
+  },
+  {
+    name: "Playful",
+    description: "Bold colors, soft shapes, roomy",
+    light: { primaryColor: "#F43F5E", borderColor: "#FDE68A", bgColor: "#FFFBEB", surfaceColor: "#ffffff", textColor: "#1C1917" },
+    dark: { primaryColor: "#FB7185", borderColor: "#3d3222", bgColor: "#141008", surfaceColor: "#1c1710", textColor: "#fef3c7" },
+    shared: { borderRadius: 16, fontScale: 1.05, spacingScale: 1.15, fontFamily: "Nunito" },
+  },
+];
+
+type DimensionOption = { label: string; light: Partial<PlaygroundState>; dark: Partial<PlaygroundState> };
+
+function resolveDimension(opt: DimensionOption, theme: "light" | "dark"): Partial<PlaygroundState> {
+  return theme === "dark" ? opt.dark : opt.light;
+}
+
+const PALETTE_OPTIONS: DimensionOption[] = [
+  { label: "Indigo",   light: { primaryColor: "#6366f1", bgColor: "#ffffff", surfaceColor: "#ffffff", borderColor: "#e5e7eb", textColor: "#111827" },   dark: { primaryColor: "#818cf8", bgColor: "#0f0f14", surfaceColor: "#18181f", borderColor: "#2e2e3a", textColor: "#f1f1f4" } },
+  { label: "Ocean",    light: { primaryColor: "#0EA5E9", bgColor: "#F0F9FF", surfaceColor: "#ffffff", borderColor: "#BAE6FD", textColor: "#0C4A6E" },   dark: { primaryColor: "#38BDF8", bgColor: "#0a1520", surfaceColor: "#0f1c2a", borderColor: "#1a3a52", textColor: "#bae6fd" } },
+  { label: "Forest",   light: { primaryColor: "#16A34A", bgColor: "#F0FDF4", surfaceColor: "#ffffff", borderColor: "#BBF7D0", textColor: "#14532D" },   dark: { primaryColor: "#4ADE80", bgColor: "#0a1510", surfaceColor: "#0f1c16", borderColor: "#1a3a28", textColor: "#bbf7d0" } },
+  { label: "Sunset",   light: { primaryColor: "#F97316", bgColor: "#FFFBEB", surfaceColor: "#ffffff", borderColor: "#FED7AA", textColor: "#431407" },   dark: { primaryColor: "#FB923C", bgColor: "#14100a", surfaceColor: "#1c1710", borderColor: "#3d2e1a", textColor: "#fed7aa" } },
+  { label: "Lavender", light: { primaryColor: "#8B5CF6", bgColor: "#F5F3FF", surfaceColor: "#ffffff", borderColor: "#DDD6FE", textColor: "#2E1065" },   dark: { primaryColor: "#A78BFA", bgColor: "#100e1a", surfaceColor: "#171422", borderColor: "#2e2848", textColor: "#ddd6fe" } },
+  { label: "Slate",    light: { primaryColor: "#475569", bgColor: "#F8FAFC", surfaceColor: "#ffffff", borderColor: "#CBD5E1", textColor: "#0F172A" },   dark: { primaryColor: "#94A3B8", bgColor: "#0c0e12", surfaceColor: "#14161c", borderColor: "#2a2e38", textColor: "#cbd5e1" } },
+];
+
+const SHAPE_OPTIONS: DimensionOption[] = [
+  { label: "Sharp", light: { borderRadius: 2 }, dark: { borderRadius: 2 } },
+  { label: "Rounded", light: { borderRadius: 8 }, dark: { borderRadius: 8 } },
+  { label: "Pill", light: { borderRadius: 20 }, dark: { borderRadius: 20 } },
+];
+
+const DENSITY_OPTIONS: DimensionOption[] = [
+  { label: "Compact", light: { fontScale: 0.9, spacingScale: 0.8 }, dark: { fontScale: 0.9, spacingScale: 0.8 } },
+  { label: "Default", light: { fontScale: 1, spacingScale: 1 }, dark: { fontScale: 1, spacingScale: 1 } },
+  { label: "Comfortable", light: { fontScale: 1.05, spacingScale: 1.2 }, dark: { fontScale: 1.05, spacingScale: 1.2 } },
+];
 
 export const PLAYGROUND_FONTS = [
   "Inter",
@@ -190,18 +263,198 @@ export function generateCode(state: PlaygroundState): string {
   return lines.join("\n");
 }
 
+function DimensionPicker({
+  label,
+  options,
+  state,
+  onChange,
+  shell,
+}: {
+  label: string;
+  options: DimensionOption[];
+  state: PlaygroundState;
+  onChange: (s: PlaygroundState) => void;
+  shell: ShellColors;
+}) {
+  const activeValue = options.find((opt) => {
+    const patch = resolveDimension(opt, state.theme);
+    return Object.entries(patch).every(
+      ([k, v]) => state[k as keyof PlaygroundState] === v,
+    );
+  })?.label ?? options[0].label;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <Label shell={shell}>{label}</Label>
+      <SegmentedControl
+        size="sm"
+        value={activeValue}
+        onChange={(val) => {
+          const opt = options.find((o) => o.label === val);
+          if (opt) onChange({ ...state, ...resolveDimension(opt, state.theme) });
+        }}
+        options={options.map((o) => ({ value: o.label, label: o.label }))}
+      />
+    </div>
+  );
+}
+
+function PresetCard({
+  preset,
+  shell,
+  theme,
+  onSelect,
+}: {
+  preset: PresetDefinition;
+  shell: ShellColors;
+  theme: "light" | "dark";
+  onSelect: () => void;
+}) {
+  const s = resolvePreset(preset, theme);
+  return (
+    <button
+      onClick={onSelect}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        padding: 12,
+        background: "transparent",
+        border: `1px solid ${shell.border}`,
+        borderRadius: 10,
+        cursor: "pointer",
+        textAlign: "left",
+        transition: "all 0.15s",
+        width: "100%",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = s.primaryColor + "60";
+        e.currentTarget.style.background = s.primaryColor + "08";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = shell.border;
+        e.currentTarget.style.background = "transparent";
+      }}
+    >
+      <span style={{ fontSize: 13, fontWeight: 600, color: shell.text, fontFamily: "var(--font-dm-sans), sans-serif" }}>
+        {preset.name}
+      </span>
+      <span style={{ fontSize: 11, color: shell.muted, fontFamily: "var(--font-dm-sans), sans-serif", lineHeight: 1.3 }}>
+        {preset.description}
+      </span>
+    </button>
+  );
+}
+
 export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }: Props) {
   const set = (patch: Partial<PlaygroundState>) => onChange({ ...state, ...patch });
   useGoogleFont(state.fontFamily);
   const [mounted, setMounted] = useState(false);
+  const [view, setView] = useState<"presets" | "customize">("presets");
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
 
   const code = generateCode(state);
 
+  const presetsContent = (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "20px" }}>
+      <Label shell={shell}>Presets</Label>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {COMBINED_PRESETS.map((p) => (
+          <PresetCard
+            key={p.name}
+            preset={p}
+            shell={shell}
+            theme={state.theme}
+            onSelect={() => onChange({ ...state, ...resolvePreset(p, state.theme) })}
+          />
+        ))}
+      </div>
+
+      <div style={{ height: 1, background: shell.border, margin: "4px 0" }} />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <Label shell={shell}>Palette</Label>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {PALETTE_OPTIONS.map((opt) => {
+            const colors = resolveDimension(opt, state.theme);
+            const active = Object.entries(colors).every(
+              ([k, v]) => state[k as keyof PlaygroundState] === v,
+            );
+            return (
+              <button
+                key={opt.label}
+                onClick={() => onChange({ ...state, ...colors })}
+                title={opt.label}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: 0,
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <ColorSwatch
+                  color={colors.primaryColor as string}
+                  size="md"
+                  selected={active}
+                />
+                <span style={{
+                  fontSize: 9,
+                  fontFamily: "var(--font-dm-sans), sans-serif",
+                  color: active ? state.primaryColor : shell.muted,
+                  fontWeight: active ? 600 : 400,
+                }}>
+                  {opt.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <DimensionPicker label="Shape" options={SHAPE_OPTIONS} state={state} onChange={onChange} shell={shell} />
+      <DimensionPicker label="Density" options={DENSITY_OPTIONS} state={state} onChange={onChange} shell={shell} />
+
+      <button
+        onClick={() => setView("customize")}
+        style={{
+          marginTop: 4,
+          padding: "7px 0",
+          background: "transparent",
+          border: `1px solid ${shell.border}`,
+          borderRadius: 6,
+          color: shell.muted,
+          fontFamily: "var(--font-dm-sans), sans-serif",
+          fontSize: 11,
+          cursor: "pointer",
+        }}
+      >
+        Customize →
+      </button>
+    </div>
+  );
+
   const customizeContent = (
     <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "20px" }}>
+      <button
+        onClick={() => setView("presets")}
+        style={{
+          alignSelf: "flex-start",
+          padding: 0,
+          background: "transparent",
+          border: "none",
+          color: shell.muted,
+          fontFamily: "var(--font-dm-sans), sans-serif",
+          fontSize: 11,
+          cursor: "pointer",
+        }}
+      >
+        ← Presets
+      </button>
       <Row>
         <Label shell={shell}>Accent</Label>
         <ColorPicker value={state.primaryColor} onChange={(hex) => set({ primaryColor: hex })} presetGroups={ACCENT_PRESETS} />
@@ -240,20 +493,22 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
     </div>
   );
 
+  const activeContent = view === "presets" ? presetsContent : customizeContent;
+
   const codeContent = (
     <div style={{ padding: "0 12px 20px" }}>
       <CodeBlock code={code} />
     </div>
   );
 
-  if (!showCodeTab) return customizeContent;
+  if (!showCodeTab) return activeContent;
 
   return (
     <Tabs
       defaultValue="customize"
       style={{ paddingTop: 4 }}
       tabs={[
-        { value: "customize", label: "Customize", content: customizeContent },
+        { value: "customize", label: "Customize", content: activeContent },
         { value: "code", label: "Code", content: codeContent },
       ]}
     />

@@ -12,6 +12,28 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.10.0",
+    date: "March 2026",
+    title: "Design Presets & CLI",
+    items: [
+      {
+        label: "Design Presets",
+        description:
+          "Pick a curated preset and get an instantly polished UI — colors, spacing, borders, and shadows — with zero manual configuration. 3 combined presets (modern, enterprise, playful) and 4 mixable dimensions: palette (6 options), shape (3), density (3), shadow (3). Full-atmosphere palettes tint bg, surface, and border colors toward the accent hue. Works with both light and dark themes automatically.",
+      },
+      {
+        label: "npx lucent-ui init",
+        description:
+          "Interactive CLI that walks you through preset selection and writes a lucent.config.ts + provider snippet.",
+      },
+      {
+        label: "MCP preset tools",
+        description:
+          "Two new MCP tools: list_presets discovers all available presets and dimensions, get_preset_config generates ready-to-use provider config from a selection.",
+      },
+    ],
+  },
+  {
     version: "0.9.2",
     date: "March 2026",
     title: "CardBleed & Tabs overflow",
