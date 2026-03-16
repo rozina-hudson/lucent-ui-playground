@@ -41,7 +41,7 @@ type ThemeColors = {
   textColor: string;
 };
 
-type PresetDefinition = {
+export type PresetDefinition = {
   name: string;
   description: string;
   light: ThemeColors;
@@ -49,11 +49,11 @@ type PresetDefinition = {
   shared: { borderRadius: number; fontScale: number; spacingScale: number; fontFamily: string };
 };
 
-function resolvePreset(preset: PresetDefinition, theme: "light" | "dark"): Omit<PlaygroundState, "theme"> {
+export function resolvePreset(preset: PresetDefinition, theme: "light" | "dark"): Omit<PlaygroundState, "theme"> {
   return { ...(theme === "dark" ? preset.dark : preset.light), ...preset.shared };
 }
 
-const COMBINED_PRESETS: PresetDefinition[] = [
+export const COMBINED_PRESETS: PresetDefinition[] = [
   {
     name: "Modern",
     description: "Clean lines, indigo accent, balanced spacing",
@@ -77,13 +77,13 @@ const COMBINED_PRESETS: PresetDefinition[] = [
   },
 ];
 
-type DimensionOption = { label: string; light: Partial<PlaygroundState>; dark: Partial<PlaygroundState> };
+export type DimensionOption = { label: string; light: Partial<PlaygroundState>; dark: Partial<PlaygroundState> };
 
-function resolveDimension(opt: DimensionOption, theme: "light" | "dark"): Partial<PlaygroundState> {
+export function resolveDimension(opt: DimensionOption, theme: "light" | "dark"): Partial<PlaygroundState> {
   return theme === "dark" ? opt.dark : opt.light;
 }
 
-const PALETTE_OPTIONS: DimensionOption[] = [
+export const PALETTE_OPTIONS: DimensionOption[] = [
   { label: "Indigo",   light: { primaryColor: "#6366f1", bgColor: "#ffffff", surfaceColor: "#ffffff", borderColor: "#e5e7eb", textColor: "#111827" },   dark: { primaryColor: "#818cf8", bgColor: "#0f0f14", surfaceColor: "#18181f", borderColor: "#2e2e3a", textColor: "#f1f1f4" } },
   { label: "Ocean",    light: { primaryColor: "#0EA5E9", bgColor: "#F0F9FF", surfaceColor: "#ffffff", borderColor: "#BAE6FD", textColor: "#0C4A6E" },   dark: { primaryColor: "#38BDF8", bgColor: "#0a1520", surfaceColor: "#0f1c2a", borderColor: "#1a3a52", textColor: "#bae6fd" } },
   { label: "Forest",   light: { primaryColor: "#16A34A", bgColor: "#F0FDF4", surfaceColor: "#ffffff", borderColor: "#BBF7D0", textColor: "#14532D" },   dark: { primaryColor: "#4ADE80", bgColor: "#0a1510", surfaceColor: "#0f1c16", borderColor: "#1a3a28", textColor: "#bbf7d0" } },
@@ -92,13 +92,13 @@ const PALETTE_OPTIONS: DimensionOption[] = [
   { label: "Slate",    light: { primaryColor: "#475569", bgColor: "#F8FAFC", surfaceColor: "#ffffff", borderColor: "#CBD5E1", textColor: "#0F172A" },   dark: { primaryColor: "#94A3B8", bgColor: "#0c0e12", surfaceColor: "#14161c", borderColor: "#2a2e38", textColor: "#cbd5e1" } },
 ];
 
-const SHAPE_OPTIONS: DimensionOption[] = [
+export const SHAPE_OPTIONS: DimensionOption[] = [
   { label: "Sharp", light: { borderRadius: 2 }, dark: { borderRadius: 2 } },
   { label: "Rounded", light: { borderRadius: 8 }, dark: { borderRadius: 8 } },
   { label: "Pill", light: { borderRadius: 20 }, dark: { borderRadius: 20 } },
 ];
 
-const DENSITY_OPTIONS: DimensionOption[] = [
+export const DENSITY_OPTIONS: DimensionOption[] = [
   { label: "Compact", light: { fontScale: 0.9, spacingScale: 0.8 }, dark: { fontScale: 0.9, spacingScale: 0.8 } },
   { label: "Default", light: { fontScale: 1, spacingScale: 1 }, dark: { fontScale: 1, spacingScale: 1 } },
   { label: "Comfortable", light: { fontScale: 1.05, spacingScale: 1.2 }, dark: { fontScale: 1.05, spacingScale: 1.2 } },

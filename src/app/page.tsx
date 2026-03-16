@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { usePlayground } from "@/lib/playgroundContext";
 import { getShell } from "@/lib/shellColors";
 import { CHANGELOG } from "@/lib/changelogData";
+import { DesignPresetShowcase } from "@/components/DesignPresetShowcase";
 
 export default function Home() {
   const { pg, setPg } = usePlayground();
@@ -147,6 +148,9 @@ export default function Home() {
             shell={shell}
           />
         </div>
+
+        {/* Design presets showcase */}
+        <DesignPresetShowcase shellTheme={pg.theme} />
 
         {/* Changelog preview */}
         <div className="mt-24 max-w-4xl w-full mx-auto text-left">
