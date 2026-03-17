@@ -68,7 +68,7 @@ export const componentRegistry: ComponentDef[] = [
     name: "Button",
     category: "Atoms",
     description:
-      "Trigger actions and navigation. Supports four semantic variants, three sizes, loading and disabled states, a trailing chevron for dropdown triggers, and an optional full-width layout.",
+      "Trigger actions and navigation. Supports five semantic variants (primary, secondary, outline, ghost, danger), three sizes, hover lift + glow animation, loading and disabled states, a trailing chevron for dropdown triggers, and an optional full-width layout.",
     importStatement: "import { Button } from 'lucent-ui'",
     usageCode: `<Button variant="primary">Save changes</Button>`,
     aiPrompts: {
@@ -87,7 +87,7 @@ export const componentRegistry: ComponentDef[] = [
 // Then ask: "Add a primary Button from lucent-ui"`,
     },
     props: [
-      { name: "variant", type: `"primary" | "secondary" | "ghost" | "danger"`, description: "Visual style of the button.", defaultValue: `"primary"` },
+      { name: "variant", type: `"primary" | "secondary" | "outline" | "ghost" | "danger"`, description: "Visual style of the button. secondary is a filled surface button; outline is a bordered button.", defaultValue: `"primary"` },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and horizontal padding scale.", defaultValue: `"md"` },
       { name: "loading", type: "boolean", description: "Replaces the label with a spinner and disables interaction.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction and mutes the appearance.", defaultValue: "false" },
@@ -99,10 +99,11 @@ export const componentRegistry: ComponentDef[] = [
     examples: [
       {
         title: "Variants",
-        description: "Four semantic variants for different action weights.",
+        description: "Five semantic variants for different action weights.",
         previewKey: "button-variants",
         code: `<Button variant="primary">Primary</Button>
 <Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
 <Button variant="ghost">Ghost</Button>
 <Button variant="danger">Danger</Button>`,
       },
@@ -332,6 +333,7 @@ export const componentRegistry: ComponentDef[] = [
     props: [
       { name: "value", type: "string", description: "Controlled search query.", required: true },
       { name: "onChange", type: "(value: string) => void", description: "Called on every keystroke.", required: true },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font scale — passed through to the underlying Input.", defaultValue: `"md"` },
       { name: "placeholder", type: "string", description: "Hint text when empty." },
       { name: "results", type: "Array<{ id: number | string; label: string }>", description: "Dropdown options to display." },
       { name: "onResultSelect", type: "(result: { id: number | string; label: string }) => void", description: "Called when the user clicks a result." },

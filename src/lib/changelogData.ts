@@ -12,6 +12,33 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.11.0",
+    date: "March 2026",
+    title: "Button overhaul, APCA contrast & new palettes",
+    items: [
+      {
+        label: "Component consistency",
+        description:
+          "Select refactored to wrapper-div architecture matching Input (fixes height mismatch). Select and Textarea get proper disabled states. Textarea border radius aligned to radius-lg with hover border and smooth focus-ring transitions. SearchInput gains a size prop (sm/md/lg) passthrough to Input. Button heights aligned to match Input/Select at every size.",
+      },
+      {
+        label: "Button overhaul",
+        description:
+          "New outline variant (bordered button); secondary is now a filled surface button. Hover animation with translateY(-1px) lift + accent-derived glow. Press state with translateY(1px) + accent ring. Theme-aware disabled state via color-mix (no accent tinting). Variant-aware focus ring (danger uses danger-subtle). Primary border removed for a cleaner look.",
+      },
+      {
+        label: "APCA contrast algorithm",
+        description:
+          "Replaced WCAG 2.1 luminance threshold with APCA (Accessible Perceptual Contrast Algorithm) for getContrastText — correctly handles saturated blues/purples. ensureContrast() nudges accent lightness until APCA Lc ≥ 60. LucentProvider auto-adjusts accentDefault so no accent color ever produces unreadable button text. New exports: apcaContrast, ensureContrast, getContrastRatio.",
+      },
+      {
+        label: "6 new palette presets",
+        description:
+          "Trendy: violet (#8b5cf6), coral (#e8624a), teal (#0d9488), amber (#d97706). Muted: slate (#475569), sage (#5f8c6e). Total palette count now 12.",
+      },
+    ],
+  },
+  {
     version: "0.10.0",
     date: "March 2026",
     title: "Design Presets & CLI",
