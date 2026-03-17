@@ -90,6 +90,10 @@ export const PALETTE_OPTIONS: DimensionOption[] = [
   { label: "Sunset",   light: { primaryColor: "#F97316", bgColor: "#FFFBEB", surfaceColor: "#ffffff", borderColor: "#FED7AA", textColor: "#431407" },   dark: { primaryColor: "#FB923C", bgColor: "#14100a", surfaceColor: "#1c1710", borderColor: "#3d2e1a", textColor: "#fed7aa" } },
   { label: "Lavender", light: { primaryColor: "#8B5CF6", bgColor: "#F5F3FF", surfaceColor: "#ffffff", borderColor: "#DDD6FE", textColor: "#2E1065" },   dark: { primaryColor: "#A78BFA", bgColor: "#100e1a", surfaceColor: "#171422", borderColor: "#2e2848", textColor: "#ddd6fe" } },
   { label: "Slate",    light: { primaryColor: "#475569", bgColor: "#F8FAFC", surfaceColor: "#ffffff", borderColor: "#CBD5E1", textColor: "#0F172A" },   dark: { primaryColor: "#94A3B8", bgColor: "#0c0e12", surfaceColor: "#14161c", borderColor: "#2a2e38", textColor: "#cbd5e1" } },
+  { label: "Coral",    light: { primaryColor: "#e8624a", bgColor: "#FFF5F3", surfaceColor: "#ffffff", borderColor: "#FECACA", textColor: "#431407" },   dark: { primaryColor: "#F87171", bgColor: "#140a0a", surfaceColor: "#1c1210", borderColor: "#3d1a1a", textColor: "#fecaca" } },
+  { label: "Teal",     light: { primaryColor: "#0d9488", bgColor: "#F0FDFA", surfaceColor: "#ffffff", borderColor: "#99F6E4", textColor: "#134E4A" },   dark: { primaryColor: "#2DD4BF", bgColor: "#0a1514", surfaceColor: "#0f1c1a", borderColor: "#1a3a36", textColor: "#99f6e4" } },
+  { label: "Amber",    light: { primaryColor: "#d97706", bgColor: "#FFFBEB", surfaceColor: "#ffffff", borderColor: "#FDE68A", textColor: "#451A03" },   dark: { primaryColor: "#FBBF24", bgColor: "#14100a", surfaceColor: "#1c1710", borderColor: "#3d2e1a", textColor: "#fde68a" } },
+  { label: "Sage",     light: { primaryColor: "#5f8c6e", bgColor: "#F0FDF4", surfaceColor: "#ffffff", borderColor: "#BBF7D0", textColor: "#14532D" },   dark: { primaryColor: "#86EFAC", bgColor: "#0a140e", surfaceColor: "#0f1c14", borderColor: "#1a3a24", textColor: "#bbf7d0" } },
 ];
 
 export const SHAPE_OPTIONS: DimensionOption[] = [
