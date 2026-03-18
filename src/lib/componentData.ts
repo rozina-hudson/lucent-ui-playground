@@ -43,10 +43,10 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
     label: "Atoms",
     slugs: [
       "button", "input", "textarea", "select", "searchinput",
-      "checkbox", "radio", "toggle", "tag", "badge",
+      "checkbox", "radio", "toggle",
       "formfield", "text", "icon", "divider", "spinner", "avatar", "skeleton",
       "breadcrumb", "navlink", "datepicker", "daterangepicker", "multiselect",
-      "slider", "codeblock", "table", "colorpicker", "colorswatch", "segmentedcontrol",
+      "slider", "codeblock", "table", "colorpicker", "colorswatch", "segmentedcontrol", "chip",
     ],
   },
   {
@@ -68,7 +68,7 @@ export const componentRegistry: ComponentDef[] = [
     name: "Button",
     category: "Atoms",
     description:
-      "Trigger actions and navigation. Supports five semantic variants (primary, secondary, outline, ghost, danger), three sizes, hover lift + glow animation, loading and disabled states, a trailing chevron for dropdown triggers, and an optional full-width layout.",
+      "Trigger actions and navigation. Supports five semantic variants (primary, secondary, outline, ghost, danger), four sizes (xs–lg), hover lift + glow animation, loading and disabled states, a trailing chevron for dropdown triggers, and an optional full-width layout.",
     importStatement: "import { Button } from 'lucent-ui'",
     usageCode: `<Button variant="primary">Save changes</Button>`,
     aiPrompts: {
@@ -88,7 +88,7 @@ export const componentRegistry: ComponentDef[] = [
     },
     props: [
       { name: "variant", type: `"primary" | "secondary" | "outline" | "ghost" | "danger"`, description: "Visual style of the button. secondary is a filled surface button; outline is a bordered button.", defaultValue: `"primary"` },
-      { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and horizontal padding scale.", defaultValue: `"md"` },
+      { name: "size", type: `"xs" | "sm" | "md" | "lg"`, description: "Height and horizontal padding scale. xs (26px) is ideal for compact toolbars.", defaultValue: `"md"` },
       { name: "loading", type: "boolean", description: "Replaces the label with a spinner and disables interaction.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction and mutes the appearance.", defaultValue: "false" },
       { name: "chevron", type: "boolean", description: "Appends a down-chevron icon for dropdown trigger patterns.", defaultValue: "false" },
@@ -109,9 +109,10 @@ export const componentRegistry: ComponentDef[] = [
       },
       {
         title: "Sizes",
-        description: "Three sizes to match different UI densities.",
+        description: "Four sizes from compact toolbars (xs) to prominent CTAs (lg).",
         previewKey: "button-sizes",
-        code: `<Button size="sm">Small</Button>
+        code: `<Button size="xs">Extra small</Button>
+<Button size="sm">Small</Button>
 <Button size="md">Medium</Button>
 <Button size="lg">Large</Button>`,
       },
@@ -192,7 +193,7 @@ export const componentRegistry: ComponentDef[] = [
     name: "Textarea",
     category: "Atoms",
     description:
-      "Multi-line text field with optional auto-resize and character count. Ideal for bios, notes, and any open-ended text input.",
+      "Multi-line text field with optional auto-resize, character count, and three sizes. Ideal for bios, notes, and any open-ended text input.",
     importStatement: "import { Textarea } from 'lucent-ui'",
     usageCode: `<Textarea label="Bio" placeholder="Tell us about yourself…" autoResize />`,
     aiPrompts: {
@@ -206,9 +207,12 @@ export const componentRegistry: ComponentDef[] = [
       { name: "label", type: "string", description: "Label displayed above the textarea." },
       { name: "placeholder", type: "string", description: "Hint text when the field is empty." },
       { name: "value", type: "string", description: "Controlled value." },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Height, font size, and padding scale.", defaultValue: `"md"` },
       { name: "autoResize", type: "boolean", description: "Grows the textarea height as content is added.", defaultValue: "false" },
       { name: "maxLength", type: "number", description: "Character limit. Used with showCount to display a counter." },
       { name: "showCount", type: "boolean", description: "Displays remaining character count when maxLength is set.", defaultValue: "false" },
+      { name: "helperText", type: "string", description: "Hint or description below the textarea." },
+      { name: "errorText", type: "string", description: "Error message; triggers the error visual state." },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
       { name: "onChange", type: "(e: React.ChangeEvent<HTMLTextAreaElement>) => void", description: "Change event handler." },
     ],
@@ -233,6 +237,14 @@ export const componentRegistry: ComponentDef[] = [
   showCount
   placeholder="What's happening?"
 />`,
+      },
+      {
+        title: "Sizes",
+        description: "Three sizes with size-aware font and padding.",
+        previewKey: "textarea-sizes",
+        code: `<Textarea size="sm" label="Size sm" placeholder="Small textarea" />
+<Textarea size="md" label="Size md" placeholder="Medium textarea" />
+<Textarea size="lg" label="Size lg" placeholder="Large textarea" />`,
       },
     ],
   },
@@ -314,7 +326,7 @@ export const componentRegistry: ComponentDef[] = [
     name: "SearchInput",
     category: "Atoms",
     description:
-      "Text field with a leading search icon and an inline results dropdown. Suitable for filtering, look-ups, and autocomplete flows.",
+      "Text field with a leading search icon and an inline results dropdown. Supports label, helper text, and error state. Suitable for filtering, look-ups, and autocomplete flows.",
     importStatement: "import { SearchInput } from 'lucent-ui'",
     usageCode: `<SearchInput
   value={query}
@@ -334,6 +346,9 @@ export const componentRegistry: ComponentDef[] = [
       { name: "value", type: "string", description: "Controlled search query.", required: true },
       { name: "onChange", type: "(value: string) => void", description: "Called on every keystroke.", required: true },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font scale — passed through to the underlying Input.", defaultValue: `"md"` },
+      { name: "label", type: "string", description: "Label displayed above the search input." },
+      { name: "helperText", type: "string", description: "Hint or description below the input." },
+      { name: "errorText", type: "string", description: "Error message; triggers the error visual state." },
       { name: "placeholder", type: "string", description: "Hint text when empty." },
       { name: "results", type: "Array<{ id: number | string; label: string }>", description: "Dropdown options to display." },
       { name: "onResultSelect", type: "(result: { id: number | string; label: string }) => void", description: "Called when the user clicks a result." },
@@ -370,6 +385,18 @@ const results = allItems
         previewKey: "searchinput-disabled",
         code: `<SearchInput value="" onChange={() => {}} disabled placeholder="Search disabled…" />`,
       },
+      {
+        title: "With label & helper text",
+        description: "Label and helper text provide context for the search field.",
+        previewKey: "searchinput-labeled",
+        code: `<SearchInput
+  label="Search products"
+  helperText="Type at least 2 characters"
+  value={query}
+  onChange={setQuery}
+  placeholder="Search…"
+/>`,
+      },
     ],
   },
 
@@ -379,7 +406,7 @@ const results = allItems
     name: "Checkbox",
     category: "Atoms",
     description:
-      "Labelled checkbox with checked, indeterminate, and disabled states. Available in two sizes.",
+      "Labelled checkbox with checked, indeterminate, and disabled states. Available in three sizes (sm/md/lg). The contained prop wraps the checkbox in a bordered card with accent highlighting when checked — ideal for plan selection and feature toggles.",
     importStatement: "import { Checkbox } from 'lucent-ui'",
     usageCode: `<Checkbox
   label="Accept terms and conditions"
@@ -399,7 +426,9 @@ const results = allItems
       { name: "defaultChecked", type: "boolean", description: "Uncontrolled initial checked state." },
       { name: "indeterminate", type: "boolean", description: "Visually indeterminate state (dash icon), used for parent checkboxes.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
-      { name: "size", type: `"sm" | "md"`, description: "Checkbox size.", defaultValue: `"md"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Checkbox size.", defaultValue: `"md"` },
+      { name: "contained", type: "boolean", description: "Wraps the checkbox in a bordered container with accent highlighting when checked.", defaultValue: "false" },
+      { name: "helperText", type: "string", description: "Secondary text displayed below the label." },
       { name: "onChange", type: "(e: React.ChangeEvent<HTMLInputElement>) => void", description: "Change handler." },
     ],
     examples: [
@@ -414,10 +443,18 @@ const results = allItems
       },
       {
         title: "Sizes",
-        description: "Small and medium variants.",
+        description: "Three sizes — sm, md, and lg.",
         previewKey: "checkbox-sizes",
         code: `<Checkbox size="sm" label="Small" defaultChecked />
-<Checkbox size="md" label="Medium" defaultChecked />`,
+<Checkbox size="md" label="Medium" defaultChecked />
+<Checkbox size="lg" label="Large" defaultChecked />`,
+      },
+      {
+        title: "Contained",
+        description: "Bordered container with accent highlight — great for plan selection cards.",
+        previewKey: "checkbox-contained",
+        code: `<Checkbox contained label="Free" helperText="Up to 3 projects" checked={plan === "free"} onChange={() => setPlan("free")} />
+<Checkbox contained label="Pro" helperText="Unlimited projects" checked={plan === "pro"} onChange={() => setPlan("pro")} />`,
       },
     ],
   },
@@ -429,7 +466,7 @@ const results = allItems
     customizerName: "RadioGroup",
     category: "Atoms",
     description:
-      "Radio button used inside a RadioGroup for mutually exclusive selection. Supports vertical and horizontal orientation and a group-level disabled state.",
+      "Radio button used inside a RadioGroup for mutually exclusive selection. Supports vertical and horizontal orientation, three sizes (sm/md/lg), a group-level disabled state, and a contained prop for bordered card-style options with helperText.",
     importStatement: "import { Radio, RadioGroup } from 'lucent-ui'",
     usageCode: `<RadioGroup name="plan" value={plan} onChange={setPlan}>
   <Radio value="free" label="Free — up to 3 projects" />
@@ -482,6 +519,16 @@ const results = allItems
   <Radio value="b" label="Option B" />
 </RadioGroup>`,
       },
+      {
+        title: "Contained",
+        description: "Bordered containers with accent highlight for plan-style selection.",
+        previewKey: "radio-contained",
+        code: `<RadioGroup name="plan" value={plan} onChange={setPlan}>
+  <Radio value="free" label="Free" helperText="Up to 3 projects" contained />
+  <Radio value="pro" label="Pro" helperText="Unlimited projects" contained />
+  <Radio value="enterprise" label="Enterprise" helperText="Custom limits & SSO" contained />
+</RadioGroup>`,
+      },
     ],
   },
 
@@ -491,7 +538,7 @@ const results = allItems
     name: "Toggle",
     category: "Atoms",
     description:
-      "On/off switch in three sizes. Best used for immediate boolean settings like dark mode, notifications, or feature flags.",
+      "On/off switch in three sizes with optional contained card style and helperText. Best used for immediate boolean settings like dark mode, notifications, or feature flags. The align prop positions the track on the left or right.",
     importStatement: "import { Toggle } from 'lucent-ui'",
     usageCode: `<Toggle
   label="Dark mode"
@@ -510,6 +557,9 @@ const results = allItems
       { name: "checked", type: "boolean", description: "Controlled on/off state." },
       { name: "defaultChecked", type: "boolean", description: "Uncontrolled initial state." },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Toggle size.", defaultValue: `"md"` },
+      { name: "contained", type: "boolean", description: "Wraps the toggle in a bordered container with accent highlighting when checked.", defaultValue: "false" },
+      { name: "helperText", type: "string", description: "Secondary text displayed below the label." },
+      { name: "align", type: `"left" | "right"`, description: "Position of the toggle track relative to the label.", defaultValue: `"left"` },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
       { name: "onChange", type: "(e: React.ChangeEvent<HTMLInputElement>) => void", description: "Change handler." },
     ],
@@ -539,107 +589,13 @@ const results = allItems
         code: `<Toggle disabled label="Off (disabled)" />
 <Toggle disabled defaultChecked label="On (disabled)" />`,
       },
-    ],
-  },
-
-  // ── Tag ───────────────────────────────────────────────────────────────────────
-  {
-    slug: "tag",
-    name: "Tag",
-    category: "Atoms",
-    description:
-      "Inline label for categories, skills, or metadata. Six semantic variants, two sizes, and an optional dismiss handler for removable tags.",
-    importStatement: "import { Tag } from 'lucent-ui'",
-    usageCode: `<Tag variant="accent" onDismiss={() => removeTag(id)}>
-  TypeScript
-</Tag>`,
-    aiPrompts: {
-      claude: `"Add a list of dismissible Tags from lucent-ui for skill selection. Each tag should be removable from the list."`,
-      cursor: `@lucent-ui Add dismissible Tags for a skills input. Removing a tag should update the state array.`,
-      vscode: `Using lucent-ui, add Tag components with onDismiss handlers for a skills list.`,
-      mcp: `// lucent-ui MCP
-// Ask: "Add dismissible Tags from lucent-ui for a tag list"`,
-    },
-    props: [
-      { name: "children", type: "React.ReactNode", description: "Tag label.", required: true },
-      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Colour variant.", defaultValue: `"neutral"` },
-      { name: "size", type: `"sm" | "md"`, description: "Tag size.", defaultValue: `"md"` },
-      { name: "onDismiss", type: "() => void", description: "If provided, renders a dismiss (×) button." },
-    ],
-    examples: [
       {
-        title: "Dismissible",
-        description: "Tags can be removed individually.",
-        previewKey: "tag-dismissible",
-        code: `const [tags, setTags] = useState(["React", "TypeScript", "Design Systems"]);
-
-{tags.map((t) => (
-  <Tag key={t} onDismiss={() => setTags(prev => prev.filter(x => x !== t))}>
-    {t}
-  </Tag>
-))}`,
-      },
-      {
-        title: "Variants",
-        description: "Six semantic colour variants.",
-        previewKey: "tag-variants",
-        code: `<Tag variant="neutral">Neutral</Tag>
-<Tag variant="accent">Accent</Tag>
-<Tag variant="success">Success</Tag>
-<Tag variant="warning">Warning</Tag>
-<Tag variant="danger">Danger</Tag>
-<Tag variant="info">Info</Tag>`,
-      },
-      {
-        title: "Sizes",
-        description: "Small and medium.",
-        previewKey: "tag-sizes",
-        code: `<Tag size="sm">Small</Tag>
-<Tag size="md">Medium</Tag>`,
-      },
-    ],
-  },
-
-  // ── Badge ─────────────────────────────────────────────────────────────────────
-  {
-    slug: "badge",
-    name: "Badge",
-    category: "Atoms",
-    description:
-      "Compact status indicator for counts, labels, and live status. Six semantic variants and an optional pulsing dot.",
-    importStatement: "import { Badge } from 'lucent-ui'",
-    usageCode: `<Badge variant="success" dot>Active</Badge>`,
-    aiPrompts: {
-      claude: `"Add a Badge from lucent-ui with variant="success" and a pulsing dot to indicate an active status."`,
-      cursor: `@lucent-ui Add a Badge with a pulsing dot for live status indication.`,
-      vscode: `Using lucent-ui, add a Badge component with variant="success" and dot prop for a live-status indicator.`,
-      mcp: `// lucent-ui MCP
-// Ask: "Add a status Badge from lucent-ui"`,
-    },
-    props: [
-      { name: "children", type: "React.ReactNode", description: "Badge label or count.", required: true },
-      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Colour variant.", defaultValue: `"neutral"` },
-      { name: "size", type: `"sm" | "md"`, description: "Badge size.", defaultValue: `"md"` },
-      { name: "dot", type: "boolean", description: "Adds a pulsing dot before the label.", defaultValue: "false" },
-    ],
-    examples: [
-      {
-        title: "Variants",
-        description: "Six semantic variants, one with a dot.",
-        previewKey: "badge-variants",
-        code: `<Badge variant="neutral">Neutral</Badge>
-<Badge variant="accent">Accent</Badge>
-<Badge variant="success" dot>Active</Badge>
-<Badge variant="warning">Warning</Badge>
-<Badge variant="danger">12</Badge>
-<Badge variant="info">Beta</Badge>`,
-      },
-      {
-        title: "Sizes",
-        description: "Small and medium.",
-        previewKey: "badge-sizes",
-        code: `<Badge size="sm" variant="success">Small</Badge>
-<Badge size="md" variant="success">Medium</Badge>`,
+        title: "Contained",
+        description: "Bordered containers with helperText — great for settings panels.",
+        previewKey: "toggle-contained",
+        code: `<Toggle contained label="Email notifications" helperText="Receive updates via email" defaultChecked />
+<Toggle contained label="Push notifications" helperText="Get notified on your device" />
+<Toggle contained label="Marketing emails" helperText="Occasional product news" align="right" />`,
       },
     ],
   },
@@ -1361,7 +1317,7 @@ const results = allItems
     name: "DatePicker",
     category: "Atoms",
     description:
-      "Controlled date input that opens a calendar popover. Supports min/max constraints and a placeholder.",
+      "Controlled date input that opens a calendar popover. Supports three sizes, min/max constraints, and a placeholder.",
     importStatement: "import { DatePicker } from 'lucent-ui'",
     usageCode: `const [date, setDate] = useState<Date | undefined>(undefined);
 
@@ -1382,6 +1338,7 @@ const results = allItems
       { name: "defaultValue", type: "Date", description: "Uncontrolled initial Date value." },
       { name: "onChange", type: "(date: Date) => void", description: "Called with the selected Date object." },
       { name: "placeholder", type: "string", description: "Placeholder text when no date is selected.", defaultValue: '"Select date"' },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font size — matches Input sizing.", defaultValue: `"md"` },
       { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
       { name: "min", type: "Date", description: "Minimum selectable date." },
       { name: "max", type: "Date", description: "Maximum selectable date." },
@@ -1407,6 +1364,14 @@ const results = allItems
   placeholder="Select a 2025 date"
 />`,
       },
+      {
+        title: "Sizes",
+        description: "Three sizes matching Input heights.",
+        previewKey: "datepicker-sizes",
+        code: `<DatePicker size="sm" placeholder="Size sm" />
+<DatePicker size="md" placeholder="Size md" />
+<DatePicker size="lg" placeholder="Size lg" />`,
+      },
     ],
   },
 
@@ -1416,7 +1381,7 @@ const results = allItems
     name: "DateRangePicker",
     category: "Atoms",
     description:
-      "Selects a start and end date from a calendar popover. Returns a DateRange object with from/to ISO strings.",
+      "Selects a start and end date from a calendar popover. Supports three sizes and real-time range highlighting on hover. Returns a DateRange object with start/end Date values.",
     importStatement: "import { DateRangePicker } from 'lucent-ui'",
     usageCode: `const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
 
@@ -1437,6 +1402,7 @@ const results = allItems
       { name: "defaultValue", type: "DateRange", description: "Uncontrolled initial range." },
       { name: "onChange", type: "(range: DateRange) => void", description: "Called with the selected range." },
       { name: "placeholder", type: "string", description: "Placeholder when no range is selected.", defaultValue: '"Select range"' },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font size — matches Input sizing.", defaultValue: `"md"` },
       { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
       { name: "min", type: "Date", description: "Minimum selectable date." },
       { name: "max", type: "Date", description: "Maximum selectable date." },
@@ -1461,6 +1427,14 @@ const results = allItems
         previewKey: "daterangepicker-disabled",
         code: `<DateRangePicker disabled placeholder="Unavailable" />`,
       },
+      {
+        title: "Sizes",
+        description: "Three sizes matching Input heights.",
+        previewKey: "daterangepicker-sizes",
+        code: `<DateRangePicker size="sm" placeholder="Size sm" />
+<DateRangePicker size="md" placeholder="Size md" />
+<DateRangePicker size="lg" placeholder="Size lg" />`,
+      },
     ],
   },
 
@@ -1470,7 +1444,7 @@ const results = allItems
     name: "MultiSelect",
     category: "Atoms",
     description:
-      "Dropdown that allows selecting multiple options with tags for selected values. Supports max selection and disabled options.",
+      "Dropdown that allows selecting multiple options rendered as Chips. Supports three sizes, label, helper/error text, max selection, and size-aware dropdown density.",
     importStatement: "import { MultiSelect } from 'lucent-ui'",
     usageCode: `const [values, setValues] = useState<string[]>([]);
 
@@ -1497,6 +1471,10 @@ const results = allItems
       { name: "defaultValue", type: "string[]", description: "Uncontrolled initial selection.", defaultValue: "[]" },
       { name: "onChange", type: "(values: string[]) => void", description: "Called with updated selection array." },
       { name: "placeholder", type: "string", description: "Placeholder when nothing is selected.", defaultValue: '"Select..."' },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Height, font size, and border radius matching Input.", defaultValue: `"md"` },
+      { name: "label", type: "string", description: "Label displayed above the multi-select." },
+      { name: "helperText", type: "string", description: "Hint or description below the control." },
+      { name: "errorText", type: "string", description: "Error message; triggers the error visual state." },
       { name: "disabled", type: "boolean", description: "Disables the entire control.", defaultValue: "false" },
       { name: "max", type: "number", description: "Maximum number of selectable items." },
       { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
@@ -1534,6 +1512,24 @@ const results = allItems
   defaultValue={["a"]}
   max={2}
   placeholder="Pick up to 2"
+/>`,
+      },
+      {
+        title: "With label & helper text",
+        description: "Label, helper text, and size matching Input's pattern.",
+        previewKey: "multiselect-labeled",
+        code: `<MultiSelect
+  label="Technologies"
+  helperText="Select the frameworks you use"
+  size="md"
+  options={[
+    { value: "react", label: "React" },
+    { value: "vue", label: "Vue" },
+    { value: "svelte", label: "Svelte" },
+  ]}
+  value={values}
+  onChange={setValues}
+  placeholder="Select frameworks"
 />`,
       },
     ],
@@ -2254,15 +2250,15 @@ const results = allItems
   <Table.Body>
     <Table.Row>
       <Table.Cell>Alice</Table.Cell>
-      <Table.Cell><Badge variant="success">Active</Badge></Table.Cell>
+      <Table.Cell><Chip variant="success" dot>Active</Chip></Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>Bob</Table.Cell>
-      <Table.Cell><Badge variant="warning">Away</Badge></Table.Cell>
+      <Table.Cell><Chip variant="warning" dot>Away</Chip></Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>Carol</Table.Cell>
-      <Table.Cell><Badge variant="danger">Inactive</Badge></Table.Cell>
+      <Table.Cell><Chip variant="danger" dot>Inactive</Chip></Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table>`,
@@ -2447,6 +2443,74 @@ const results = allItems
     { value: "activity", label: "Activity" },
   ]}
 />`,
+      },
+    ],
+  },
+
+  // ── Chip ──────────────────────────────────────────────────────────────────────
+  {
+    slug: "chip",
+    name: "Chip",
+    category: "Atoms",
+    description:
+      "Unified label primitive replacing Tag and Badge. Supports dismissible, clickable, and selectable modes with swatch, dot, leftIcon, and borderless options. Available in three sizes and six semantic variants. Heights scale with spacing tokens.",
+    importStatement: "import { Chip } from 'lucent-ui'",
+    usageCode: `<Chip variant="accent" onDismiss={() => remove(id)}>
+  TypeScript
+</Chip>`,
+    aiPrompts: {
+      claude: `"Add a list of Chip components from lucent-ui for filter tags. Support dismiss and click-to-select. Use the swatch prop for color-coded categories."`,
+      cursor: `@lucent-ui Add Chips with onDismiss for removable tags and onClick for selectable filters.`,
+      vscode: `Using lucent-ui, add Chip components with variant, onDismiss, and swatch props for a category filter bar.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add Chip components from lucent-ui for a filter tag list"`,
+    },
+    props: [
+      { name: "children", type: "React.ReactNode", description: "Chip label.", required: true },
+      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant.", defaultValue: `"neutral"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Chip size. Heights scale with spacing tokens.", defaultValue: `"md"` },
+      { name: "onDismiss", type: "() => void", description: "If provided, renders a dismiss (×) button for removable chips." },
+      { name: "onClick", type: "() => void", description: "Makes the chip clickable — renders as a button element." },
+      { name: "leftIcon", type: "React.ReactNode", description: "Icon or element rendered before the label (emoji, flags, avatars)." },
+      { name: "swatch", type: "string", description: "Hex color rendered as a small dot before the label for color-coded categories." },
+      { name: "dot", type: "boolean", description: "Status dot rendered before the label using the variant color.", defaultValue: "false" },
+      { name: "borderless", type: "boolean", description: "Removes the border for a softer filled-only appearance.", defaultValue: "false" },
+      { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Variants",
+        description: "Six semantic colour variants.",
+        previewKey: "chip-variants",
+        code: `<Chip variant="neutral">Neutral</Chip>
+<Chip variant="accent">Accent</Chip>
+<Chip variant="success">Success</Chip>
+<Chip variant="warning">Warning</Chip>
+<Chip variant="danger">Danger</Chip>
+<Chip variant="info">Info</Chip>`,
+      },
+      {
+        title: "Dismissible & clickable",
+        description: "Removable chips with onDismiss and selectable chips with onClick.",
+        previewKey: "chip-interactive",
+        code: `{chips.map((c) => (
+  <Chip key={c} onDismiss={() => setChips(prev => prev.filter(x => x !== c))}>{c}</Chip>
+))}
+
+{options.map((c) => (
+  <Chip key={c} variant={selected === c ? "accent" : "neutral"} onClick={() => setSelected(c)}>{c}</Chip>
+))}`,
+      },
+      {
+        title: "Swatch, dot, leftIcon & borderless",
+        description: "Decorative options for color-coded categories, status indicators, and flags.",
+        previewKey: "chip-decorated",
+        code: `<Chip swatch="#3b82f6">Design</Chip>
+<Chip swatch="#22c55e">Engineering</Chip>
+<Chip dot variant="success">Online</Chip>
+<Chip dot variant="danger">Offline</Chip>
+<Chip leftIcon="🇺🇸">United States</Chip>
+<Chip borderless variant="accent">Borderless</Chip>`,
       },
     ],
   },

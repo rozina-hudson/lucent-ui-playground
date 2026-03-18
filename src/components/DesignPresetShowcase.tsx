@@ -7,10 +7,9 @@ import {
   darkTokens,
   Avatar,
   Text,
-  Badge,
   Button,
+  Chip,
   Divider,
-  Tag,
   Tooltip,
   SegmentedControl,
   ColorSwatch,
@@ -73,7 +72,7 @@ function ProfileCard({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--lucent-space-2)" }}>
             <Text size="lg" weight="semibold">Elena Vasquez</Text>
-            <Badge variant="success" size="sm" dot>Pro</Badge>
+            <Chip variant="success" size="sm" dot>Pro</Chip>
           </div>
           <Text size="sm" color="secondary">Staff Engineer @ Vercel</Text>
         </div>
@@ -87,10 +86,10 @@ function ProfileCard({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | 
 
       {/* Tags */}
       <div style={{ display: "flex", gap: "var(--lucent-space-2)", flexWrap: "wrap", transition: T }}>
-        <Tag variant="neutral" size="sm">Design Systems</Tag>
-        <Tag variant="neutral" size="sm">TypeScript</Tag>
-        <Tag variant="neutral" size="sm">React</Tag>
-        <Tag variant="neutral" size="sm">Open Source</Tag>
+        <Chip variant="neutral" size="sm">Design Systems</Chip>
+        <Chip variant="neutral" size="sm">TypeScript</Chip>
+        <Chip variant="neutral" size="sm">React</Chip>
+        <Chip variant="neutral" size="sm">Open Source</Chip>
       </div>
 
       <Divider />
@@ -116,7 +115,7 @@ function ProfileCard({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--lucent-space-2)" }}>
           <Text size="xs" weight="semibold" color="secondary">Activity</Text>
           <div style={{ display: "flex", gap: "var(--lucent-space-2)", alignItems: "center" }}>
-            <Badge variant="accent" size="sm">Top 5%</Badge>
+            <Chip variant="accent" size="sm">Top 5%</Chip>
             <Text size="xs" color="secondary">Last 8 weeks</Text>
           </div>
         </div>

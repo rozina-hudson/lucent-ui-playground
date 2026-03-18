@@ -9,7 +9,7 @@ import {
   Button,
   Input,
   Textarea,
-  Badge,
+  Chip,
   Avatar,
   Spinner,
   Divider,
@@ -18,7 +18,6 @@ import {
   RadioGroup,
   Toggle,
   Select,
-  Tag,
   Tooltip,
   Icon,
   Text,
@@ -60,8 +59,7 @@ const SECTIONS = [
   { id: "checkbox", label: "Checkbox" },
   { id: "radio", label: "Radio" },
   { id: "toggle", label: "Toggle" },
-  { id: "tag", label: "Tag" },
-  { id: "badge", label: "Badge" },
+  { id: "chip", label: "Chip" },
   { id: "alert", label: "Alert" },
   { id: "card", label: "Card" },
   { id: "emptystate", label: "EmptyState" },
@@ -523,39 +521,26 @@ function GalleryContent({ tokens, shell }: { tokens: ReturnType<typeof useLucent
         </Row>
       </Section>
 
-      <Section id="tag" title="Tag" tokens={tokens} shell={shell}>
+      <Section id="chip" title="Chip" tokens={tokens} shell={shell}>
         <Row label="Dismissible" tokens={tokens} shell={shell}>
           {tags.map((t) => (
-            <Tag key={t} onDismiss={() => setTags((prev) => prev.filter((x) => x !== t))}>{t}</Tag>
+            <Chip key={t} onDismiss={() => setTags((prev) => prev.filter((x) => x !== t))}>{t}</Chip>
           ))}
           {tags.length === 0 && <Text as="span" size="sm" color="secondary">All dismissed</Text>}
         </Row>
         <Row label="Variants" tokens={tokens} shell={shell}>
-          <Tag variant="neutral">Neutral</Tag>
-          <Tag variant="accent">Accent</Tag>
-          <Tag variant="success">Success</Tag>
-          <Tag variant="warning">Warning</Tag>
-          <Tag variant="danger">Danger</Tag>
-          <Tag variant="info">Info</Tag>
+          <Chip variant="neutral">Neutral</Chip>
+          <Chip variant="accent">Accent</Chip>
+          <Chip variant="success">Success</Chip>
+          <Chip variant="warning">Warning</Chip>
+          <Chip variant="danger">Danger</Chip>
+          <Chip variant="info">Info</Chip>
         </Row>
-        <Row label="Sizes" tokens={tokens} shell={shell}>
-          <Tag size="sm" onDismiss={() => {}}>Small</Tag>
-          <Tag size="md" onDismiss={() => {}}>Medium</Tag>
-        </Row>
-      </Section>
-
-      <Section id="badge" title="Badge" tokens={tokens} shell={shell}>
-        <Row label="Variants" tokens={tokens} shell={shell}>
-          <Badge variant="neutral">Neutral</Badge>
-          <Badge variant="accent">Accent</Badge>
-          <Badge variant="success" dot>Active</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="danger">12</Badge>
-          <Badge variant="info">Beta</Badge>
-        </Row>
-        <Row label="Sizes" tokens={tokens} shell={shell}>
-          <Badge size="sm" variant="success">Small</Badge>
-          <Badge size="md" variant="success">Medium</Badge>
+        <Row label="Decorated" tokens={tokens} shell={shell}>
+          <Chip swatch="#3b82f6">Design</Chip>
+          <Chip dot variant="success">Online</Chip>
+          <Chip leftIcon="🇺🇸">United States</Chip>
+          <Chip borderless variant="accent">Borderless</Chip>
         </Row>
       </Section>
 

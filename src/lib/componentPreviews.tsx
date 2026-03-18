@@ -11,8 +11,6 @@ import {
   Radio,
   RadioGroup,
   Toggle,
-  Tag,
-  Badge,
   FormField,
   Text,
   Icon,
@@ -44,6 +42,7 @@ import {
   ColorSwatch,
   SegmentedControl,
   CardBleed,
+  Chip,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -65,6 +64,7 @@ const ButtonVariants: PreviewFC = () => (
 
 const ButtonSizes: PreviewFC = () => (
   <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <Button size="xs">Extra small</Button>
     <Button size="sm">Small</Button>
     <Button size="md">Medium</Button>
     <Button size="lg">Large</Button>
@@ -124,6 +124,16 @@ const TextareaCount: PreviewFC = () => {
     </div>
   );
 };
+
+const TextareaSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
+    {(["sm", "md", "lg"] as const).map((s) => (
+      <div key={s} style={{ width: 220 }}>
+        <Textarea size={s} label={`Size ${s}`} placeholder={`${s} textarea`} />
+      </div>
+    ))}
+  </div>
+);
 
 // ─── Select ───────────────────────────────────────────────────────────────────
 
@@ -191,6 +201,21 @@ const SearchInputDisabled: PreviewFC = () => (
   </div>
 );
 
+const SearchInputLabeled: PreviewFC = () => {
+  const [query, setQuery] = useState("");
+  return (
+    <div style={{ width: 320 }}>
+      <SearchInput
+        label="Search products"
+        helperText="Type at least 2 characters"
+        value={query}
+        onChange={setQuery}
+        placeholder="Search…"
+      />
+    </div>
+  );
+};
+
 // ─── Checkbox ─────────────────────────────────────────────────────────────────
 
 const CheckboxStates: PreviewFC = () => {
@@ -209,8 +234,38 @@ const CheckboxSizes: PreviewFC = () => (
   <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
     <Checkbox size="sm" label="Small" defaultChecked />
     <Checkbox size="md" label="Medium" defaultChecked />
+    <Checkbox size="lg" label="Large" defaultChecked />
   </div>
 );
+
+const CheckboxContained: PreviewFC = () => {
+  const [plan, setPlan] = useState("pro");
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, width: 300 }}>
+      <Checkbox
+        contained
+        label="Free"
+        helperText="Up to 3 projects"
+        checked={plan === "free"}
+        onChange={() => setPlan("free")}
+      />
+      <Checkbox
+        contained
+        label="Pro"
+        helperText="Unlimited projects"
+        checked={plan === "pro"}
+        onChange={() => setPlan("pro")}
+      />
+      <Checkbox
+        contained
+        label="Enterprise"
+        helperText="Custom limits & SSO"
+        checked={plan === "enterprise"}
+        onChange={() => setPlan("enterprise")}
+      />
+    </div>
+  );
+};
 
 // ─── Radio ────────────────────────────────────────────────────────────────────
 
@@ -244,6 +299,17 @@ const RadioDisabled: PreviewFC = () => (
   </RadioGroup>
 );
 
+const RadioContained: PreviewFC = () => {
+  const [val, setVal] = useState("pro");
+  return (
+    <RadioGroup name="plan-c" value={val} onChange={setVal}>
+      <Radio value="free" label="Free" helperText="Up to 3 projects" contained />
+      <Radio value="pro" label="Pro" helperText="Unlimited projects" contained />
+      <Radio value="enterprise" label="Enterprise" helperText="Custom limits & SSO" contained />
+    </RadioGroup>
+  );
+};
+
 // ─── Toggle ───────────────────────────────────────────────────────────────────
 
 const ToggleControlled: PreviewFC = () => {
@@ -271,55 +337,11 @@ const ToggleDisabled: PreviewFC = () => (
   </div>
 );
 
-// ─── Tag ──────────────────────────────────────────────────────────────────────
-
-const TagDismissible: PreviewFC = () => {
-  const [tags, setTags] = useState(["React", "TypeScript", "Design Systems"]);
-  return (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-      {tags.map((t) => (
-        <Tag key={t} onDismiss={() => setTags((prev) => prev.filter((x) => x !== t))}>{t}</Tag>
-      ))}
-      {tags.length === 0 && <Text as="span" size="sm" color="secondary">All dismissed</Text>}
-    </div>
-  );
-};
-
-const TagVariants: PreviewFC = () => (
-  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-    <Tag variant="neutral">Neutral</Tag>
-    <Tag variant="accent">Accent</Tag>
-    <Tag variant="success">Success</Tag>
-    <Tag variant="warning">Warning</Tag>
-    <Tag variant="danger">Danger</Tag>
-    <Tag variant="info">Info</Tag>
-  </div>
-);
-
-const TagSizes: PreviewFC = () => (
-  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-    <Tag size="sm">Small</Tag>
-    <Tag size="md">Medium</Tag>
-  </div>
-);
-
-// ─── Badge ────────────────────────────────────────────────────────────────────
-
-const BadgeVariants: PreviewFC = () => (
-  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-    <Badge variant="neutral">Neutral</Badge>
-    <Badge variant="accent">Accent</Badge>
-    <Badge variant="success" dot>Active</Badge>
-    <Badge variant="warning">Warning</Badge>
-    <Badge variant="danger">12</Badge>
-    <Badge variant="info">Beta</Badge>
-  </div>
-);
-
-const BadgeSizes: PreviewFC = () => (
-  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-    <Badge size="sm" variant="success">Small</Badge>
-    <Badge size="md" variant="success">Medium</Badge>
+const ToggleContained: PreviewFC = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 8, width: 320 }}>
+    <Toggle contained label="Email notifications" helperText="Receive updates via email" defaultChecked />
+    <Toggle contained label="Push notifications" helperText="Get notified on your device" />
+    <Toggle contained label="Marketing emails" helperText="Occasional product news" align="right" />
   </div>
 );
 
@@ -698,6 +720,16 @@ const DatePickerConstrained: PreviewFC = () => (
   </div>
 );
 
+const DatePickerSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
+    {(["sm", "md", "lg"] as const).map((s) => (
+      <div key={s} style={{ width: 200 }}>
+        <DatePicker size={s} placeholder={`Size ${s}`} />
+      </div>
+    ))}
+  </div>
+);
+
 // ─── DateRangePicker ──────────────────────────────────────────────────────────
 
 const DateRangePickerControlled: PreviewFC = () => {
@@ -712,6 +744,16 @@ const DateRangePickerControlled: PreviewFC = () => {
 const DateRangePickerDisabled: PreviewFC = () => (
   <div style={{ width: 320 }}>
     <DateRangePicker disabled placeholder="Unavailable" />
+  </div>
+);
+
+const DateRangePickerSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
+    {(["sm", "md", "lg"] as const).map((s) => (
+      <div key={s} style={{ width: 240 }}>
+        <DateRangePicker size={s} placeholder={`Size ${s}`} />
+      </div>
+    ))}
   </div>
 );
 
@@ -751,6 +793,28 @@ const MultiSelectMax: PreviewFC = () => (
     />
   </div>
 );
+
+const MultiSelectLabeled: PreviewFC = () => {
+  const [values, setValues] = useState<string[]>([]);
+  return (
+    <div style={{ width: 300 }}>
+      <MultiSelect
+        label="Technologies"
+        helperText="Select the frameworks you use"
+        size="md"
+        options={[
+          { value: "react", label: "React" },
+          { value: "vue", label: "Vue" },
+          { value: "svelte", label: "Svelte" },
+          { value: "angular", label: "Angular" },
+        ]}
+        value={values}
+        onChange={setValues}
+        placeholder="Select frameworks"
+      />
+    </div>
+  );
+};
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
@@ -1088,15 +1152,15 @@ const TableRichCells: PreviewFC = () => (
     <Table.Body>
       <Table.Row>
         <Table.Cell>Alice</Table.Cell>
-        <Table.Cell><Badge variant="success">Active</Badge></Table.Cell>
+        <Table.Cell><Chip variant="success" dot>Active</Chip></Table.Cell>
       </Table.Row>
       <Table.Row>
         <Table.Cell>Bob</Table.Cell>
-        <Table.Cell><Badge variant="warning">Away</Badge></Table.Cell>
+        <Table.Cell><Chip variant="warning" dot>Away</Chip></Table.Cell>
       </Table.Row>
       <Table.Row>
         <Table.Cell>Carol</Table.Cell>
-        <Table.Cell><Badge variant="danger">Inactive</Badge></Table.Cell>
+        <Table.Cell><Chip variant="danger" dot>Inactive</Chip></Table.Cell>
       </Table.Row>
     </Table.Body>
   </Table>
@@ -1174,6 +1238,50 @@ const SegmentedControlControlled: PreviewFC = () => {
   );
 };
 
+// ─── Chip ────────────────────────────────────────────────────────────────────
+
+const ChipVariants: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+    <Chip variant="neutral">Neutral</Chip>
+    <Chip variant="accent">Accent</Chip>
+    <Chip variant="success">Success</Chip>
+    <Chip variant="warning">Warning</Chip>
+    <Chip variant="danger">Danger</Chip>
+    <Chip variant="info">Info</Chip>
+  </div>
+);
+
+const ChipInteractive: PreviewFC = () => {
+  const [chips, setChips] = useState(["React", "TypeScript", "Design Systems"]);
+  const [selected, setSelected] = useState<string | null>("React");
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {chips.map((c) => (
+          <Chip key={c} onDismiss={() => setChips((prev) => prev.filter((x) => x !== c))}>{c}</Chip>
+        ))}
+        {chips.length === 0 && <Text as="span" size="sm" color="secondary">All dismissed</Text>}
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {["React", "Vue", "Svelte"].map((c) => (
+          <Chip key={c} variant={selected === c ? "accent" : "neutral"} onClick={() => setSelected(c)}>{c}</Chip>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ChipDecorated: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+    <Chip swatch="#3b82f6">Design</Chip>
+    <Chip swatch="#22c55e">Engineering</Chip>
+    <Chip dot variant="success">Online</Chip>
+    <Chip dot variant="danger">Offline</Chip>
+    <Chip leftIcon="🇺🇸">United States</Chip>
+    <Chip borderless variant="accent">Borderless</Chip>
+  </div>
+);
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const componentPreviews: Record<string, PreviewFC> = {
@@ -1188,6 +1296,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // Textarea
   "textarea-autoresize": TextareaAutoresize,
   "textarea-count": TextareaCount,
+  "textarea-sizes": TextareaSizes,
   // Select
   "select-default": SelectDefault,
   "select-sizes": SelectSizes,
@@ -1196,24 +1305,21 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "searchinput-results": SearchInputResults,
   "searchinput-loading": SearchInputLoading,
   "searchinput-disabled": SearchInputDisabled,
+  "searchinput-labeled": SearchInputLabeled,
   // Checkbox
   "checkbox-states": CheckboxStates,
   "checkbox-sizes": CheckboxSizes,
+  "checkbox-contained": CheckboxContained,
   // Radio
   "radio-vertical": RadioVertical,
   "radio-horizontal": RadioHorizontal,
   "radio-disabled": RadioDisabled,
+  "radio-contained": RadioContained,
   // Toggle
   "toggle-controlled": ToggleControlled,
   "toggle-sizes": ToggleSizes,
   "toggle-disabled": ToggleDisabled,
-  // Tag
-  "tag-dismissible": TagDismissible,
-  "tag-variants": TagVariants,
-  "tag-sizes": TagSizes,
-  // Badge
-  "badge-variants": BadgeVariants,
-  "badge-sizes": BadgeSizes,
+  "toggle-contained": ToggleContained,
   // FormField
   "formfield-basic": FormFieldBasic,
   "formfield-required": FormFieldRequired,
@@ -1262,12 +1368,15 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // DatePicker
   "datepicker-controlled": DatePickerControlled,
   "datepicker-constrained": DatePickerConstrained,
+  "datepicker-sizes": DatePickerSizes,
   // DateRangePicker
   "daterangepicker-controlled": DateRangePickerControlled,
   "daterangepicker-disabled": DateRangePickerDisabled,
+  "daterangepicker-sizes": DateRangePickerSizes,
   // MultiSelect
   "multiselect-controlled": MultiSelectControlled,
   "multiselect-max": MultiSelectMax,
+  "multiselect-labeled": MultiSelectLabeled,
   // Tabs
   "tabs-basic": TabsBasic,
   "tabs-disabled": TabsDisabled,
@@ -1311,4 +1420,8 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // SegmentedControl
   "segmentedcontrol-default": SegmentedControlDefault,
   "segmentedcontrol-controlled": SegmentedControlControlled,
+  // Chip
+  "chip-variants": ChipVariants,
+  "chip-interactive": ChipInteractive,
+  "chip-decorated": ChipDecorated,
 };
