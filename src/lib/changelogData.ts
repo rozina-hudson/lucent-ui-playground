@@ -12,6 +12,70 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.13.0",
+    date: "March 2026",
+    title: "Chip component, contained controls & token-based spacing",
+    items: [
+      {
+        label: "Chip — unified label primitive",
+        description:
+          "New Chip component replaces both Tag and Badge with a single flexible component for filters, tags, statuses, and categories. Supports onDismiss for removable chips, onClick for clickable/selectable chips, swatch for color-coded categories, dot for status indicators (online/offline), leftIcon for leading elements (emoji, flags, avatars), and borderless for a softer filled-only appearance. Available in three sizes (sm/md/lg) with six semantic variants. Heights scale with spacing tokens. Tag and Badge are kept for backward compatibility.",
+      },
+      {
+        label: "Contained Checkbox, Radio & Toggle",
+        description:
+          "All three controls gain a contained prop that wraps them in a bordered container with accent highlighting when checked. Designed for plan selection cards, feature toggles, and consent items where each option needs its own visual weight. Pair with the new helperText prop for secondary context below the label — the label auto-upgrades to medium weight for visual hierarchy. Checkbox and Radio also gain an lg size (20px). Toggle adds an align prop to position the track on the left or right.",
+      },
+      {
+        label: "Token-based heights",
+        description:
+          "All form control heights now use calc(space-token × 0.5 + fixed) for dampened vertical scaling — horizontal padding scales fully with spacing tokens while height scales at 50% rate. This applies to Input, Select, Button, DatePicker, DateRangePicker, MultiSelect, Chip, and contained Checkbox/Radio/Toggle. The playground adds spacing, font size, and roundness sliders to visualise scaling in real time.",
+      },
+      {
+        label: "MultiSelect enhancements",
+        description:
+          "MultiSelect gains label, helperText, and errorText props matching Input's pattern. Focus ring now matches Input (boxShadow instead of outline). Dropdown padding follows a size × density matrix — tighter at sm, more generous at lg, scaling with density presets. Checkboxes in the dropdown match the MultiSelect's size. Selected values render as Chips instead of Tags.",
+      },
+      {
+        label: "SearchInput & Textarea",
+        description:
+          "SearchInput adds label, helperText, and errorText passthrough to the underlying Input. The search icon scales with size (14/18/20px). Textarea gains a size prop (sm/md/lg) with size-aware font and padding. Label and helper text font sizes now scale with component size across Input, Select, and MultiSelect.",
+      },
+      {
+        label: "Input focus fix",
+        description:
+          "Fixed a bug where the focus ring wouldn't appear on SearchInput — {...rest} was spread after the explicit onFocus/onBlur handlers, overwriting them when consumers passed their own handlers.",
+      },
+    ],
+  },
+  {
+    version: "0.12.0",
+    date: "March 2026",
+    title: "xs button, component filter & picker alignment",
+    items: [
+      {
+        label: "Button xs size",
+        description:
+          "New xs size (26px height, font-size-xs) for compact UIs like customizer panels and toolbars. The customizer's palette/shape/density/shadow pickers now use the Button atom with size=\"xs\" and color swatch leftIcon instead of raw HTML buttons.",
+      },
+      {
+        label: "Component filter",
+        description:
+          "ComponentPreview gains a search bar at the top to filter sections by component name — type to show/hide, with a count of visible components.",
+      },
+      {
+        label: "MultiSelect, DatePicker & Tag alignment",
+        description:
+          "MultiSelect adds a size prop (sm/md/lg) with heights, font sizes, and border radius matching Input. Tags inside MultiSelect now use the Tag atom (not an internal duplicate) with size-matched variants. DatePicker and DateRangePicker gain a size prop with full-width triggers and content-box sizing to match Input heights. DateRangePicker highlights the range between first click and hovered day in real time. Tag adds an lg size (28px), hover animation on dismissible tags, and respects the roundness setting (radius-lg instead of radius-full).",
+      },
+      {
+        label: "Manifest updates",
+        description:
+          "Button: outline variant, xs size, chevron/spread props, swatch example. Tag: lg size. MultiSelect, DatePicker, DateRangePicker: size prop.",
+      },
+    ],
+  },
+  {
     version: "0.11.0",
     date: "March 2026",
     title: "Button overhaul, APCA contrast & new palettes",

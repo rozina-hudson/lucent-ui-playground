@@ -4,10 +4,11 @@ import { useState } from "react";
 import {
   Alert,
   Avatar,
-  Badge,
   Breadcrumb,
   Button,
+  CardBleed,
   Checkbox,
+  Chip,
   CommandPalette,
   DataTable,
   DatePicker,
@@ -20,17 +21,17 @@ import {
   MultiSelect,
   NavLink,
   PageLayout,
+  Radio,
+  RadioGroup,
   SearchInput,
   Select,
   Skeleton,
-  Tag,
   Tabs,
   Text,
   Textarea,
   Timeline,
   Toggle,
   Tooltip,
-  CardBleed,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -44,15 +45,16 @@ export type BentoComposition = {
 };
 
 // ─── 1. Email composer (2×2) ────────────────────────────────────────────────
+// Showcases: Chip (dismissible recipients), Button xs, Textarea size
 
 const EmailComposer: React.FC = () => {
-  const [to, setTo] = useState("elena@acme.co");
+  const [recipients, setRecipients] = useState(["elena@acme.co", "ops@acme.co"]);
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [priority, setPriority] = useState("normal");
   const [sending, setSending] = useState(false);
 
-  const canSend = to.trim() && subject.trim() && body.trim();
+  const canSend = recipients.length > 0 && subject.trim() && body.trim();
 
   const handleSend = () => {
     setSending(true);
@@ -63,31 +65,37 @@ const EmailComposer: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", height: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Text size="sm" weight="semibold">New message</Text>
-        <Badge variant="neutral" size="sm">Draft</Badge>
-        <div style={{ flex: 1 }} />
-        <Select
-          size="sm"
-          options={[
-            { value: "low", label: "Low priority" },
-            { value: "normal", label: "Normal" },
-            { value: "high", label: "High priority" },
-          ]}
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-        />
+        <Chip variant="neutral" size="sm" borderless>Draft</Chip>
       </div>
 
       <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
         <div style={{ flex: 1 }}>
-          <Input size="sm" label="To" value={to} onChange={(e) => setTo(e.target.value)} placeholder="recipient@email.com" />
+          <Select
+            size="sm"
+            label="Priority"
+            options={[
+              { value: "low", label: "Low priority" },
+              { value: "normal", label: "Normal" },
+              { value: "high", label: "High priority" },
+            ]}
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+          />
         </div>
-        <Button size="sm" variant="outline">CC</Button>
-        <Button size="sm" variant="outline">BCC</Button>
+      </div>
+
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+        <Text size="xs" color="secondary">To:</Text>
+        {recipients.map((r) => (
+          <Chip key={r} size="sm" onDismiss={() => setRecipients((prev) => prev.filter((x) => x !== r))}>{r}</Chip>
+        ))}
+        <Button size="xs" variant="ghost">+ Add</Button>
       </div>
 
       <Input size="sm" label="Subject" placeholder="Re: Q2 planning…" value={subject} onChange={(e) => setSubject(e.target.value)} />
 
       <Textarea
+        size="sm"
         placeholder="Write your message…"
         autoResize
         maxLength={2000}
@@ -98,19 +106,18 @@ const EmailComposer: React.FC = () => {
       />
 
       <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
-        <Button size="sm" variant="primary" disabled={!canSend} loading={sending} onClick={handleSend}>
-          Send
-        </Button>
-        <Button size="sm" variant="outline">Save draft</Button>
-        <Button size="sm" variant="ghost">Attach</Button>
+        <Button size="xs" variant="primary" disabled={!canSend} loading={sending} onClick={handleSend}>Send</Button>
+        <Button size="xs" variant="outline">Save draft</Button>
+        <Button size="xs" variant="ghost">Attach</Button>
         <div style={{ flex: 1 }} />
-        <Button size="sm" variant="danger" disabled={!to && !subject && !body}>Discard</Button>
+        <Button size="xs" variant="danger" disabled={!recipients.length && !subject && !body}>Discard</Button>
       </div>
     </div>
   );
 };
 
 // ─── 2. API playground (2×2) ────────────────────────────────────────────────
+// Showcases: Chip dot (status), SearchInput label, Textarea size
 
 const APIPlayground: React.FC = () => {
   const [method, setMethod] = useState("GET");
@@ -131,12 +138,12 @@ const APIPlayground: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", height: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Text size="sm" weight="semibold">API Console</Text>
-        <Badge variant="accent" size="sm">REST</Badge>
+        <Chip variant="accent" size="sm" borderless>REST</Chip>
+        {response && <Chip variant="success" size="sm" dot>200 OK</Chip>}
         <div style={{ flex: 1 }} />
         <SearchInput size="sm" value={history} onChange={setHistory} placeholder="Search history…" />
       </div>
 
-      {/* Method + URL + Send — all sm, aligned heights */}
       <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
         <div style={{ width: 100 }}>
           <Select
@@ -154,9 +161,7 @@ const APIPlayground: React.FC = () => {
         <div style={{ flex: 1 }}>
           <Input size="sm" placeholder="https://api.example.com/…" value={url} onChange={(e) => setUrl(e.target.value)} />
         </div>
-        <Button size="sm" variant="primary" loading={loading} onClick={handleSend} disabled={!url.trim()}>
-          Send
-        </Button>
+        <Button size="sm" variant="primary" loading={loading} onClick={handleSend} disabled={!url.trim()}>Send request</Button>
       </div>
 
       <Tabs
@@ -172,7 +177,7 @@ const APIPlayground: React.FC = () => {
                     <Skeleton variant="text" lines={4} />
                   </div>
                 ) : response ? (
-                  <Textarea value={response} onChange={() => {}} disabled style={{ fontFamily: "monospace", fontSize: 12, minHeight: 120 }} />
+                  <Textarea size="sm" value={response} onChange={() => {}} disabled style={{ fontFamily: "monospace", fontSize: 12, minHeight: 120 }} />
                 ) : (
                   <Text size="sm" color="secondary">Send a request to see the response here.</Text>
                 )}
@@ -203,7 +208,7 @@ const APIPlayground: React.FC = () => {
             label: "Body",
             content: (
               <div style={{ paddingTop: 8 }}>
-                <Textarea placeholder='{ "name": "New User" }' autoResize style={{ fontFamily: "monospace", fontSize: 12, minHeight: 80 }} />
+                <Textarea size="sm" placeholder='{ "name": "New User" }' autoResize style={{ fontFamily: "monospace", fontSize: 12, minHeight: 80 }} />
               </div>
             ),
           },
@@ -214,6 +219,7 @@ const APIPlayground: React.FC = () => {
 };
 
 // ─── 3. Support ticket (2×2) ────────────────────────────────────────────────
+// Showcases: MultiSelect label/helperText/size, Chip for applied labels, Textarea size
 
 const SupportTicket: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -225,11 +231,19 @@ const SupportTicket: React.FC = () => {
 
   const canSubmit = title.trim() && desc.trim();
 
+  const labelColors: Record<string, string> = {
+    bug: "#ef4444",
+    feature: "#3b82f6",
+    docs: "#8b5cf6",
+    ux: "#f59e0b",
+    perf: "#22c55e",
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", height: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Text size="sm" weight="semibold">New ticket</Text>
-        <Badge variant="warning" size="sm">Support</Badge>
+        <Chip variant="warning" size="sm" dot>Support</Chip>
       </div>
 
       {submitted && (
@@ -242,7 +256,6 @@ const SupportTicket: React.FC = () => {
         <Input id="tk-title" placeholder="Brief summary of the issue" value={title} onChange={(e) => setTitle(e.target.value)} />
       </FormField>
 
-      {/* Priority + Assignee — sm aligned */}
       <div style={{ display: "flex", gap: 8 }}>
         <div style={{ flex: 1 }}>
           <FormField label="Priority" htmlFor="tk-priority">
@@ -276,22 +289,34 @@ const SupportTicket: React.FC = () => {
         </div>
       </div>
 
-      <FormField label="Labels" htmlFor="tk-tags">
-        <MultiSelect
-          options={[
-            { value: "bug", label: "Bug" },
-            { value: "feature", label: "Feature" },
-            { value: "docs", label: "Documentation" },
-            { value: "ux", label: "UX" },
-            { value: "perf", label: "Performance" },
-          ]}
-          value={tags}
-          onChange={setTags}
-          placeholder="Add labels…"
-        />
-      </FormField>
+      <MultiSelect
+        label="Labels"
+        helperText="Categorize this ticket"
+        size="sm"
+        options={[
+          { value: "bug", label: "Bug" },
+          { value: "feature", label: "Feature" },
+          { value: "docs", label: "Documentation" },
+          { value: "ux", label: "UX" },
+          { value: "perf", label: "Performance" },
+        ]}
+        value={tags}
+        onChange={setTags}
+        placeholder="Add labels…"
+      />
+
+      {tags.length > 0 && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {tags.map((t) => (
+            <Chip key={t} size="sm" swatch={labelColors[t]} onDismiss={() => setTags((prev) => prev.filter((x) => x !== t))}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </Chip>
+          ))}
+        </div>
+      )}
 
       <Textarea
+        size="sm"
         label="Description"
         placeholder="Describe the issue in detail…"
         autoResize
@@ -302,75 +327,58 @@ const SupportTicket: React.FC = () => {
       />
 
       <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
-        <Button size="sm" variant="primary" disabled={!canSubmit} onClick={() => setSubmitted(true)}>
-          Submit ticket
-        </Button>
-        <Button size="sm" variant="outline">Save draft</Button>
+        <Button size="xs" variant="primary" disabled={!canSubmit} onClick={() => setSubmitted(true)}>Submit ticket</Button>
+        <Button size="xs" variant="outline">Save draft</Button>
         <div style={{ flex: 1 }} />
-        <Button size="sm" variant="danger" disabled={!title && !desc}>Clear form</Button>
+        <Button size="xs" variant="danger" disabled={!title && !desc}>Clear form</Button>
       </div>
     </div>
   );
 };
 
-// ─── 4. Billing overview (2×1) ──────────────────────────────────────────────
+// ─── 4. Plan selector (2×1) ─────────────────────────────────────────────────
+// Showcases: Contained Radio with helperText, Chip for plan features
 
-const BillingOverview: React.FC = () => {
-  const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
-
-  const plans = [
-    { name: "Free", price: "$0", current: false },
-    { name: "Pro", price: "$29", current: true },
-    { name: "Enterprise", price: "Custom", current: false },
-  ];
+const PlanSelector: React.FC = () => {
+  const [plan, setPlan] = useState("pro");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-        <div>
-          <Text size="sm" weight="semibold">Billing</Text>
-          <Text size="xs" color="secondary">Current period usage and plan</Text>
-        </div>
-        <DateRangePicker value={range} onChange={setRange} placeholder="Billing period…" />
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <Text size="sm" weight="semibold">Choose a plan</Text>
+        <Chip variant="accent" size="sm" borderless>Billed monthly</Chip>
       </div>
 
-      <CardBleed style={{ borderTop: "1px solid var(--lucent-border-default)", paddingTop: 16 }}>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              style={{
-                flex: "1 1 100px",
-                padding: "12px 14px",
-                borderRadius: 8,
-                border: plan.current ? "2px solid var(--lucent-accent-default)" : "1px solid var(--lucent-border-default)",
-                background: plan.current ? "var(--lucent-accent-subtle)" : "var(--lucent-surface)",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                <Text size="sm" weight="semibold">{plan.name}</Text>
-                {plan.current && <Badge variant="accent" size="sm">Current</Badge>}
-              </div>
-              <Text size="lg" weight="bold">{plan.price}</Text>
-              <Text size="xs" color="secondary">/month</Text>
-              <div style={{ marginTop: 8 }}>
-                {plan.current ? (
-                  <Button size="sm" variant="secondary" disabled fullWidth>Active</Button>
-                ) : plan.name === "Free" ? (
-                  <Button size="sm" variant="ghost" disabled fullWidth>Downgrade</Button>
-                ) : (
-                  <Button size="sm" variant="outline" fullWidth>Upgrade</Button>
-                )}
-              </div>
-            </div>
-          ))}
+      <RadioGroup name="plan-select" value={plan} onChange={setPlan}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 140px" }}>
+            <Radio value="free" label="Free — $0/mo" helperText="Up to 3 projects, 1 GB storage" contained />
+          </div>
+          <div style={{ flex: "1 1 140px" }}>
+            <Radio value="pro" label="Pro — $29/mo" helperText="Unlimited projects, 50 GB, priority support" contained />
+          </div>
+          <div style={{ flex: "1 1 140px" }}>
+            <Radio value="enterprise" label="Enterprise" helperText="Custom limits, SSO, dedicated support" contained />
+          </div>
         </div>
-      </CardBleed>
+      </RadioGroup>
+
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <Chip size="sm" variant={plan === "free" ? "neutral" : "success"} leftIcon="✓">API access</Chip>
+        <Chip size="sm" variant={plan !== "free" ? "success" : "neutral"} leftIcon={plan !== "free" ? "✓" : "×"}>Custom domains</Chip>
+        <Chip size="sm" variant={plan === "enterprise" ? "success" : "neutral"} leftIcon={plan === "enterprise" ? "✓" : "×"}>SSO</Chip>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
+        <Button size="xs" variant="primary">Confirm plan</Button>
+        <Button size="xs" variant="ghost">Compare plans</Button>
+      </div>
     </div>
   );
 };
 
 // ─── 5. Code review (1×2) ───────────────────────────────────────────────────
+// Showcases: Chip (swatch for file status), Textarea size, Button xs
 
 const CodeReview: React.FC = () => {
   const [comment, setComment] = useState("");
@@ -378,8 +386,8 @@ const CodeReview: React.FC = () => {
 
   const files = [
     { name: "src/Button.tsx", adds: 42, dels: 18, status: "modified" },
+    { name: "src/Chip.tsx", adds: 180, dels: 0, status: "added" },
     { name: "src/Select.tsx", adds: 26, dels: 8, status: "modified" },
-    { name: "src/SearchInput.tsx", adds: 14, dels: 3, status: "modified" },
     { name: "src/types.ts", adds: 6, dels: 0, status: "added" },
   ];
 
@@ -387,14 +395,14 @@ const CodeReview: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", height: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Text size="sm" weight="semibold">Review</Text>
-        <Badge variant="warning" size="sm">4 files</Badge>
+        <Chip variant="warning" size="sm" dot>{files.length} files</Chip>
       </div>
-      <Breadcrumb items={[{ label: "main" }, { label: "feat/button-overhaul" }]} separator="→" />
+      <Breadcrumb items={[{ label: "main" }, { label: "feat/chip-component" }]} separator="→" />
 
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         {files.map((f) => (
           <div key={f.name} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: "1px solid var(--lucent-border-subtle)" }}>
-            <Tag variant={f.status === "added" ? "success" : "neutral"} size="sm">{f.status === "added" ? "A" : "M"}</Tag>
+            <Chip variant={f.status === "added" ? "success" : "neutral"} size="sm" borderless>{f.status === "added" ? "A" : "M"}</Chip>
             <Text size="sm" style={{ flex: 1, fontFamily: "monospace", fontSize: 12 }}>{f.name}</Text>
             <Text size="xs" style={{ color: "var(--lucent-success-default)" }}>+{f.adds}</Text>
             <Text size="xs" style={{ color: "var(--lucent-danger-default)" }}>−{f.dels}</Text>
@@ -403,6 +411,7 @@ const CodeReview: React.FC = () => {
       </div>
 
       <Textarea
+        size="sm"
         placeholder="Leave a review comment…"
         autoResize
         value={comment}
@@ -411,101 +420,50 @@ const CodeReview: React.FC = () => {
       />
 
       <div style={{ display: "flex", gap: 6, marginTop: "auto", flexWrap: "wrap" }}>
-        <Button size="sm" variant="primary" onClick={() => setApproved(true)} disabled={approved}>
+        <Button size="xs" variant="primary" onClick={() => setApproved(true)} disabled={approved}>
           {approved ? "Approved" : "Approve"}
         </Button>
-        <Button size="sm" variant="outline" disabled={!comment.trim()}>Request changes</Button>
-        <Button size="sm" variant="ghost" disabled={!comment.trim()}>Comment</Button>
+        <Button size="xs" variant="outline" disabled={!comment.trim()}>Request changes</Button>
+        <Button size="xs" variant="ghost" disabled={!comment.trim()}>Comment</Button>
       </div>
     </div>
   );
 };
 
-// ─── 6. Feature flags (1×2) ─────────────────────────────────────────────────
+// ─── 6. Notification settings (1×2) ─────────────────────────────────────────
+// Showcases: Contained Toggle with helperText and align
 
-const FeatureFlags: React.FC = () => {
-  const [search, setSearch] = useState("");
-  const [env, setEnv] = useState("staging");
-  const [flags, setFlags] = useState<Record<string, boolean>>({
-    darkMode: true,
-    aiAssist: true,
-    betaUI: false,
-    newOnboard: false,
-    v2Api: true,
-  });
+const NotificationSettings: React.FC = () => {
+  const [saved, setSaved] = useState(false);
 
-  const allFlags = [
-    { key: "darkMode", label: "Dark mode", locked: false },
-    { key: "aiAssist", label: "AI assist", locked: false },
-    { key: "betaUI", label: "Beta UI", locked: false },
-    { key: "newOnboard", label: "New onboarding", locked: true },
-    { key: "v2Api", label: "V2 API", locked: true },
-  ];
-
-  const filtered = allFlags.filter((f) => !search || f.label.toLowerCase().includes(search.toLowerCase()));
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">Feature flags</Text>
-        <Badge variant="neutral" size="sm">{Object.values(flags).filter(Boolean).length} active</Badge>
-      </div>
+      <Text size="sm" weight="semibold">Notifications</Text>
 
-      {/* Environment select + search — sm aligned */}
-      <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-        <div style={{ width: 120 }}>
-          <Select
-            size="sm"
-            options={[
-              { value: "staging", label: "Staging" },
-              { value: "prod", label: "Production" },
-              { value: "dev", label: "Development" },
-            ]}
-            value={env}
-            onChange={(e) => setEnv(e.target.value)}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <SearchInput size="sm" value={search} onChange={setSearch} placeholder="Filter flags…" />
-        </div>
-      </div>
+      {saved && <Alert variant="success" title="Preferences saved">Your notification settings have been updated.</Alert>}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {filtered.map((flag) => (
-          <div
-            key={flag.key}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "8px 0",
-              borderBottom: "1px solid var(--lucent-border-subtle)",
-              opacity: flag.locked ? 0.6 : 1,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Text size="sm">{flag.label}</Text>
-              {flag.locked && <Tag variant="neutral" size="sm">Locked</Tag>}
-            </div>
-            <Toggle
-              size="sm"
-              checked={flags[flag.key]}
-              disabled={flag.locked}
-              onChange={(e) => setFlags({ ...flags, [flag.key]: e.target.checked })}
-            />
-          </div>
-        ))}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <Toggle contained label="Email digest" helperText="Daily summary of activity" defaultChecked />
+        <Toggle contained label="Push notifications" helperText="Real-time alerts on your device" defaultChecked />
+        <Toggle contained label="Slack integration" helperText="Post updates to #team-alerts" align="right" />
+        <Toggle contained label="Marketing emails" helperText="Occasional product news and tips" align="right" />
       </div>
 
       <div style={{ display: "flex", gap: 6, marginTop: "auto" }}>
-        <Button size="sm" variant="primary" disabled={env === "prod"}>Deploy to {env}</Button>
-        <Button size="sm" variant="outline">Reset</Button>
+        <Button size="xs" variant="primary" onClick={handleSave}>Save preferences</Button>
+        <Button size="xs" variant="ghost">Reset defaults</Button>
       </div>
     </div>
   );
 };
 
 // ─── 7. Invoice builder (2×1) ───────────────────────────────────────────────
+// Showcases: Chip for status, DatePicker size, Button xs
 
 const InvoiceBuilder: React.FC = () => {
   const [client, setClient] = useState("");
@@ -521,7 +479,8 @@ const InvoiceBuilder: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Text size="sm" weight="semibold">Invoice</Text>
-        <Badge variant="neutral" size="sm">INV-2024-037</Badge>
+        <Chip variant="neutral" size="sm" borderless>INV-2024-037</Chip>
+        <Chip variant="warning" size="sm" dot>Pending</Chip>
       </div>
 
       <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
@@ -530,7 +489,7 @@ const InvoiceBuilder: React.FC = () => {
         </div>
         <div style={{ flex: 1 }}>
           <FormField label="Due date" htmlFor="inv-date">
-            <DatePicker value={date} onChange={setDate} placeholder="Select date…" />
+            <DatePicker size="sm" value={date} onChange={setDate} placeholder="Select date…" />
           </FormField>
         </div>
       </div>
@@ -561,6 +520,7 @@ const InvoiceBuilder: React.FC = () => {
 };
 
 // ─── 8. Monitoring dashboard (2×2) ──────────────────────────────────────────
+// Showcases: Chip dot (service status), SearchInput label, Button xs
 
 const MonitoringDashboard: React.FC = () => {
   const [activeNav, setActiveNav] = useState("overview");
@@ -604,9 +564,9 @@ const MonitoringDashboard: React.FC = () => {
         header={
           <div style={{ display: "flex", alignItems: "center", gap: 10, width: "100%" }}>
             <Text size="sm" weight="semibold" family="display">Monitor</Text>
-            <Badge variant="danger" size="sm" dot>2 issues</Badge>
+            <Chip variant="danger" size="sm" dot>2 issues</Chip>
             <div style={{ flex: 1 }} />
-            <Button size="sm" variant="ghost" onClick={() => setCmdOpen(true)}>⌘K</Button>
+            <Button size="xs" variant="ghost" onClick={() => setCmdOpen(true)}>⌘K</Button>
             <Tooltip content="Ops team" delay={0}>
               <Avatar alt="Ops" size="xs" />
             </Tooltip>
@@ -666,6 +626,7 @@ const MonitoringDashboard: React.FC = () => {
 };
 
 // ─── 9. Workspace settings (1×2) ────────────────────────────────────────────
+// Showcases: Contained Checkbox with helperText, Chip for member roles, Button xs
 
 const WorkspaceSettings: React.FC = () => {
   const [name, setName] = useState("Acme Corp");
@@ -685,7 +646,6 @@ const WorkspaceSettings: React.FC = () => {
 
       {saved && <Alert variant="success" title="Saved" style={{ marginBottom: 8 }}>Workspace name updated.</Alert>}
 
-      {/* Rename — sm aligned row */}
       <CardBleed style={{ borderBottom: "1px solid var(--lucent-border-default)", padding: "12px 0" }}>
         <div style={{ padding: "0 16px" }}>
           <Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>General</Text>
@@ -698,7 +658,6 @@ const WorkspaceSettings: React.FC = () => {
         </div>
       </CardBleed>
 
-      {/* Invite member — sm aligned */}
       <CardBleed style={{ borderBottom: "1px solid var(--lucent-border-default)", padding: "12px 0" }}>
         <div style={{ padding: "0 16px" }}>
           <Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>Invite member</Text>
@@ -720,14 +679,20 @@ const WorkspaceSettings: React.FC = () => {
             </div>
             <Button size="sm" variant="outline" disabled={!inviteEmail.includes("@")}>Invite</Button>
           </div>
+          <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+            <Chip size="sm" leftIcon="👤" variant="accent">You (Owner)</Chip>
+            <Chip size="sm" leftIcon="👤">Alice (Admin)</Chip>
+            <Chip size="sm" leftIcon="👤">Bob (Member)</Chip>
+          </div>
         </div>
       </CardBleed>
 
-      {/* Danger zone */}
       <div style={{ marginTop: "auto", padding: "12px 0" }}>
         <Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>Danger zone</Text>
         <Checkbox
-          label="I understand this action is irreversible"
+          contained
+          label="Delete this workspace"
+          helperText="I understand this action is irreversible"
           checked={confirmDelete}
           onChange={(e) => setConfirmDelete(e.target.checked)}
         />
@@ -740,6 +705,7 @@ const WorkspaceSettings: React.FC = () => {
 };
 
 // ─── 10. Data import (1×2) ──────────────────────────────────────────────────
+// Showcases: MultiSelect label/size for column mapping, Chip for file info, DateRangePicker size
 
 const UploadSvg = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
@@ -750,6 +716,7 @@ const UploadSvg = () => (
 const DataImport: React.FC = () => {
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [format, setFormat] = useState("csv");
+  const [columns, setColumns] = useState<string[]>(["name", "email"]);
   const [importing, setImporting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -764,7 +731,8 @@ const DataImport: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", height: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Text size="sm" weight="semibold">Import data</Text>
-        {hasFile && <Badge variant="accent" size="sm">{files.length} file{files.length !== 1 ? "s" : ""}</Badge>}
+        {hasFile && <Chip variant="accent" size="sm" dot>{files.length} file{files.length !== 1 ? "s" : ""}</Chip>}
+        {done && <Chip variant="success" size="sm" dot>Complete</Chip>}
       </div>
 
       {done && (
@@ -773,7 +741,6 @@ const DataImport: React.FC = () => {
         </Alert>
       )}
 
-      {/* Format selector — sm aligned with label */}
       <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
         <div style={{ flex: 1 }}>
           <Select
@@ -789,6 +756,22 @@ const DataImport: React.FC = () => {
           />
         </div>
       </div>
+
+      <MultiSelect
+        label="Columns to import"
+        helperText="Choose which columns to include"
+        size="sm"
+        options={[
+          { value: "name", label: "Name" },
+          { value: "email", label: "Email" },
+          { value: "role", label: "Role" },
+          { value: "created", label: "Created at" },
+          { value: "status", label: "Status" },
+        ]}
+        value={columns}
+        onChange={setColumns}
+        placeholder="Select columns…"
+      />
 
       <FileUpload
         value={files}
@@ -807,12 +790,8 @@ const DataImport: React.FC = () => {
       )}
 
       <div style={{ display: "flex", gap: 6, marginTop: "auto" }}>
-        <Button size="sm" variant="primary" disabled={!hasFile || done} loading={importing} onClick={handleImport}>
-          Import
-        </Button>
-        <Button size="sm" variant="outline" disabled={!hasFile} onClick={() => { setFiles([]); setDone(false); }}>
-          Clear
-        </Button>
+        <Button size="sm" variant="primary" disabled={!hasFile || done} loading={importing} onClick={handleImport}>Import</Button>
+        <Button size="sm" variant="outline" disabled={!hasFile} onClick={() => { setFiles([]); setDone(false); }}>Clear</Button>
       </div>
     </div>
   );
@@ -821,14 +800,14 @@ const DataImport: React.FC = () => {
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const BENTO_COMPOSITIONS: BentoComposition[] = [
-  { id: "email-composer",   colSpan: 2, rowSpan: 2, component: EmailComposer },
-  { id: "api-playground",   colSpan: 2, rowSpan: 2, component: APIPlayground },
-  { id: "support-ticket",   colSpan: 2, rowSpan: 2, component: SupportTicket },
-  { id: "billing",          colSpan: 2, rowSpan: 1, component: BillingOverview },
-  { id: "code-review",      colSpan: 1, rowSpan: 2, component: CodeReview },
-  { id: "feature-flags",    colSpan: 1, rowSpan: 2, component: FeatureFlags },
-  { id: "invoice",          colSpan: 2, rowSpan: 1, component: InvoiceBuilder },
-  { id: "monitoring",       colSpan: 2, rowSpan: 2, component: MonitoringDashboard },
-  { id: "workspace",        colSpan: 1, rowSpan: 2, component: WorkspaceSettings },
-  { id: "data-import",      colSpan: 1, rowSpan: 2, component: DataImport },
+  { id: "email-composer",       colSpan: 2, rowSpan: 2, component: EmailComposer },
+  { id: "api-playground",       colSpan: 2, rowSpan: 2, component: APIPlayground },
+  { id: "support-ticket",       colSpan: 2, rowSpan: 2, component: SupportTicket },
+  { id: "plan-selector",        colSpan: 2, rowSpan: 1, component: PlanSelector },
+  { id: "code-review",          colSpan: 1, rowSpan: 2, component: CodeReview },
+  { id: "notifications",        colSpan: 1, rowSpan: 2, component: NotificationSettings },
+  { id: "invoice",              colSpan: 2, rowSpan: 1, component: InvoiceBuilder },
+  { id: "monitoring",           colSpan: 2, rowSpan: 2, component: MonitoringDashboard },
+  { id: "workspace",            colSpan: 1, rowSpan: 2, component: WorkspaceSettings },
+  { id: "data-import",          colSpan: 1, rowSpan: 2, component: DataImport },
 ];

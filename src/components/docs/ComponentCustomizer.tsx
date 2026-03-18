@@ -155,6 +155,8 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
                 code={`<Button variant="primary">Save</Button>`}
                 {...(values as any)}
               />
+            ) : compName === "Chip" ? (
+              <Comp {...(values as any)}>Sample Chip</Comp>
             ) : (
               <Comp
                 {...(values as any)}
