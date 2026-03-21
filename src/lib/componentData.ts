@@ -1317,7 +1317,7 @@ const results = allItems
     name: "DatePicker",
     category: "Atoms",
     description:
-      "Controlled date input that opens a calendar popover. Supports three sizes, min/max constraints, and a placeholder.",
+      "Controlled date input that opens a calendar popover. Supports label, helperText, errorText, three sizes, min/max constraints, and border-box sizing matching Input/Select.",
     importStatement: "import { DatePicker } from 'lucent-ui'",
     usageCode: `const [date, setDate] = useState<Date | undefined>(undefined);
 
@@ -1338,6 +1338,9 @@ const results = allItems
       { name: "defaultValue", type: "Date", description: "Uncontrolled initial Date value." },
       { name: "onChange", type: "(date: Date) => void", description: "Called with the selected Date object." },
       { name: "placeholder", type: "string", description: "Placeholder text when no date is selected.", defaultValue: '"Select date"' },
+      { name: "label", type: "string", description: "Label displayed above the picker." },
+      { name: "helperText", type: "string", description: "Hint or description below the picker." },
+      { name: "errorText", type: "string", description: "Error message — triggers the error visual state with aria-invalid." },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font size — matches Input sizing.", defaultValue: `"md"` },
       { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
       { name: "min", type: "Date", description: "Minimum selectable date." },
@@ -1352,6 +1355,22 @@ const results = allItems
         code: `const [date, setDate] = useState<Date | undefined>(undefined);
 
 <DatePicker value={date} onChange={setDate} placeholder="Pick a date" />`,
+      },
+      {
+        title: "With label & helper text",
+        description: "Label, helperText, and errorText props matching Input's pattern.",
+        previewKey: "datepicker-labeled",
+        code: `<DatePicker
+  label="Start date"
+  helperText="When should the project begin?"
+  placeholder="Pick a date"
+/>
+
+<DatePicker
+  label="Deadline"
+  errorText="A deadline is required"
+  placeholder="Pick a date"
+/>`,
       },
       {
         title: "With constraints",
@@ -1381,7 +1400,7 @@ const results = allItems
     name: "DateRangePicker",
     category: "Atoms",
     description:
-      "Selects a start and end date from a calendar popover. Supports three sizes and real-time range highlighting on hover. Returns a DateRange object with start/end Date values.",
+      "Selects a start and end date from a calendar popover. Supports label, helperText, errorText, three sizes, and real-time range highlighting on hover. Returns a DateRange object with start/end Date values. Border-box sizing matches Input/Select.",
     importStatement: "import { DateRangePicker } from 'lucent-ui'",
     usageCode: `const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
 
@@ -1402,6 +1421,9 @@ const results = allItems
       { name: "defaultValue", type: "DateRange", description: "Uncontrolled initial range." },
       { name: "onChange", type: "(range: DateRange) => void", description: "Called with the selected range." },
       { name: "placeholder", type: "string", description: "Placeholder when no range is selected.", defaultValue: '"Select range"' },
+      { name: "label", type: "string", description: "Label displayed above the picker." },
+      { name: "helperText", type: "string", description: "Hint or description below the picker." },
+      { name: "errorText", type: "string", description: "Error message — triggers the error visual state with aria-invalid." },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font size — matches Input sizing.", defaultValue: `"md"` },
       { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
       { name: "min", type: "Date", description: "Minimum selectable date." },
@@ -1418,6 +1440,22 @@ const results = allItems
 <DateRangePicker
   value={range}
   onChange={setRange}
+  placeholder="Select date range"
+/>`,
+      },
+      {
+        title: "With label & helper text",
+        description: "Label, helperText, and errorText props matching Input's pattern.",
+        previewKey: "daterangepicker-labeled",
+        code: `<DateRangePicker
+  label="Trip dates"
+  helperText="Select your check-in and check-out dates"
+  placeholder="Select date range"
+/>
+
+<DateRangePicker
+  label="Booking period"
+  errorText="Please select a valid date range"
   placeholder="Select date range"
 />`,
       },
@@ -2467,7 +2505,7 @@ const results = allItems
     },
     props: [
       { name: "children", type: "React.ReactNode", description: "Chip label.", required: true },
-      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant.", defaultValue: `"neutral"` },
+      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant. The accent variant uses a solid accent background with auto-derived text-on-accent color.", defaultValue: `"neutral"` },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Chip size. Heights scale with spacing tokens.", defaultValue: `"md"` },
       { name: "onDismiss", type: "() => void", description: "If provided, renders a dismiss (×) button for removable chips." },
       { name: "onClick", type: "() => void", description: "Makes the chip clickable — renders as a button element." },

@@ -12,6 +12,33 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.14.0",
+    date: "March 2026",
+    title: "Form field consistency & picker labels",
+    items: [
+      {
+        label: "Form field consistency",
+        description:
+          "Textarea label font size is now size-aware, matching Input (sm/md use font-size-sm, lg uses font-size-md). Textarea horizontal padding aligned with Input (space-3 for sm, space-4 for md/lg). Select lg value font size corrected from font-size-lg to font-size-md to match Input.",
+      },
+      {
+        label: "DatePicker / DateRangePicker",
+        description:
+          "Added label, helperText, and errorText props. Fixed box-sizing from content-box to border-box so width no longer grows with padding. Horizontal padding is now size-aware, matching Input/Select. Icon-to-text gap is now size-aware (space-2 for sm, midpoint for md, space-3 for lg). Focus ring updated to border + boxShadow pattern matching Input/Select. Manifests updated with new props and aria-invalid.",
+      },
+      {
+        label: "Chip accent variant",
+        description:
+          "The accent variant now uses a solid accent background with auto-derived text-on-accent color for better visual weight and contrast.",
+      },
+      {
+        label: "Playground",
+        description:
+          "DatePicker and DateRangePicker entries now include label, helperText, and errorText controls.",
+      },
+    ],
+  },
+  {
     version: "0.13.0",
     date: "March 2026",
     title: "Chip component, contained controls & token-based spacing",

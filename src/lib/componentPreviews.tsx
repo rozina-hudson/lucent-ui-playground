@@ -720,6 +720,25 @@ const DatePickerConstrained: PreviewFC = () => (
   </div>
 );
 
+const DatePickerLabeled: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
+    <div style={{ width: 280 }}>
+      <DatePicker
+        label="Start date"
+        helperText="When should the project begin?"
+        placeholder="Pick a date"
+      />
+    </div>
+    <div style={{ width: 280 }}>
+      <DatePicker
+        label="Deadline"
+        errorText="A deadline is required"
+        placeholder="Pick a date"
+      />
+    </div>
+  </div>
+);
+
 const DatePickerSizes: PreviewFC = () => (
   <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
     {(["sm", "md", "lg"] as const).map((s) => (
@@ -740,6 +759,25 @@ const DateRangePickerControlled: PreviewFC = () => {
     </div>
   );
 };
+
+const DateRangePickerLabeled: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
+    <div style={{ width: 320 }}>
+      <DateRangePicker
+        label="Trip dates"
+        helperText="Select your check-in and check-out dates"
+        placeholder="Select date range"
+      />
+    </div>
+    <div style={{ width: 320 }}>
+      <DateRangePicker
+        label="Booking period"
+        errorText="Please select a valid date range"
+        placeholder="Select date range"
+      />
+    </div>
+  </div>
+);
 
 const DateRangePickerDisabled: PreviewFC = () => (
   <div style={{ width: 320 }}>
@@ -1367,10 +1405,12 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "navlink-sidebar": NavLinkSidebar,
   // DatePicker
   "datepicker-controlled": DatePickerControlled,
+  "datepicker-labeled": DatePickerLabeled,
   "datepicker-constrained": DatePickerConstrained,
   "datepicker-sizes": DatePickerSizes,
   // DateRangePicker
   "daterangepicker-controlled": DateRangePickerControlled,
+  "daterangepicker-labeled": DateRangePickerLabeled,
   "daterangepicker-disabled": DateRangePickerDisabled,
   "daterangepicker-sizes": DateRangePickerSizes,
   // MultiSelect
