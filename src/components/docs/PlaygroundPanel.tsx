@@ -58,21 +58,21 @@ export const COMBINED_PRESETS: PresetDefinition[] = [
     name: "Modern",
     description: "Clean lines, indigo accent, balanced spacing",
     light: { primaryColor: "#6366f1", borderColor: "#e5e7eb", bgColor: "#ffffff", surfaceColor: "#ffffff", textColor: "#111827" },
-    dark: { primaryColor: "#818cf8", borderColor: "#2e2e3a", bgColor: "#0f0f14", surfaceColor: "#18181f", textColor: "#f1f1f4" },
+    dark: { primaryColor: "#818cf8", borderColor: "#2e2e3a", bgColor: "#0f0f14", surfaceColor: "#18181f", textColor: "#f3f4f6" },
     shared: { borderRadius: 8, fontScale: 1, spacingScale: 1, fontFamily: "Inter" },
   },
   {
     name: "Enterprise",
     description: "Conservative, compact, professional",
-    light: { primaryColor: "#2563EB", borderColor: "#D4D4D8", bgColor: "#F9FAFB", surfaceColor: "#ffffff", textColor: "#0F172A" },
-    dark: { primaryColor: "#60A5FA", borderColor: "#2a2d35", bgColor: "#0c0e14", surfaceColor: "#14161e", textColor: "#e2e8f0" },
+    light: { primaryColor: "#2563EB", borderColor: "#D4D4D8", bgColor: "#F9FAFB", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#60A5FA", borderColor: "#2a2d35", bgColor: "#0c0e14", surfaceColor: "#14161e", textColor: "#f3f4f6" },
     shared: { borderRadius: 4, fontScale: 0.95, spacingScale: 0.85, fontFamily: "IBM Plex Sans" },
   },
   {
     name: "Playful",
     description: "Bold colors, soft shapes, roomy",
-    light: { primaryColor: "#F43F5E", borderColor: "#FDE68A", bgColor: "#FFFBEB", surfaceColor: "#ffffff", textColor: "#1C1917" },
-    dark: { primaryColor: "#FB7185", borderColor: "#3d3222", bgColor: "#141008", surfaceColor: "#1c1710", textColor: "#fef3c7" },
+    light: { primaryColor: "#F43F5E", borderColor: "#FDE68A", bgColor: "#FFFBEB", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#FB7185", borderColor: "#3d3222", bgColor: "#141008", surfaceColor: "#1c1710", textColor: "#f3f4f6" },
     shared: { borderRadius: 16, fontScale: 1.05, spacingScale: 1.15, fontFamily: "Nunito" },
   },
 ];
@@ -84,16 +84,16 @@ export function resolveDimension(opt: DimensionOption, theme: "light" | "dark"):
 }
 
 export const PALETTE_OPTIONS: DimensionOption[] = [
-  { label: "Indigo",   light: { primaryColor: "#6366f1", bgColor: "#ffffff", surfaceColor: "#ffffff", borderColor: "#e5e7eb", textColor: "#111827" },   dark: { primaryColor: "#818cf8", bgColor: "#0f0f14", surfaceColor: "#18181f", borderColor: "#2e2e3a", textColor: "#f1f1f4" } },
-  { label: "Ocean",    light: { primaryColor: "#0EA5E9", bgColor: "#F0F9FF", surfaceColor: "#ffffff", borderColor: "#BAE6FD", textColor: "#0C4A6E" },   dark: { primaryColor: "#38BDF8", bgColor: "#0a1520", surfaceColor: "#0f1c2a", borderColor: "#1a3a52", textColor: "#bae6fd" } },
-  { label: "Forest",   light: { primaryColor: "#16A34A", bgColor: "#F0FDF4", surfaceColor: "#ffffff", borderColor: "#BBF7D0", textColor: "#14532D" },   dark: { primaryColor: "#4ADE80", bgColor: "#0a1510", surfaceColor: "#0f1c16", borderColor: "#1a3a28", textColor: "#bbf7d0" } },
-  { label: "Sunset",   light: { primaryColor: "#F97316", bgColor: "#FFFBEB", surfaceColor: "#ffffff", borderColor: "#FED7AA", textColor: "#431407" },   dark: { primaryColor: "#FB923C", bgColor: "#14100a", surfaceColor: "#1c1710", borderColor: "#3d2e1a", textColor: "#fed7aa" } },
-  { label: "Lavender", light: { primaryColor: "#8B5CF6", bgColor: "#F5F3FF", surfaceColor: "#ffffff", borderColor: "#DDD6FE", textColor: "#2E1065" },   dark: { primaryColor: "#A78BFA", bgColor: "#100e1a", surfaceColor: "#171422", borderColor: "#2e2848", textColor: "#ddd6fe" } },
-  { label: "Slate",    light: { primaryColor: "#475569", bgColor: "#F8FAFC", surfaceColor: "#ffffff", borderColor: "#CBD5E1", textColor: "#0F172A" },   dark: { primaryColor: "#94A3B8", bgColor: "#0c0e12", surfaceColor: "#14161c", borderColor: "#2a2e38", textColor: "#cbd5e1" } },
-  { label: "Coral",    light: { primaryColor: "#e8624a", bgColor: "#FFF5F3", surfaceColor: "#ffffff", borderColor: "#FECACA", textColor: "#431407" },   dark: { primaryColor: "#F87171", bgColor: "#140a0a", surfaceColor: "#1c1210", borderColor: "#3d1a1a", textColor: "#fecaca" } },
-  { label: "Teal",     light: { primaryColor: "#0d9488", bgColor: "#F0FDFA", surfaceColor: "#ffffff", borderColor: "#99F6E4", textColor: "#134E4A" },   dark: { primaryColor: "#2DD4BF", bgColor: "#0a1514", surfaceColor: "#0f1c1a", borderColor: "#1a3a36", textColor: "#99f6e4" } },
-  { label: "Amber",    light: { primaryColor: "#d97706", bgColor: "#FFFBEB", surfaceColor: "#ffffff", borderColor: "#FDE68A", textColor: "#451A03" },   dark: { primaryColor: "#FBBF24", bgColor: "#14100a", surfaceColor: "#1c1710", borderColor: "#3d2e1a", textColor: "#fde68a" } },
-  { label: "Sage",     light: { primaryColor: "#5f8c6e", bgColor: "#F0FDF4", surfaceColor: "#ffffff", borderColor: "#BBF7D0", textColor: "#14532D" },   dark: { primaryColor: "#86EFAC", bgColor: "#0a140e", surfaceColor: "#0f1c14", borderColor: "#1a3a24", textColor: "#bbf7d0" } },
+  { label: "Indigo",   light: { primaryColor: "#6366f1", bgColor: "#ffffff", surfaceColor: "#ffffff", borderColor: "#e5e7eb" },   dark: { primaryColor: "#818cf8", bgColor: "#0f0f14", surfaceColor: "#18181f", borderColor: "#2e2e3a" } },
+  { label: "Ocean",    light: { primaryColor: "#0EA5E9", bgColor: "#F0F9FF", surfaceColor: "#ffffff", borderColor: "#BAE6FD" },   dark: { primaryColor: "#38BDF8", bgColor: "#0a1520", surfaceColor: "#0f1c2a", borderColor: "#1a3a52" } },
+  { label: "Forest",   light: { primaryColor: "#16A34A", bgColor: "#F0FDF4", surfaceColor: "#ffffff", borderColor: "#BBF7D0" },   dark: { primaryColor: "#4ADE80", bgColor: "#0a1510", surfaceColor: "#0f1c16", borderColor: "#1a3a28" } },
+  { label: "Sunset",   light: { primaryColor: "#F97316", bgColor: "#FFFBEB", surfaceColor: "#ffffff", borderColor: "#FED7AA" },   dark: { primaryColor: "#FB923C", bgColor: "#14100a", surfaceColor: "#1c1710", borderColor: "#3d2e1a" } },
+  { label: "Lavender", light: { primaryColor: "#8B5CF6", bgColor: "#F5F3FF", surfaceColor: "#ffffff", borderColor: "#DDD6FE" },   dark: { primaryColor: "#A78BFA", bgColor: "#100e1a", surfaceColor: "#171422", borderColor: "#2e2848" } },
+  { label: "Slate",    light: { primaryColor: "#475569", bgColor: "#F8FAFC", surfaceColor: "#ffffff", borderColor: "#CBD5E1" },   dark: { primaryColor: "#94A3B8", bgColor: "#0c0e12", surfaceColor: "#14161c", borderColor: "#2a2e38" } },
+  { label: "Coral",    light: { primaryColor: "#e8624a", bgColor: "#FFF5F3", surfaceColor: "#ffffff", borderColor: "#FECACA" },   dark: { primaryColor: "#F87171", bgColor: "#140a0a", surfaceColor: "#1c1210", borderColor: "#3d1a1a" } },
+  { label: "Teal",     light: { primaryColor: "#0d9488", bgColor: "#F0FDFA", surfaceColor: "#ffffff", borderColor: "#99F6E4" },   dark: { primaryColor: "#2DD4BF", bgColor: "#0a1514", surfaceColor: "#0f1c1a", borderColor: "#1a3a36" } },
+  { label: "Amber",    light: { primaryColor: "#d97706", bgColor: "#FFFBEB", surfaceColor: "#ffffff", borderColor: "#FDE68A" },   dark: { primaryColor: "#FBBF24", bgColor: "#14100a", surfaceColor: "#1c1710", borderColor: "#3d2e1a" } },
+  { label: "Sage",     light: { primaryColor: "#5f8c6e", bgColor: "#F0FDF4", surfaceColor: "#ffffff", borderColor: "#BBF7D0" },   dark: { primaryColor: "#86EFAC", bgColor: "#0a140e", surfaceColor: "#0f1c14", borderColor: "#1a3a24" } },
 ];
 
 export const SHAPE_OPTIONS: DimensionOption[] = [
@@ -202,30 +202,34 @@ export function generateCode(state: PlaygroundState): string {
   let lines: string[];
 
   if (useAnchors) {
+    const anchorLines = [
+      `    bgBase:         "${state.bgColor}",`,
+      `    surface:        "${state.surfaceColor}",`,
+      `    borderDefault:  "${adjustBorderForTheme(state.borderColor, state.theme)}",`,
+      ...(state.textColor !== d.textColor ? [`    textPrimary:    "${state.textColor}",`] : []),
+      `    accentDefault:  "${state.primaryColor}",`,
+      `    successDefault: "#16a34a",`,
+      `    warningDefault: "#d97706",`,
+      `    dangerDefault:  "#dc2626",`,
+      `    infoDefault:    "#2563eb",`,
+    ];
     lines = [
       `import { LucentProvider } from 'lucent-ui';`,
       ``,
       `<LucentProvider`,
       `  theme="${state.theme}"`,
       `  anchors={{`,
-      `    bgBase:         "${state.bgColor}",`,
-      `    surface:        "${state.surfaceColor}",`,
-      `    borderDefault:  "${adjustBorderForTheme(state.borderColor, state.theme)}",`,
-      `    textPrimary:    "${state.textColor}",`,
-      `    accentDefault:  "${state.primaryColor}",`,
-      `    successDefault: "#16a34a",`,
-      `    warningDefault: "#d97706",`,
-      `    dangerDefault:  "#dc2626",`,
-      `    infoDefault:    "#2563eb",`,
+      ...anchorLines,
       `  }}`,
       `>`,
       `  {/* your app */}`,
       `</LucentProvider>`,
       ``,
       `/*`,
-      ` * anchors mode: all 30+ variant tokens are auto-derived from these 9`,
+      ` * anchors mode: all variant tokens are auto-derived from these`,
       ` * colors — hover/active/subtle states, WCAG-compliant textOnAccent,`,
-      ` * surface elevations, and status tints.`,
+      ` * surface elevations, and status tints. textPrimary is optional`,
+      ` * and defaults to neutral gray.`,
       ` */`,
     ];
   } else {

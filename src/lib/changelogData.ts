@@ -12,6 +12,28 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.14.2",
+    date: "March 2026",
+    title: "Neutral text & control track colors",
+    items: [
+      {
+        label: "Neutral text colors",
+        description:
+          "Removed textPrimary from all palette presets — text colors now stay neutral gray (#111827 light / #f3f4f6 dark) regardless of accent palette. textPrimary is now optional in ThemeAnchors, falling through to the base theme default when omitted.",
+      },
+      {
+        label: "controlTrack token",
+        description:
+          "New controlTrack token provides a neutral gray background for inactive control surfaces (light: #d1d5db, dark: derived from bgBase). Decoupled from borderDefault so it isn't affected by accent-tinted palette borders.",
+      },
+      {
+        label: "Toggle & Slider",
+        description:
+          "Toggle off-state track now uses controlTrack instead of borderStrong. Slider unfilled and disabled tracks use controlTrack instead of borderDefault (WebKit and Firefox).",
+      },
+    ],
+  },
+  {
     version: "0.14.0",
     date: "March 2026",
     title: "Form field consistency & picker labels",

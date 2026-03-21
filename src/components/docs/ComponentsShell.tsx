@@ -280,14 +280,27 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   // Cleanup on unmount
   useEffect(() => () => genTimers.current.forEach(clearTimeout), []);
 
+  // Load the playground font globally
+  useEffect(() => {
+    const family = pg.fontFamily;
+    const id = `gfont-${family.replace(/\s+/g, "-")}`;
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;500;600;700&display=swap`;
+      document.head.appendChild(link);
+    }
+  }, [pg.fontFamily]);
+
   const sidebar = (
-    <div style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
+    <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
       <SidebarNav shell={shell} segment={segment} />
     </div>
   );
 
   const rightSidebarContent = generateUI ? (
-    <div style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden", background: "transparent" }}>
+    <div className="hide-scrollbar" style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden", background: "transparent" }}>
       <PlaygroundPanel state={pg} onChange={setPg} shell={shell} showCodeTab />
     </div>
   ) : undefined;
@@ -307,6 +320,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
 
   return (
     <LucentProvider theme={pg.theme} anchors={anchors}>
+      <div className="hide-scrollbar" style={{ ...previewContainerStyle, [a("--lucent-font-family-base")]: `"${pg.fontFamily}", sans-serif`, fontFamily: `"${pg.fontFamily}", sans-serif` }}>
       <PageLayout
         style={{ height: "100vh", background: resolvedBg, color: resolvedText }}
         header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark", borderColor: defaultPlaygroundState.borderColor, bgColor: defaultPlaygroundState.bgColor, surfaceColor: defaultPlaygroundState.surfaceColor, textColor: defaultPlaygroundState.textColor })} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
@@ -318,6 +332,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       >
         {generateUIContent}
       </PageLayout>
+      </div>
     </LucentProvider>
   );
 }
