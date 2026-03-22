@@ -2589,27 +2589,29 @@ const results = allItems
     name: "Chip",
     category: "Atoms",
     description:
-      "Unified label primitive replacing Tag and Badge. Supports dismissible, clickable, and selectable modes with swatch, dot, leftIcon, and borderless options. Available in three sizes and six semantic variants. Heights scale with spacing tokens.",
+      "Status-first label primitive. Supports dismissible, clickable, and selectable modes with swatch, dot, leftIcon, borderless, ghost, and pulse options. Dot-only mode (omit children with dot) renders a compact circular indicator. Available in three sizes and six semantic variants. Heights scale with spacing tokens.",
     importStatement: "import { Chip } from 'lucent-ui'",
     usageCode: `<Chip variant="accent" onDismiss={() => remove(id)}>
   TypeScript
 </Chip>`,
     aiPrompts: {
-      claude: `"Add a list of Chip components from lucent-ui for filter tags. Support dismiss and click-to-select. Use the swatch prop for color-coded categories."`,
-      cursor: `@lucent-ui Add Chips with onDismiss for removable tags and onClick for selectable filters.`,
-      vscode: `Using lucent-ui, add Chip components with variant, onDismiss, and swatch props for a category filter bar.`,
+      claude: `"Add a list of Chip components from lucent-ui for filter tags. Support dismiss and click-to-select. Use ghost chips for inline table statuses and dot-only with pulse for live indicators."`,
+      cursor: `@lucent-ui Add Chips with onDismiss for removable tags, ghost for inline statuses, and dot pulse for live indicators.`,
+      vscode: `Using lucent-ui, add Chip components with variant, ghost, dot, pulse props for status indicators and a category filter bar.`,
       mcp: `// lucent-ui MCP
-// Ask: "Add Chip components from lucent-ui for a filter tag list"`,
+// Ask: "Add Chip components from lucent-ui with ghost mode for table statuses and pulsing dots for live states"`,
     },
     props: [
-      { name: "children", type: "React.ReactNode", description: "Chip label.", required: true },
+      { name: "children", type: "React.ReactNode", description: "Chip label. Optional — omit with dot to render a dot-only indicator." },
       { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant. The accent variant uses a solid accent background with auto-derived text-on-accent color.", defaultValue: `"neutral"` },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Chip size. Heights scale with spacing tokens.", defaultValue: `"md"` },
       { name: "onDismiss", type: "() => void", description: "If provided, renders a dismiss (×) button for removable chips." },
       { name: "onClick", type: "() => void", description: "Makes the chip clickable — renders as a button element." },
       { name: "leftIcon", type: "React.ReactNode", description: "Icon or element rendered before the label (emoji, flags, avatars)." },
       { name: "swatch", type: "string", description: "Hex color rendered as a small dot before the label for color-coded categories." },
-      { name: "dot", type: "boolean", description: "Status dot rendered before the label using the variant color.", defaultValue: "false" },
+      { name: "dot", type: "boolean", description: "Status dot rendered before the label using the variant color. When used without children, renders a compact circular dot-only indicator.", defaultValue: "false" },
+      { name: "pulse", type: "boolean", description: "Pulsing ring animation on the status dot for live/in-progress states (deploying, syncing, live incident). Only applies when dot is true. Uses injected @keyframes lucent-chip-pulse.", defaultValue: "false" },
+      { name: "ghost", type: "boolean", description: "Transparent background with text color only, no border. Subtle 8% tint on hover when interactive. Ideal for inline status indicators in tables and lists.", defaultValue: "false" },
       { name: "borderless", type: "boolean", description: "Removes the border for a softer filled-only appearance.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
     ],
@@ -2647,6 +2649,25 @@ const results = allItems
 <Chip dot variant="danger">Offline</Chip>
 <Chip leftIcon="🇺🇸">United States</Chip>
 <Chip borderless variant="accent">Borderless</Chip>`,
+      },
+      {
+        title: "Ghost, pulse & dot-only",
+        description: "Ghost mode for inline table statuses, pulse for live indicators, and dot-only mode for compact signals.",
+        previewKey: "chip-status",
+        code: `{/* Ghost — inline status indicators */}
+<Chip ghost variant="success" dot>Deployed</Chip>
+<Chip ghost variant="warning" dot>Syncing</Chip>
+<Chip ghost variant="danger" dot>Failed</Chip>
+
+{/* Pulse — live/in-progress states */}
+<Chip variant="success" dot pulse>Live</Chip>
+<Chip variant="warning" dot pulse>Deploying</Chip>
+<Chip variant="danger" dot pulse>Incident</Chip>
+
+{/* Dot-only — compact circular indicators */}
+<Chip variant="success" dot />
+<Chip variant="warning" dot pulse />
+<Chip variant="danger" dot />`,
       },
     ],
   },

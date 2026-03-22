@@ -1409,6 +1409,26 @@ const ChipDecorated: PreviewFC = () => (
   </div>
 );
 
+const ChipStatus: PreviewFC = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <Chip ghost variant="success" dot>Deployed</Chip>
+      <Chip ghost variant="warning" dot>Syncing</Chip>
+      <Chip ghost variant="danger" dot>Failed</Chip>
+    </div>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <Chip variant="success" dot pulse>Live</Chip>
+      <Chip variant="warning" dot pulse>Deploying</Chip>
+      <Chip variant="danger" dot pulse>Incident</Chip>
+    </div>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <Chip variant="success" dot />
+      <Chip variant="warning" dot pulse />
+      <Chip variant="danger" dot />
+    </div>
+  </div>
+);
+
 // ─── Menu ────────────────────────────────────────────────────────────────────
 
 const MenuBasic: PreviewFC = () => (
@@ -1716,6 +1736,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "chip-variants": ChipVariants,
   "chip-interactive": ChipInteractive,
   "chip-decorated": ChipDecorated,
+  "chip-status": ChipStatus,
   // Toast
   "toast-basic": ToastBasic,
   "toast-variants": ToastVariants,

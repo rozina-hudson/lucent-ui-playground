@@ -13,6 +13,44 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.22.0",
+    date: "March 2026",
+    title: "Chip: Pulse, Ghost & Dot-only Mode",
+    items: [
+      {
+        label: "Chip pulse",
+        description:
+          "Pulsing ring animation on the status dot for live/in-progress states (deploying, syncing, live incident).",
+        subItems: [
+          "pulse prop — only applies when dot is true.",
+          "Uses injected @keyframes lucent-chip-pulse following the existing pattern.",
+        ],
+      },
+      {
+        label: "Chip ghost",
+        description:
+          "Transparent background with text color only, no border. Ideal for inline status indicators in tables and lists.",
+        subItems: [
+          "ghost prop — subtle 8% tint on hover when interactive.",
+        ],
+      },
+      {
+        label: "Chip dot-only mode",
+        description:
+          "Omit children with dot to render a compact circular indicator (no padding, border-radius: 50%).",
+        subItems: [
+          "Works with pulse for a minimal pulsing dot.",
+          "children is now optional on Chip.",
+        ],
+      },
+      {
+        label: "Manifest",
+        description:
+          "Updated with status-first design intent and reorganized usage examples.",
+      },
+    ],
+  },
+  {
     version: "0.21.0",
     date: "March 2026",
     title: "New Atom: Progress Bar",
