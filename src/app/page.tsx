@@ -6,6 +6,14 @@ import { usePlayground } from "@/lib/playgroundContext";
 import { getShell } from "@/lib/shellColors";
 import { CHANGELOG } from "@/lib/changelogData";
 import { DesignPresetShowcase } from "@/components/DesignPresetShowcase";
+import {
+  defaultPlaygroundState,
+  PALETTE_OPTIONS,
+  COMBINED_PRESETS,
+  resolveDimension,
+  resolvePreset,
+  type PlaygroundState,
+} from "@/components/docs/PlaygroundPanel";
 
 export default function Home() {
   const { pg, setPg } = usePlayground();
@@ -45,7 +53,41 @@ export default function Home() {
           <NavLink href="https://www.npmjs.com/package/lucent-ui" external shell={shell}>npm</NavLink>
           <NavLink href="https://github.com/rozina-hudson/lucent-ui" external shell={shell}>GitHub</NavLink>
           <button
-            onClick={() => setPg({ ...pg, theme: isDark ? "light" : "dark" })}
+            onClick={() => {
+              const newTheme = isDark ? "light" : "dark";
+              const d = defaultPlaygroundState;
+
+              const matchedPalette = PALETTE_OPTIONS.find((opt) => {
+                const colors = resolveDimension(opt, pg.theme);
+                return Object.entries(colors).every(
+                  ([k, v]) => pg[k as keyof PlaygroundState] === v,
+                );
+              });
+              if (matchedPalette) {
+                setPg({ ...pg, theme: newTheme, ...resolveDimension(matchedPalette, newTheme) });
+                return;
+              }
+
+              const matchedPreset = COMBINED_PRESETS.find((preset) => {
+                const resolved = resolvePreset(preset, pg.theme);
+                return Object.entries(resolved).every(
+                  ([k, v]) => pg[k as keyof PlaygroundState] === v,
+                );
+              });
+              if (matchedPreset) {
+                setPg({ ...pg, theme: newTheme, ...resolvePreset(matchedPreset, newTheme) });
+                return;
+              }
+
+              setPg({
+                ...pg,
+                theme: newTheme,
+                borderColor: d.borderColor,
+                bgColor: d.bgColor,
+                surfaceColor: d.surfaceColor,
+                textColor: d.textColor,
+              });
+            }}
             aria-label="Toggle theme"
             style={{
               background: "none",
