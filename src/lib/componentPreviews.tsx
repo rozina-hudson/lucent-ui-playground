@@ -49,6 +49,9 @@ import {
   MenuGroup,
   ToastProvider,
   useToast,
+  Stack,
+  Row,
+  Progress,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -1504,6 +1507,66 @@ const ToastAction: PreviewFC = () => (
   </ToastProvider>
 );
 
+// ─── Stack ───────────────────────────────────────────────────────────────────
+
+const StackBasic: PreviewFC = () => (
+  <Stack gap="4" style={{ width: 240 }}>
+    <Text>First item</Text>
+    <Text>Second item</Text>
+    <Text>Third item</Text>
+  </Stack>
+);
+
+const StackForm: PreviewFC = () => (
+  <Stack as="form" gap="6" style={{ width: 280 }}>
+    <Input label="Name" placeholder="Jane Doe" />
+    <Input label="Email" placeholder="jane@example.com" />
+    <Button variant="primary">Submit</Button>
+  </Stack>
+);
+
+// ─── Row ─────────────────────────────────────────────────────────────────────
+
+const RowButtons: PreviewFC = () => (
+  <Row gap="3">
+    <Button variant="primary">Save</Button>
+    <Button variant="outline">Cancel</Button>
+  </Row>
+);
+
+const RowBetween: PreviewFC = () => (
+  <Row justify="between" style={{ width: 320 }}>
+    <Text>Settings</Text>
+    <Button variant="ghost" size="sm">Edit</Button>
+  </Row>
+);
+
+// ─── Progress ────────────────────────────────────────────────────────────────
+
+const ProgressBasic: PreviewFC = () => (
+  <div style={{ width: 320 }}>
+    <Progress value={65} label />
+  </div>
+);
+
+const ProgressVariants: PreviewFC = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 320 }}>
+    <Progress value={80} variant="success" label />
+    <Progress value={55} variant="warning" label />
+    <Progress value={30} variant="danger" label />
+  </div>
+);
+
+const ProgressThreshold: PreviewFC = () => {
+  const [val, setVal] = useState(85);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 320 }}>
+      <Progress value={val} warnAt={60} dangerAt={80} label />
+      <Slider label="Value" value={val} onChange={(e) => setVal(Number(e.target.value))} showValue />
+    </div>
+  );
+};
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const componentPreviews: Record<string, PreviewFC> = {
@@ -1661,4 +1724,14 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "menu-basic": MenuBasic,
   "menu-selected": MenuSelected,
   "menu-grouped": MenuGrouped,
+  // Stack
+  "stack-basic": StackBasic,
+  "stack-form": StackForm,
+  // Row
+  "row-buttons": RowButtons,
+  "row-between": RowBetween,
+  // Progress
+  "progress-basic": ProgressBasic,
+  "progress-variants": ProgressVariants,
+  "progress-threshold": ProgressThreshold,
 };

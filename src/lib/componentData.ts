@@ -47,6 +47,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "formfield", "text", "icon", "divider", "spinner", "avatar", "skeleton",
       "breadcrumb", "navlink", "datepicker", "daterangepicker", "multiselect",
       "slider", "codeblock", "table", "colorpicker", "colorswatch", "segmentedcontrol", "chip",
+      "stack", "row", "progress",
     ],
   },
   {
@@ -2789,6 +2790,150 @@ toast({ title: "Saved", variant: "success" });`,
 })}>
   Delete with undo
 </Button>`,
+      },
+    ],
+  },
+  // ── Stack ─────────────────────────────────────────────────────────────────
+  {
+    slug: "stack",
+    name: "Stack",
+    category: "Atoms",
+    description:
+      "Vertical flex layout primitive. Accepts a gap spacing token (0–24), align, justify, wrap, and a polymorphic as prop (div, section, nav, form, fieldset, ul, ol). Gap values reference spacing tokens so density presets scale layout automatically.",
+    importStatement: "import { Stack } from 'lucent-ui'",
+    usageCode: `<Stack gap="4">
+  <Text>First</Text>
+  <Text>Second</Text>
+</Stack>`,
+    aiPrompts: {
+      claude: `"Add a Stack from lucent-ui with gap="6" to vertically space a heading, description, and action button."`,
+      cursor: `@lucent-ui Use Stack with gap="4" to lay out a form with stacked fields.`,
+      vscode: `Using lucent-ui, add a Stack component to vertically arrange content with consistent gap spacing.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Use Stack from lucent-ui to create a vertical layout with gap-based spacing"`,
+    },
+    props: [
+      { name: "gap", type: `"0" | "1" | "2" | "3" | "4" | "6" | "8" | "10" | "12" | "16" | "20" | "24"`, description: "Vertical gap between children using spacing tokens.", defaultValue: `"4"` },
+      { name: "align", type: `"stretch" | "start" | "center" | "end"`, description: "Cross-axis alignment.", defaultValue: `"stretch"` },
+      { name: "justify", type: `"start" | "center" | "end" | "between" | "around" | "evenly"`, description: "Main-axis distribution." },
+      { name: "as", type: `"div" | "section" | "nav" | "form" | "fieldset" | "ul" | "ol"`, description: "Rendered HTML element.", defaultValue: `"div"` },
+      { name: "wrap", type: "boolean", description: "Allow children to wrap.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Basic stack",
+        description: "Vertical layout with default gap.",
+        previewKey: "stack-basic",
+        code: `<Stack gap="4">
+  <Text>First item</Text>
+  <Text>Second item</Text>
+  <Text>Third item</Text>
+</Stack>`,
+      },
+      {
+        title: "Form layout",
+        description: "Stack as a form container with wider spacing.",
+        previewKey: "stack-form",
+        code: `<Stack as="form" gap="6">
+  <Input label="Name" />
+  <Input label="Email" />
+  <Button variant="primary">Submit</Button>
+</Stack>`,
+      },
+    ],
+  },
+  // ── Row ──────────────────────────────────────────────────────────────────
+  {
+    slug: "row",
+    name: "Row",
+    category: "Atoms",
+    description:
+      "Horizontal flex layout primitive with the same API as Stack. Default gap and alignment are tuned for horizontal layouts like label/action pairs and button groups. Gap values reference spacing tokens so density presets scale automatically.",
+    importStatement: "import { Row } from 'lucent-ui'",
+    usageCode: `<Row gap="3">
+  <Button variant="primary">Save</Button>
+  <Button variant="outline">Cancel</Button>
+</Row>`,
+    aiPrompts: {
+      claude: `"Add a Row from lucent-ui with gap="3" to horizontally arrange action buttons."`,
+      cursor: `@lucent-ui Use Row with gap="3" to lay out a horizontal button group.`,
+      vscode: `Using lucent-ui, add a Row component to horizontally arrange buttons with consistent spacing.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Use Row from lucent-ui to create a horizontal button group with gap-based spacing"`,
+    },
+    props: [
+      { name: "gap", type: `"0" | "1" | "2" | "3" | "4" | "6" | "8" | "10" | "12" | "16" | "20" | "24"`, description: "Horizontal gap between children using spacing tokens.", defaultValue: `"3"` },
+      { name: "align", type: `"stretch" | "start" | "center" | "end"`, description: "Cross-axis alignment.", defaultValue: `"center"` },
+      { name: "justify", type: `"start" | "center" | "end" | "between" | "around" | "evenly"`, description: "Main-axis distribution." },
+      { name: "as", type: `"div" | "section" | "nav" | "form" | "fieldset" | "ul" | "ol"`, description: "Rendered HTML element.", defaultValue: `"div"` },
+      { name: "wrap", type: "boolean", description: "Allow children to wrap.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Button group",
+        description: "Horizontal row of action buttons.",
+        previewKey: "row-buttons",
+        code: `<Row gap="3">
+  <Button variant="primary">Save</Button>
+  <Button variant="outline">Cancel</Button>
+</Row>`,
+      },
+      {
+        title: "Space between",
+        description: "Row with items pushed to opposite ends.",
+        previewKey: "row-between",
+        code: `<Row justify="between">
+  <Text>Settings</Text>
+  <Button variant="ghost" size="sm">Edit</Button>
+</Row>`,
+      },
+    ],
+  },
+  // ── Progress ─────────────────────────────────────────────────────────────
+  {
+    slug: "progress",
+    name: "Progress",
+    category: "Atoms",
+    description:
+      "Horizontal progress bar for completion, usage, or health metrics. Supports four semantic variants (accent, success, warning, danger), three sizes, optional labels, and threshold-based auto-variant switching via warnAt/dangerAt props. Smooth CSS transitions on value and variant changes.",
+    importStatement: "import { Progress } from 'lucent-ui'",
+    usageCode: `<Progress value={65} />`,
+    aiPrompts: {
+      claude: `"Add a Progress bar from lucent-ui with value={75} and variant="success" to show upload completion."`,
+      cursor: `@lucent-ui Add a Progress bar with threshold auto-variant using warnAt and dangerAt props for a CPU usage indicator.`,
+      vscode: `Using lucent-ui, add a Progress component with label={true} to show a percentage bar.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Use Progress from lucent-ui with warnAt and dangerAt thresholds for a health metric"`,
+    },
+    props: [
+      { name: "value", type: "number", description: "Current progress value.", required: true },
+      { name: "max", type: "number", description: "Maximum value.", defaultValue: "100" },
+      { name: "variant", type: `"accent" | "success" | "warning" | "danger"`, description: "Bar color variant.", defaultValue: `"accent"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Bar height.", defaultValue: `"md"` },
+      { name: "label", type: "boolean | ReactNode", description: "Show percentage label (true) or custom content." },
+      { name: "warnAt", type: "number", description: "Value threshold to auto-switch to warning variant." },
+      { name: "dangerAt", type: "number", description: "Value threshold to auto-switch to danger variant." },
+    ],
+    examples: [
+      {
+        title: "Basic progress",
+        description: "Simple bar with a value and label.",
+        previewKey: "progress-basic",
+        code: `<Progress value={65} label />`,
+      },
+      {
+        title: "Variants",
+        description: "Semantic color variants for different contexts.",
+        previewKey: "progress-variants",
+        code: `<Progress value={80} variant="success" label />
+<Progress value={55} variant="warning" label />
+<Progress value={30} variant="danger" label />`,
+      },
+      {
+        title: "Threshold auto-variant",
+        description: "Automatic color switching based on value thresholds (ascending: high is bad).",
+        previewKey: "progress-threshold",
+        code: `<Progress value={85} warnAt={60} dangerAt={80} label />`,
       },
     ],
   },

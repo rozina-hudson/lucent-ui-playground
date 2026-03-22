@@ -13,6 +13,112 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.21.0",
+    date: "March 2026",
+    title: "New Atom: Progress Bar",
+    items: [
+      {
+        label: "Progress",
+        description:
+          "Horizontal bar for completion, usage, or health metrics.",
+        subItems: [
+          "Props: value, max (default 100), variant (accent/success/warning/danger), size (sm/md/lg), label (true for percentage, or custom ReactNode).",
+          "Threshold auto-variant — warnAt and dangerAt props auto-switch color based on the current value. Ascending thresholds (warnAt < dangerAt) suit \"high is bad\" metrics (CPU, disk); descending (warnAt > dangerAt) suit \"low is bad\" metrics (battery, health).",
+          "Accessible role=\"progressbar\" with aria-valuenow, aria-valuemin, aria-valuemax.",
+          "Smooth CSS transitions on value and variant changes.",
+        ],
+      },
+      {
+        label: "Playground",
+        description:
+          "Progress and Slider added to the component playground for side-by-side comparison with prop knobs.",
+      },
+      {
+        label: "Density preview",
+        description:
+          "Widened compact/comfortable multipliers (65%/140%) so density changes are actually visible.",
+      },
+    ],
+  },
+  {
+    version: "0.20.0",
+    date: "March 2026",
+    title: "New Atoms: Stack & Row Layout Primitives",
+    items: [
+      {
+        label: "Stack",
+        description:
+          "Vertical flex container with gap spacing tokens.",
+        subItems: [
+          "Props: gap (spacing token \"0\"–\"24\"), align, justify, as (polymorphic: div | section | nav | form | fieldset | ul | ol), wrap.",
+          "Default: gap=\"4\", align=\"stretch\".",
+          "Gap values reference var(--lucent-space-{n}) tokens, so density presets scale layout automatically.",
+        ],
+      },
+      {
+        label: "Row",
+        description:
+          "Horizontal flex container with the same API as Stack.",
+        subItems: [
+          "Default: gap=\"3\", align=\"center\" — tuned for horizontal layouts like label/action pairs and button groups.",
+          "Gap values reference spacing tokens, so density presets scale layout automatically.",
+        ],
+      },
+      {
+        label: "Dev helpers refactored",
+        description:
+          "Internal Section and Row dev helpers refactored to use the new primitives.",
+      },
+    ],
+  },
+  {
+    version: "0.19.1",
+    date: "March 2026",
+    title: "Overlay Polish",
+    items: [
+      {
+        label: "Frosted glass overlays",
+        description:
+          "All overlay components (CommandPalette, Menu, MultiSelect, DatePicker, DateRangePicker, SearchInput, ColorPicker) now use a frosted glass backdrop: 85% opacity surface-overlay with backdrop-filter: blur(6px).",
+      },
+      {
+        label: "Accent glow",
+        description:
+          "Overlay borders are tinted with 15% accent-default via color-mix, and a soft 24px accent glow shadow adapts automatically to any palette preset.",
+      },
+      {
+        label: "Portal dropdowns",
+        description:
+          "MultiSelect, DatePicker, DateRangePicker, and SearchInput dropdowns now render via createPortal with position: fixed, so they escape Card overflow: hidden.",
+      },
+      {
+        label: "CommandPalette",
+        description:
+          "Arrow-key navigation and UI polish.",
+        subItems: [
+          "Fixed keyboard navigation cycling through items; added wrapping at top/bottom (#91).",
+          "Active highlight now uses accent-tinted background visible in both light and dark mode.",
+          "Rounded inset item highlights, Button xs keycaps in footer and search bar, frosted glass panel with blurred backdrop.",
+        ],
+      },
+      {
+        label: "DatePicker / DateRangePicker size scaling",
+        description:
+          "Calendar content (cell height, font size, nav buttons, padding, minWidth) now scales with the size prop (sm/md/lg).",
+      },
+      {
+        label: "DatePicker dark mode hover",
+        description:
+          "Day hover uses color-mix(accent-default 20%, surface-secondary) for visibility in dark mode.",
+      },
+      {
+        label: "SearchInput",
+        description:
+          "Fixed duplicate clear button (native type=\"search\" X), aligned dropdown text/spacing/rounding with Menu pattern, text size now matches input size.",
+      },
+    ],
+  },
+  {
     version: "0.19.0",
     date: "March 2026",
     title: "Toast molecule — imperative notifications",
