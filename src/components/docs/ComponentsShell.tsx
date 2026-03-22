@@ -105,6 +105,7 @@ const SidebarNav = memo(function SidebarNav({
 
 const HeaderContent = memo(function HeaderContent({
   shell,
+  bg,
   prev,
   next,
   defName,
@@ -115,6 +116,7 @@ const HeaderContent = memo(function HeaderContent({
   onDismissGenerateUI,
 }: {
   shell: Shell;
+  bg: string;
   prev: ComponentDef | null;
   next: ComponentDef | null;
   defName: string;
@@ -125,7 +127,7 @@ const HeaderContent = memo(function HeaderContent({
   onDismissGenerateUI: () => void;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: shell.bg, gap: 12 }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: bg, gap: 12 }}>
       <Link href="/" style={{ fontFamily: "var(--font-unbounded), sans-serif", fontWeight: 600, fontSize: 13, color: shell.gold, textDecoration: "none", letterSpacing: "-0.01em", flexShrink: 0 }}>
         Lucent UI
       </Link>
@@ -280,6 +282,25 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   // Cleanup on unmount
   useEffect(() => () => genTimers.current.forEach(clearTimeout), []);
 
+  // Sync playground CSS custom properties to :root so portaled content
+  // (Menu, ColorPicker, CommandPalette) inherits spacing/radius/font overrides
+  useEffect(() => {
+    const root = document.documentElement;
+    const entries = Object.entries(previewContainerStyle).filter(
+      ([k]) => typeof k === "string" && k.startsWith("--lucent-"),
+    );
+    for (const [prop, val] of entries) {
+      root.style.setProperty(prop, val as string);
+    }
+    root.style.setProperty("--lucent-font-family-base", `"${pg.fontFamily}", sans-serif`);
+    return () => {
+      for (const [prop] of entries) {
+        root.style.removeProperty(prop);
+      }
+      root.style.removeProperty("--lucent-font-family-base");
+    };
+  }, [previewContainerStyle, pg.fontFamily]);
+
   // Load the playground font globally
   useEffect(() => {
     const family = pg.fontFamily;
@@ -294,7 +315,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   }, [pg.fontFamily]);
 
   const sidebar = (
-    <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
+    <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: resolvedBg }}>
       <SidebarNav shell={shell} segment={segment} />
     </div>
   );
@@ -323,7 +344,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       <div className="hide-scrollbar" style={{ ...previewContainerStyle, [a("--lucent-font-family-base")]: `"${pg.fontFamily}", sans-serif`, fontFamily: `"${pg.fontFamily}", sans-serif` }}>
       <PageLayout
         style={{ height: "100vh", background: resolvedBg, color: resolvedText }}
-        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark", borderColor: defaultPlaygroundState.borderColor, bgColor: defaultPlaygroundState.bgColor, surfaceColor: defaultPlaygroundState.surfaceColor, textColor: defaultPlaygroundState.textColor })} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
+        header={<HeaderContent shell={shell} bg={resolvedBg} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark", borderColor: defaultPlaygroundState.borderColor, bgColor: defaultPlaygroundState.bgColor, surfaceColor: defaultPlaygroundState.surfaceColor, textColor: defaultPlaygroundState.textColor })} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
         sidebar={sidebar}
         headerHeight={56}
         sidebarWidth={generateUI ? 10 : 240}

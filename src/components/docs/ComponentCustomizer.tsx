@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import * as Lucent from "lucent-ui";
-import { Select, Toggle, Input, Text, Radio } from "lucent-ui";
+import { Select, Toggle, Input, Text, Radio, useLucent, ToastProvider, useToast, Button } from "lucent-ui";
 import type { ComponentDef } from "@/lib/componentData";
 import type { ShellColors } from "@/lib/shellColors";
 
@@ -44,9 +44,22 @@ const DEFAULT_TABS = [
   { value: "three", label: "Tab Three", content: <Text size="sm">Content for Tab Three.</Text> },
 ];
 
+function ToastPreviewButtons() {
+  const { toast } = useToast();
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <Button variant="outline" size="sm" onClick={() => toast({ title: "Changes saved", description: "Your profile has been updated.", variant: "success" })}>Success</Button>
+      <Button variant="outline" size="sm" onClick={() => toast({ title: "Warning", description: "Approaching storage limit.", variant: "warning" })}>Warning</Button>
+      <Button variant="outline" size="sm" onClick={() => toast({ title: "Error", description: "Something went wrong.", variant: "danger" })}>Danger</Button>
+      <Button variant="outline" size="sm" onClick={() => toast({ title: "Item deleted", variant: "danger", action: { label: "Undo", onClick: () => {} } })}>With action</Button>
+    </div>
+  );
+}
+
 export function ComponentCustomizer({ def, shell, values, onValuesChange, previewStyle, previewBg }: Props) {
   const compName = def.customizerName ?? def.name;
   const Comp = useMemo(() => (Lucent as any)[compName] ?? null, [compName]);
+  const { tokens } = useLucent();
 
   const configurableProps = def.props.filter(
     (p) =>
@@ -155,8 +168,34 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
                 code={`<Button variant="primary">Save</Button>`}
                 {...(values as any)}
               />
+            ) : compName === "NavLink" ? (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
+                  width: 200,
+                  padding: 12,
+                  borderRadius: 10,
+                  ...(values.inverse ? {
+                    background: tokens.bgSubtle,
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)",
+                  } : {}),
+                }}
+              >
+                <Comp {...(values as any)} isActive href="#">Dashboard</Comp>
+                <Comp {...(values as any)} isActive={false} href="#">Components</Comp>
+                <Comp {...(values as any)} isActive={false} href="#">Settings</Comp>
+              </div>
             ) : compName === "Chip" ? (
               <Comp {...(values as any)}>Sample Chip</Comp>
+            ) : compName === "ToastProvider" ? (
+              <ToastProvider
+                position={values.position ?? "bottom-right"}
+                duration={values.duration ? Number(values.duration) : 5000}
+              >
+                <ToastPreviewButtons />
+              </ToastProvider>
             ) : (
               <Comp
                 {...(values as any)}

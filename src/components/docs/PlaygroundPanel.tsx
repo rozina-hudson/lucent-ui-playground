@@ -103,9 +103,15 @@ export const SHAPE_OPTIONS: DimensionOption[] = [
 ];
 
 export const DENSITY_OPTIONS: DimensionOption[] = [
-  { label: "Compact", light: { fontScale: 0.9, spacingScale: 0.8 }, dark: { fontScale: 0.9, spacingScale: 0.8 } },
-  { label: "Default", light: { fontScale: 1, spacingScale: 1 }, dark: { fontScale: 1, spacingScale: 1 } },
-  { label: "Comfortable", light: { fontScale: 1.05, spacingScale: 1.2 }, dark: { fontScale: 1.05, spacingScale: 1.2 } },
+  { label: "Compact", light: { spacingScale: 0.8 }, dark: { spacingScale: 0.8 } },
+  { label: "Default", light: { spacingScale: 1 }, dark: { spacingScale: 1 } },
+  { label: "Comfortable", light: { spacingScale: 1.2 }, dark: { spacingScale: 1.2 } },
+];
+
+export const FONT_SCALE_OPTIONS: DimensionOption[] = [
+  { label: "Small", light: { fontScale: 0.9 }, dark: { fontScale: 0.9 } },
+  { label: "Default", light: { fontScale: 1 }, dark: { fontScale: 1 } },
+  { label: "Large", light: { fontScale: 1.1 }, dark: { fontScale: 1.1 } },
 ];
 
 export const PLAYGROUND_FONTS = [
@@ -425,7 +431,23 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
         </div>
       </div>
       <DimensionPicker label="Shape" options={SHAPE_OPTIONS} state={state} onChange={onChange} shell={shell} />
-      <DimensionPicker label="Density" options={DENSITY_OPTIONS} state={state} onChange={onChange} shell={shell} />
+      <div style={{
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ["--lucent-space-1" as any]: `${0.25 * state.spacingScale}rem`,
+        ["--lucent-space-2" as any]: `${0.5 * state.spacingScale}rem`,
+        ["--lucent-space-3" as any]: `${0.75 * state.spacingScale}rem`,
+        ["--lucent-space-4" as any]: `${1 * state.spacingScale}rem`,
+        ["--lucent-font-size-xs" as any]: `${0.75 * state.fontScale}rem`,
+        ["--lucent-font-size-sm" as any]: `${0.875 * state.fontScale}rem`,
+        ["--lucent-font-size-md" as any]: `${1 * state.fontScale}rem`,
+        display: "flex",
+        flexDirection: "column" as const,
+        gap: 12,
+        transition: "all 0.2s ease",
+      }}>
+        <DimensionPicker label="Density" options={DENSITY_OPTIONS} state={state} onChange={onChange} shell={shell} />
+        <DimensionPicker label="Font Scale" options={FONT_SCALE_OPTIONS} state={state} onChange={onChange} shell={shell} />
+      </div>
 
       <button
         onClick={() => setView("customize")}

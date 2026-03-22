@@ -13,6 +13,8 @@ import {
   Tooltip,
   SegmentedControl,
   ColorSwatch,
+  ToastProvider,
+  useToast,
 } from "lucent-ui";
 import { getShell, type ShellColors } from "@/lib/shellColors";
 import {
@@ -49,7 +51,8 @@ const SHADOW_VALUES: Record<ShadowLevel, Record<"light" | "dark", string>> = {
 
 // ─── Profile card ──────────────────────────────────────────────────────────────
 
-function ProfileCard({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | "dark" }) {
+function ProfileCardInner({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | "dark" }) {
+  const { toast } = useToast();
   return (
     <div
       style={{
@@ -144,10 +147,31 @@ function ProfileCard({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | 
 
       {/* Actions */}
       <div style={{ display: "flex", gap: "var(--lucent-space-2)", marginTop: "var(--lucent-space-1)", transition: T }}>
-        <Button size="sm" variant="primary" style={{ flex: 1 }}>Follow</Button>
-        <Button size="sm" variant="ghost">Message</Button>
+        <Button
+          size="sm"
+          variant="primary"
+          style={{ flex: 1 }}
+          onClick={() => toast({ title: "Following Elena Vasquez", variant: "success" })}
+        >
+          Follow
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => toast({ title: "Message sent", description: "Elena will be notified.", variant: "info" })}
+        >
+          Message
+        </Button>
       </div>
     </div>
+  );
+}
+
+function ProfileCard({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | "dark" }) {
+  return (
+    <ToastProvider position="bottom-right" duration={3000}>
+      <ProfileCardInner shadow={shadow} theme={theme} />
+    </ToastProvider>
   );
 }
 

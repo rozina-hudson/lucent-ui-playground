@@ -101,6 +101,18 @@ export default function ChangelogPage() {
                         item.description
                       )}
                     </Text>
+                    {item.subItems && item.subItems.length > 0 && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                        {item.subItems.map((sub, si) => (
+                          <div key={si} style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                            <span style={{ color: shell.subtle, fontSize: 10, flexShrink: 0 }}>—</span>
+                            <Text as="span" size="xs" lineHeight="relaxed" style={{ color: shell.subtle }}>
+                              {sub}
+                            </Text>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

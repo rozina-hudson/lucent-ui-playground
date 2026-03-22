@@ -127,7 +127,7 @@ export function DocLayout({ def, prev, next }: Props) {
               label: "Preview",
               content: (
                 <div style={{ display: "flex", gap: 16 }}>
-                  <div style={{ flex: 1, background: tokens.bgBase, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12, ...previewContainerStyle }}>
+                  <div style={{ flex: 1, background: tokens.surface, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12, ...previewContainerStyle }}>
                     {mounted && TopPreview ? <TopPreview /> : null}
                   </div>
                   <div style={{ width: 280, flexShrink: 0, border: `1px solid ${shell.border}`, borderRadius: 12, background: shell.surface }}>
@@ -146,7 +146,7 @@ export function DocLayout({ def, prev, next }: Props) {
                   values={compValues}
                   onValuesChange={(name, v) => setCompValues((prev) => ({ ...prev, [name]: v }))}
                   previewStyle={previewContainerStyle}
-                  previewBg={tokens.bgBase}
+                  previewBg={tokens.surface}
                 />
               ),
             },
@@ -204,7 +204,7 @@ export function DocLayout({ def, prev, next }: Props) {
             example={ex}
             previews={componentPreviews}
             shell={shell}
-            previewBg={tokens.bgBase}
+            previewBg={tokens.surface}
             previewStyle={previewContainerStyle}
           />
         ))}
