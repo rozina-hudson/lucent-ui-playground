@@ -77,13 +77,13 @@ function ProfileCardInner({ shadow, theme }: { shadow: ShadowLevel; theme: "ligh
     >
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: "var(--lucent-space-4)", transition: T }}>
-        <Avatar alt="Elena Vasquez" src="https://i.pravatar.cc/150?img=32" size="lg" />
+        <Avatar alt="Elena Vasquez" src="https://i.pravatar.cc/150?u=szogyenyi.zina@gmail.com" size="lg" />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--lucent-space-2)" }}>
-            <Text size="lg" weight="semibold">Elena Vasquez</Text>
+            <Text size="lg" weight="semibold">Rozina Szogyenyi</Text>
             <Chip variant="success" size="sm" dot>Pro</Chip>
           </div>
-          <Text size="sm" color="secondary">Staff Engineer @ Vercel</Text>
+          <Text size="sm" color="secondary">Staff Product Designer @ Deel</Text>
         </div>
       </div>
 
