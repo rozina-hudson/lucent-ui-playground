@@ -6,11 +6,17 @@ import {
   lightTokens,
   darkTokens,
   Avatar,
+  Badge,
   Text,
   Button,
   Chip,
   Divider,
-  Tooltip,
+  Menu,
+  MenuItem,
+  MenuSeparator,
+  Select,
+  Slider,
+  Toggle,
   SegmentedControl,
   ColorSwatch,
   ToastProvider,
@@ -63,10 +69,10 @@ function ProfileCardInner({ shadow, theme }: { shadow: ShadowLevel; theme: "ligh
         display: "flex",
         flexDirection: "column",
         gap: "var(--lucent-space-4)",
-        maxWidth: 380,
         width: "100%",
         boxShadow: SHADOW_VALUES[shadow][theme],
         transition: T,
+        textAlign: "left",
       }}
     >
       {/* Header */}
@@ -111,40 +117,6 @@ function ProfileCardInner({ shadow, theme }: { shadow: ShadowLevel; theme: "ligh
         ))}
       </div>
 
-      <Divider />
-
-      {/* Activity heatmap */}
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--lucent-space-2)" }}>
-          <Text size="xs" weight="semibold" color="secondary">Activity</Text>
-          <div style={{ display: "flex", gap: "var(--lucent-space-2)", alignItems: "center" }}>
-            <Chip variant="accent" size="sm">Top 5%</Chip>
-            <Text size="xs" color="secondary">Last 8 weeks</Text>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 3, transition: T }}>
-          {ACTIVITY_DATA.map((week, wi) => (
-            <div key={wi} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              {week.map((level, di) => (
-                <Tooltip key={di} content={`${level} contributions`} delay={0}>
-                  <div
-                    style={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: "var(--lucent-radius-sm)",
-                      background: level === 0
-                        ? "var(--lucent-border-default)"
-                        : `color-mix(in srgb, var(--lucent-accent-default) ${25 + level * 25}%, transparent)`,
-                      transition: T,
-                    }}
-                  />
-                </Tooltip>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Actions */}
       <div style={{ display: "flex", gap: "var(--lucent-space-2)", marginTop: "var(--lucent-space-1)", transition: T }}>
         <Button
@@ -167,24 +139,118 @@ function ProfileCardInner({ shadow, theme }: { shadow: ShadowLevel; theme: "ligh
   );
 }
 
-function ProfileCard({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | "dark" }) {
+// ─── Settings card ────────────────────────────────────────────────────────────
+
+function SettingsCardInner({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | "dark" }) {
+  const { toast } = useToast();
+  const [notifications, setNotifications] = useState(true);
+  const [autoSave, setAutoSave] = useState(false);
+  const [fontSize, setFontSize] = useState(16);
+  const [language, setLanguage] = useState("en");
+
   return (
-    <ToastProvider position="bottom-right" duration={3000}>
-      <ProfileCardInner shadow={shadow} theme={theme} />
-    </ToastProvider>
+    <div
+      style={{
+        background: "var(--lucent-surface)",
+        border: "1px solid var(--lucent-border-default)",
+        borderRadius: "var(--lucent-radius-lg)",
+        padding: "var(--lucent-space-6)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "var(--lucent-space-3)",
+        width: "100%",
+        boxShadow: SHADOW_VALUES[shadow][theme],
+        transition: T,
+        textAlign: "left",
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--lucent-space-2)", transition: T }}>
+        <Text size="md" weight="semibold" style={{ flex: 1 }}>Preferences</Text>
+        <Badge variant="accent" size="sm">v2.4</Badge>
+        <Menu trigger={<Button size="2xs" variant="ghost">⋯</Button>}>
+          <MenuItem onSelect={() => {}}>Reset defaults</MenuItem>
+          <MenuItem onSelect={() => {}}>Import config</MenuItem>
+          <MenuSeparator />
+          <MenuItem onSelect={() => {}} danger>Clear all data</MenuItem>
+        </Menu>
+      </div>
+
+      <Divider />
+
+      {/* Toggles */}
+      <Toggle
+        contained
+        label="Push notifications"
+        helperText="Alerts on your device"
+        checked={notifications}
+        onChange={(e) => setNotifications(e.target.checked)}
+      />
+      <Toggle
+        contained
+        label="Auto-save"
+        helperText="Save changes automatically"
+        checked={autoSave}
+        onChange={(e) => setAutoSave(e.target.checked)}
+      />
+
+      {/* Slider */}
+      <Slider
+        label="Font size"
+        min={12}
+        max={24}
+        value={fontSize}
+        onChange={(e) => setFontSize(Number(e.target.value))}
+        size="sm"
+        showValue
+      />
+
+      {/* Select */}
+      <Select
+        size="sm"
+        label="Language"
+        value={language}
+        onChange={(e) => setLanguage(e.target.value)}
+        options={[
+          { value: "en", label: "English" },
+          { value: "es", label: "Español" },
+          { value: "fr", label: "Français" },
+          { value: "de", label: "Deutsch" },
+        ]}
+      />
+
+      <Divider />
+
+      {/* Actions */}
+      <div style={{ display: "flex", gap: "var(--lucent-space-2)", transition: T }}>
+        <Button
+          size="sm"
+          variant="primary"
+          style={{ flex: 1 }}
+          onClick={() => toast({ title: "Preferences saved", variant: "success" })}
+        >
+          Save changes
+        </Button>
+        <Button size="sm" variant="ghost">Reset</Button>
+      </div>
+    </div>
   );
 }
 
-const ACTIVITY_DATA = [
-  [1, 0, 2, 1, 0, 3, 1],
-  [2, 3, 1, 0, 2, 1, 0],
-  [0, 1, 3, 2, 1, 0, 2],
-  [3, 2, 0, 1, 3, 2, 1],
-  [1, 0, 2, 3, 0, 1, 3],
-  [2, 1, 1, 0, 2, 3, 0],
-  [0, 3, 2, 1, 0, 2, 1],
-  [1, 2, 0, 3, 1, 0, 2],
-];
+function PreviewCards({ shadow, theme }: { shadow: ShadowLevel; theme: "light" | "dark" }) {
+  return (
+    <ToastProvider position="bottom-right" duration={3000}>
+      <div style={{ display: "flex", gap: 16, width: "100%" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <ProfileCardInner shadow={shadow} theme={theme} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <SettingsCardInner shadow={shadow} theme={theme} />
+        </div>
+      </div>
+    </ToastProvider>
+  );
+}
 
 // Strip textColor so accent palettes only affect bg/border/accent, not text
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -408,13 +474,38 @@ export function DesignPresetShowcase({ shellTheme }: { shellTheme: "light" | "da
   useEffect(() => {
     setPg((prev) => {
       const d = defaultPlaygroundState;
+      const oldTheme = prev.theme;
+
+      // Detect active palette and swap to its colors for the new theme
+      const matchedPalette = PALETTE_OPTIONS.find((opt) => {
+        const colors = resolveDimension(opt, oldTheme);
+        return Object.entries(colors).every(
+          ([k, v]) => prev[k as keyof PlaygroundState] === v,
+        );
+      });
+      if (matchedPalette) {
+        return { ...prev, theme: shellTheme, ...resolveDimension(matchedPalette, shellTheme) };
+      }
+
+      // Detect active preset and swap
+      const matchedPreset = COMBINED_PRESETS.find((preset) => {
+        const resolved = resolvePreset(preset, oldTheme);
+        return Object.entries(resolved).every(
+          ([k, v]) => prev[k as keyof PlaygroundState] === v,
+        );
+      });
+      if (matchedPreset) {
+        return { ...prev, theme: shellTheme, ...resolvePreset(matchedPreset, shellTheme) };
+      }
+
+      // No match — reset to defaults so base theme fallback kicks in
       return {
         ...prev,
         theme: shellTheme,
-        bgColor: prev.bgColor === d.bgColor ? d.bgColor : prev.bgColor,
-        surfaceColor: prev.surfaceColor === d.surfaceColor ? d.surfaceColor : prev.surfaceColor,
-        textColor: prev.textColor === d.textColor ? d.textColor : prev.textColor,
-        borderColor: prev.borderColor === d.borderColor ? d.borderColor : prev.borderColor,
+        borderColor: d.borderColor,
+        bgColor: d.bgColor,
+        surfaceColor: d.surfaceColor,
+        textColor: d.textColor,
       };
     });
   }, [shellTheme]);
@@ -520,20 +611,23 @@ export function DesignPresetShowcase({ shellTheme }: { shellTheme: "light" | "da
         </p>
       </div>
 
-      {/* Main layout — 50/50 split, no outer border */}
+      {/* Main layout — controls left, preview right */}
       <div
         style={{
           display: "flex",
           gap: 0,
           position: "relative",
+          alignItems: "flex-start",
         }}
       >
-        {/* Controls — left 50% */}
+        {/* Controls — left */}
         <div
           style={{
-            flex: 1,
+            flex: "0 0 340px",
             overflowY: "auto",
-            maxHeight: 620,
+            maxHeight: 820,
+            position: "sticky",
+            top: 0,
           }}
         >
           <ControlsPanel
@@ -545,12 +639,12 @@ export function DesignPresetShowcase({ shellTheme }: { shellTheme: "light" | "da
           />
         </div>
 
-        {/* Preview — right 50% */}
+        {/* Preview — right */}
         <div
           style={{
             flex: 1,
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             justifyContent: "center",
           }}
         >
@@ -559,30 +653,31 @@ export function DesignPresetShowcase({ shellTheme }: { shellTheme: "light" | "da
               <div
                 style={{
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center",
-                  padding: "40px 32px",
+                  padding: "24px 32px",
                   position: "relative",
                   width: "100%",
+                  gap: 16,
                   ...previewStyle,
                 }}
               >
-                {/* Accent glow behind card */}
+                {/* Accent glow behind cards */}
                 <div
                   style={{
                     position: "absolute",
-                    top: "50%",
+                    top: "40%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
-                    width: 340,
-                    height: 340,
+                    width: 400,
+                    height: 500,
                     borderRadius: "50%",
                     background: `radial-gradient(circle, ${pg.primaryColor}18 0%, transparent 70%)`,
                     pointerEvents: "none",
                     transition: T,
                   }}
                 />
-                <ProfileCard shadow={shadow} theme={pg.theme} />
+                <PreviewCards shadow={shadow} theme={pg.theme} />
               </div>
             </LucentProvider>
           )}

@@ -2,38 +2,41 @@
 
 import { useState } from "react";
 import {
-  Alert,
   Avatar,
   Breadcrumb,
   Button,
+  Card,
   CardBleed,
   Checkbox,
   Chip,
-  CommandPalette,
-  DataTable,
-  DatePicker,
+  CodeBlock,
+  Collapsible,
+  ColorPicker,
+  ColorSwatch,
   DateRangePicker,
-  EmptyState,
-  FileUpload,
+  Divider,
   FormField,
-  Icon,
   Input,
-  MultiSelect,
-  NavLink,
-  PageLayout,
+  Menu,
+  MenuGroup,
+  MenuItem,
+  MenuSeparator,
   Radio,
   RadioGroup,
   SearchInput,
+  SegmentedControl,
   Select,
-  Skeleton,
-  Tabs,
+  Slider,
+  Spinner,
+  Table,
   Text,
   Textarea,
   Timeline,
+  ToastProvider,
   Toggle,
   Tooltip,
+  useToast,
 } from "lucent-ui";
-import type { UploadFile } from "lucent-ui";
 
 // ─── Composition type ─────────────────────────────────────────────────────────
 
@@ -42,772 +45,710 @@ export type BentoComposition = {
   colSpan: 1 | 2;
   rowSpan: 1 | 2;
   component: React.FC;
+  /** When true the composition renders its own Card — BentoGrid skips the wrapper. */
+  ownCard?: boolean;
 };
 
-// ─── 1. Email composer (2×2) ────────────────────────────────────────────────
-// Showcases: Chip (dismissible recipients), Button xs, Textarea size
+// ─── 1. Team Chat (2×2) ──────────────────────────────────────────────────────
+// Card: outline with header, CardBleed for message area
 
-const EmailComposer: React.FC = () => {
-  const [recipients, setRecipients] = useState(["elena@acme.co", "ops@acme.co"]);
-  const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
-  const [priority, setPriority] = useState("normal");
-  const [sending, setSending] = useState(false);
+const TeamChat: React.FC = () => {
+  const [msg, setMsg] = useState("");
 
-  const canSend = recipients.length > 0 && subject.trim() && body.trim();
-
-  const handleSend = () => {
-    setSending(true);
-    setTimeout(() => setSending(false), 1500);
-  };
+  const messages = [
+    { id: 1, user: "Alice", time: "10:32 AM", text: "Has anyone reviewed the new PR?" },
+    { id: 2, user: "Bob", time: "10:34 AM", text: "Looking at it now — the API changes look solid 👍" },
+    { id: 3, user: "Clara", time: "10:36 AM", text: "I left a few comments on the error handling." },
+  ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">New message</Text>
-        <Chip variant="neutral" size="sm" borderless>Draft</Chip>
-      </div>
-
-      <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-        <div style={{ flex: 1 }}>
-          <Select
-            size="sm"
-            label="Priority"
-            options={[
-              { value: "low", label: "Low priority" },
-              { value: "normal", label: "Normal" },
-              { value: "high", label: "High priority" },
-            ]}
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-          />
+    <Card
+      variant="outline"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">#engineering</Text>
+          <Chip variant="success" size="sm" dot>3 online</Chip>
+          <div style={{ flex: 1 }} />
+          <Menu trigger={<Button size="xs" variant="ghost">⋯</Button>}>
+            <MenuItem onSelect={() => {}}>Channel settings</MenuItem>
+            <MenuItem onSelect={() => {}}>Pinned messages</MenuItem>
+            <MenuSeparator />
+            <MenuItem onSelect={() => {}} danger>Leave channel</MenuItem>
+          </Menu>
         </div>
-      </div>
-
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-        <Text size="xs" color="secondary">To:</Text>
-        {recipients.map((r) => (
-          <Chip key={r} size="sm" onDismiss={() => setRecipients((prev) => prev.filter((x) => x !== r))}>{r}</Chip>
+      }
+      footer={
+        <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <Input size="sm" placeholder="Message #engineering…" value={msg} onChange={(e) => setMsg(e.target.value)} />
+          </div>
+          <Button size="sm" variant="primary" disabled={!msg.trim()}>Send</Button>
+        </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {messages.map((m) => (
+          <div key={m.id} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+            <Tooltip content={m.user} delay={0}>
+              <Avatar alt={m.user} size="sm" />
+            </Tooltip>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
+                <Text size="sm" weight="semibold">{m.user}</Text>
+                <Text size="xs" color="secondary">{m.time}</Text>
+              </div>
+              <Text size="sm">{m.text}</Text>
+            </div>
+          </div>
         ))}
-        <Button size="xs" variant="ghost">+ Add</Button>
+
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <Spinner size="xs" />
+          <Text size="xs" color="secondary">Clara is typing…</Text>
+        </div>
       </div>
-
-      <Input size="sm" label="Subject" placeholder="Re: Q2 planning…" value={subject} onChange={(e) => setSubject(e.target.value)} />
-
-      <Textarea
-        size="sm"
-        placeholder="Write your message…"
-        autoResize
-        maxLength={2000}
-        showCount
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        style={{ flex: 1, minHeight: 100 }}
-      />
-
-      <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
-        <Button size="xs" variant="primary" disabled={!canSend} loading={sending} onClick={handleSend}>Send</Button>
-        <Button size="xs" variant="outline">Save draft</Button>
-        <Button size="xs" variant="ghost">Attach</Button>
-        <div style={{ flex: 1 }} />
-        <Button size="xs" variant="danger" disabled={!recipients.length && !subject && !body}>Discard</Button>
-      </div>
-    </div>
+    </Card>
   );
 };
 
-// ─── 2. API playground (2×2) ────────────────────────────────────────────────
-// Showcases: Chip dot (status), SearchInput label, Textarea size
+// ─── 2. Theme Builder (2×2) ──────────────────────────────────────────────────
+// Card features: combo variant with header + footer (tinted chrome, elevated body)
 
-const APIPlayground: React.FC = () => {
-  const [method, setMethod] = useState("GET");
-  const [url, setUrl] = useState("https://api.example.com/users");
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState("");
+const ThemeBuilder: React.FC = () => {
+  const [color, setColor] = useState("#3b82f6");
+  const [radius, setRadius] = useState(8);
+  const [spacing, setSpacing] = useState(16);
+  const [mode, setMode] = useState("light");
 
-  const handleSend = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setResponse(JSON.stringify({ users: [{ id: 1, name: "Alice" }, { id: 2, name: "Bob" }], total: 42 }, null, 2));
-      setLoading(false);
-    }, 800);
-  };
+  const palette = ["#3b82f6", "#8b5cf6", "#ef4444", "#f59e0b", "#22c55e", "#06b6d4"];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">API Console</Text>
-        <Chip variant="accent" size="sm" borderless>REST</Chip>
-        {response && <Chip variant="success" size="sm" dot>200 OK</Chip>}
-        <div style={{ flex: 1 }} />
-        <SearchInput size="sm" value={history} onChange={setHistory} placeholder="Search history…" />
-      </div>
-
-      <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-        <div style={{ width: 100 }}>
-          <Select
+    <Card
+      variant="combo"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">Theme Studio</Text>
+          <Chip variant="accent" size="sm" borderless>Custom</Chip>
+          <div style={{ flex: 1 }} />
+          <SegmentedControl
             size="sm"
+            value={mode}
+            onChange={setMode}
             options={[
-              { value: "GET", label: "GET" },
-              { value: "POST", label: "POST" },
-              { value: "PUT", label: "PUT" },
-              { value: "DELETE", label: "DELETE" },
+              { value: "light", label: "Light" },
+              { value: "dark", label: "Dark" },
             ]}
-            value={method}
-            onChange={(e) => setMethod(e.target.value)}
           />
         </div>
-        <div style={{ flex: 1 }}>
-          <Input size="sm" placeholder="https://api.example.com/…" value={url} onChange={(e) => setUrl(e.target.value)} />
+      }
+      footer={
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button size="xs" variant="primary">Apply theme</Button>
+          <Button size="xs" variant="outline">Export tokens</Button>
+          <Button size="xs" variant="ghost">Reset</Button>
         </div>
-        <Button size="sm" variant="primary" loading={loading} onClick={handleSend} disabled={!url.trim()}>Send request</Button>
-      </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <Card variant="filled" padding="sm">
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <ColorPicker value={color} onChange={setColor} size="sm" />
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", flex: 1 }}>
+              {palette.map((c) => (
+                <ColorSwatch key={c} color={c} size="md" selected={c === color} onClick={() => setColor(c)} />
+              ))}
+            </div>
+          </div>
+        </Card>
 
-      <Tabs
-        tabs={[
-          {
-            value: "response",
-            label: "Response",
-            content: (
-              <div style={{ paddingTop: 8 }}>
-                {loading ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    <Skeleton variant="rectangle" height={20} />
-                    <Skeleton variant="text" lines={4} />
-                  </div>
-                ) : response ? (
-                  <Textarea size="sm" value={response} onChange={() => {}} disabled style={{ fontFamily: "monospace", fontSize: 12, minHeight: 120 }} />
-                ) : (
-                  <Text size="sm" color="secondary">Send a request to see the response here.</Text>
-                )}
-              </div>
-            ),
-          },
-          {
-            value: "headers",
-            label: "Headers",
-            content: (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 8 }}>
-                <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-                  <div style={{ flex: 1 }}><Input size="sm" placeholder="Key" defaultValue="Authorization" /></div>
-                  <div style={{ flex: 2 }}><Input size="sm" placeholder="Value" defaultValue="Bearer •••••" /></div>
-                  <Button size="sm" variant="ghost">Remove</Button>
-                </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-                  <div style={{ flex: 1 }}><Input size="sm" placeholder="Key" defaultValue="Content-Type" /></div>
-                  <div style={{ flex: 2 }}><Input size="sm" placeholder="Value" defaultValue="application/json" /></div>
-                  <Button size="sm" variant="ghost">Remove</Button>
-                </div>
-                <Button size="sm" variant="outline" style={{ alignSelf: "flex-start" }}>+ Add header</Button>
-              </div>
-            ),
-          },
-          {
-            value: "body",
-            label: "Body",
-            content: (
-              <div style={{ paddingTop: 8 }}>
-                <Textarea size="sm" placeholder='{ "name": "New User" }' autoResize style={{ fontFamily: "monospace", fontSize: 12, minHeight: 80 }} />
-              </div>
-            ),
-          },
-        ]}
-      />
-    </div>
+        <Collapsible trigger="Layout" defaultOpen>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingTop: 8 }}>
+            <Slider label="Border radius" min={0} max={24} value={radius} onChange={(e) => setRadius(Number(e.target.value))} size="sm" showValue />
+            <Slider label="Base spacing" min={4} max={32} value={spacing} onChange={(e) => setSpacing(Number(e.target.value))} size="sm" showValue />
+          </div>
+        </Collapsible>
+      </div>
+    </Card>
   );
 };
 
-// ─── 3. Support ticket (2×2) ────────────────────────────────────────────────
-// Showcases: MultiSelect label/helperText/size, Chip for applied labels, Textarea size
+// ─── 3. Sprint Board (2×1) ───────────────────────────────────────────────────
+// Card: ghost outer (transparent), interactive ghost Cards with selected state inside
 
-const SupportTicket: React.FC = () => {
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [priority, setPriority] = useState("medium");
-  const [assignee, setAssignee] = useState("");
-  const [tags, setTags] = useState<string[]>(["bug"]);
-  const [submitted, setSubmitted] = useState(false);
+const SprintBoard: React.FC = () => {
+  const [filter, setFilter] = useState("all");
+  const [selected, setSelected] = useState<number | null>(2);
 
-  const canSubmit = title.trim() && desc.trim();
+  const tasks = [
+    { id: 1, title: "Fix auth redirect loop", status: "done", assignee: "Alice" },
+    { id: 2, title: "Add dark mode toggle", status: "in-progress", assignee: "Bob" },
+    { id: 3, title: "Update API docs", status: "todo", assignee: "Clara" },
+    { id: 4, title: "Refactor form validation", status: "in-progress", assignee: "Alice" },
+  ];
 
-  const labelColors: Record<string, string> = {
-    bug: "#ef4444",
-    feature: "#3b82f6",
-    docs: "#8b5cf6",
-    ux: "#f59e0b",
-    perf: "#22c55e",
+  const statusVariant: Record<string, "neutral" | "warning" | "success"> = {
+    todo: "neutral",
+    "in-progress": "warning",
+    done: "success",
+  };
+  const statusLabels: Record<string, string> = {
+    todo: "To do",
+    "in-progress": "In progress",
+    done: "Done",
   };
 
+  const filtered = filter === "all" ? tasks : tasks.filter((t) => t.status === filter);
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">New ticket</Text>
-        <Chip variant="warning" size="sm" dot>Support</Chip>
-      </div>
-
-      {submitted && (
-        <Alert variant="success" title="Ticket created">
-          Your ticket has been submitted and assigned.
-        </Alert>
-      )}
-
-      <FormField label="Title" htmlFor="tk-title" required>
-        <Input id="tk-title" placeholder="Brief summary of the issue" value={title} onChange={(e) => setTitle(e.target.value)} />
-      </FormField>
-
-      <div style={{ display: "flex", gap: 8 }}>
-        <div style={{ flex: 1 }}>
-          <FormField label="Priority" htmlFor="tk-priority">
-            <Select
-              size="sm"
-              options={[
-                { value: "low", label: "Low" },
-                { value: "medium", label: "Medium" },
-                { value: "high", label: "High" },
-                { value: "critical", label: "Critical" },
-              ]}
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-            />
-          </FormField>
+    <Card
+      variant="ghost"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">Sprint 14</Text>
+          <Chip variant="accent" size="sm" borderless>8 pts</Chip>
+          <div style={{ flex: 1 }} />
+          <Menu trigger={<Button size="xs" variant="ghost">⋯</Button>}>
+            <MenuGroup label="Sprint">
+              <MenuItem onSelect={() => {}}>Edit sprint</MenuItem>
+              <MenuItem onSelect={() => {}}>View burndown</MenuItem>
+            </MenuGroup>
+            <MenuSeparator />
+            <MenuItem onSelect={() => {}} danger>End sprint</MenuItem>
+          </Menu>
         </div>
-        <div style={{ flex: 1 }}>
-          <FormField label="Assignee" htmlFor="tk-assignee">
-            <Select
-              size="sm"
-              placeholder="Unassigned"
-              options={[
-                { value: "alice", label: "Alice Lee" },
-                { value: "bob", label: "Bob Kim" },
-                { value: "clara", label: "Clara Roy" },
-              ]}
-              value={assignee}
-              onChange={(e) => setAssignee(e.target.value)}
-            />
-          </FormField>
-        </div>
-      </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <SegmentedControl
+          size="sm"
+          value={filter}
+          onChange={setFilter}
+          options={[
+            { value: "all", label: "All" },
+            { value: "todo", label: "To do" },
+            { value: "in-progress", label: "Active" },
+            { value: "done", label: "Done" },
+          ]}
+        />
 
-      <MultiSelect
-        label="Labels"
-        helperText="Categorize this ticket"
-        size="sm"
-        options={[
-          { value: "bug", label: "Bug" },
-          { value: "feature", label: "Feature" },
-          { value: "docs", label: "Documentation" },
-          { value: "ux", label: "UX" },
-          { value: "perf", label: "Performance" },
-        ]}
-        value={tags}
-        onChange={setTags}
-        placeholder="Add labels…"
-      />
-
-      {tags.length > 0 && (
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {tags.map((t) => (
-            <Chip key={t} size="sm" swatch={labelColors[t]} onDismiss={() => setTags((prev) => prev.filter((x) => x !== t))}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-            </Chip>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {filtered.map((t) => (
+            <Card
+              key={t.id}
+              variant="outline"
+              padding="sm"
+              selected={selected === t.id}
+              onClick={() => setSelected(selected === t.id ? null : t.id)}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Chip variant={statusVariant[t.status]} size="sm" dot>{statusLabels[t.status]}</Chip>
+                <Text size="sm" style={{ flex: 1 }}>{t.title}</Text>
+                <Tooltip content={t.assignee} delay={0}>
+                  <Avatar alt={t.assignee} size="xs" />
+                </Tooltip>
+              </div>
+            </Card>
           ))}
         </div>
-      )}
-
-      <Textarea
-        size="sm"
-        label="Description"
-        placeholder="Describe the issue in detail…"
-        autoResize
-        maxLength={1000}
-        showCount
-        value={desc}
-        onChange={(e) => setDesc(e.target.value)}
-      />
-
-      <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
-        <Button size="xs" variant="primary" disabled={!canSubmit} onClick={() => setSubmitted(true)}>Submit ticket</Button>
-        <Button size="xs" variant="outline">Save draft</Button>
-        <div style={{ flex: 1 }} />
-        <Button size="xs" variant="danger" disabled={!title && !desc}>Clear form</Button>
       </div>
-    </div>
+    </Card>
   );
 };
 
-// ─── 4. Plan selector (2×1) ─────────────────────────────────────────────────
-// Showcases: Contained Radio with helperText, Chip for plan features
+// ─── 4. Code Vault (1×2) ────────────────────────────────────────────────────
+// Card: filled with header + footer, CardBleed for full-width code blocks
 
-const PlanSelector: React.FC = () => {
-  const [plan, setPlan] = useState("pro");
+const CodeVault: React.FC = () => {
+  const [search, setSearch] = useState("");
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">Choose a plan</Text>
-        <Chip variant="accent" size="sm" borderless>Billed monthly</Chip>
-      </div>
-
-      <RadioGroup name="plan-select" value={plan} onChange={setPlan}>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <div style={{ flex: "1 1 140px" }}>
-            <Radio value="free" label="Free — $0/mo" helperText="Up to 3 projects, 1 GB storage" contained />
-          </div>
-          <div style={{ flex: "1 1 140px" }}>
-            <Radio value="pro" label="Pro — $29/mo" helperText="Unlimited projects, 50 GB, priority support" contained />
-          </div>
-          <div style={{ flex: "1 1 140px" }}>
-            <Radio value="enterprise" label="Enterprise" helperText="Custom limits, SSO, dedicated support" contained />
-          </div>
-        </div>
-      </RadioGroup>
-
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-        <Chip size="sm" variant={plan === "free" ? "neutral" : "success"} leftIcon="✓">API access</Chip>
-        <Chip size="sm" variant={plan !== "free" ? "success" : "neutral"} leftIcon={plan !== "free" ? "✓" : "×"}>Custom domains</Chip>
-        <Chip size="sm" variant={plan === "enterprise" ? "success" : "neutral"} leftIcon={plan === "enterprise" ? "✓" : "×"}>SSO</Chip>
-      </div>
-
-      <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
-        <Button size="xs" variant="primary">Confirm plan</Button>
-        <Button size="xs" variant="ghost">Compare plans</Button>
-      </div>
-    </div>
-  );
-};
-
-// ─── 5. Code review (1×2) ───────────────────────────────────────────────────
-// Showcases: Chip (swatch for file status), Textarea size, Button xs
-
-const CodeReview: React.FC = () => {
-  const [comment, setComment] = useState("");
-  const [approved, setApproved] = useState(false);
-
-  const files = [
-    { name: "src/Button.tsx", adds: 42, dels: 18, status: "modified" },
-    { name: "src/Chip.tsx", adds: 180, dels: 0, status: "added" },
-    { name: "src/Select.tsx", adds: 26, dels: 8, status: "modified" },
-    { name: "src/types.ts", adds: 6, dels: 0, status: "added" },
+  const snippets = [
+    {
+      title: "Debounce hook",
+      lang: "tsx",
+      code: `function useDebounce<T>(value: T, ms = 300) {
+  const [d, setD] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setD(value), ms);
+    return () => clearTimeout(t);
+  }, [value, ms]);
+  return d;
+}`,
+    },
+    {
+      title: "Fetch with retry",
+      lang: "tsx",
+      code: `async function fetchRetry(url: string, n = 3) {
+  for (let i = 0; i < n; i++) {
+    try { return await fetch(url); }
+    catch (e) { if (i === n - 1) throw e; }
+  }
+}`,
+    },
   ];
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">Review</Text>
-        <Chip variant="warning" size="sm" dot>{files.length} files</Chip>
-      </div>
-      <Breadcrumb items={[{ label: "main" }, { label: "feat/chip-component" }]} separator="→" />
+  const filtered = search
+    ? snippets.filter((s) => s.title.toLowerCase().includes(search.toLowerCase()))
+    : snippets;
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        {files.map((f) => (
-          <div key={f.name} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: "1px solid var(--lucent-border-subtle)" }}>
-            <Chip variant={f.status === "added" ? "success" : "neutral"} size="sm" borderless>{f.status === "added" ? "A" : "M"}</Chip>
-            <Text size="sm" style={{ flex: 1, fontFamily: "monospace", fontSize: 12 }}>{f.name}</Text>
-            <Text size="xs" style={{ color: "var(--lucent-success-default)" }}>+{f.adds}</Text>
-            <Text size="xs" style={{ color: "var(--lucent-danger-default)" }}>−{f.dels}</Text>
-          </div>
+  return (
+    <Card
+      variant="filled"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">Snippets</Text>
+          <Chip variant="neutral" size="sm" borderless>{snippets.length} saved</Chip>
+        </div>
+      }
+      footer={
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button size="xs" variant="primary">+ New snippet</Button>
+          <Button size="xs" variant="ghost">Import</Button>
+        </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <SearchInput size="sm" value={search} onChange={setSearch} placeholder="Search snippets…" />
+
+        {filtered.map((s, i) => (
+          <Collapsible key={i} trigger={s.title} defaultOpen={i === 0}>
+            <div style={{ paddingTop: 6 }}>
+              <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
+                <Chip size="sm" variant="accent" borderless>{s.lang.toUpperCase()}</Chip>
+              </div>
+              <CardBleed>
+                <CodeBlock language={s.lang} code={s.code} />
+              </CardBleed>
+            </div>
+          </Collapsible>
         ))}
       </div>
-
-      <Textarea
-        size="sm"
-        placeholder="Leave a review comment…"
-        autoResize
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        style={{ minHeight: 60 }}
-      />
-
-      <div style={{ display: "flex", gap: 6, marginTop: "auto", flexWrap: "wrap" }}>
-        <Button size="xs" variant="primary" onClick={() => setApproved(true)} disabled={approved}>
-          {approved ? "Approved" : "Approve"}
-        </Button>
-        <Button size="xs" variant="outline" disabled={!comment.trim()}>Request changes</Button>
-        <Button size="xs" variant="ghost" disabled={!comment.trim()}>Comment</Button>
-      </div>
-    </div>
+    </Card>
   );
 };
 
-// ─── 6. Notification settings (1×2) ─────────────────────────────────────────
-// Showcases: Contained Toggle with helperText and align
+// ─── 5. Volume Mixer (1×2) ──────────────────────────────────────────────────
+// Card: elevated with header + footer, CardBleed for channel section
 
-const NotificationSettings: React.FC = () => {
-  const [saved, setSaved] = useState(false);
+const VolumeMixer: React.FC = () => {
+  const [master, setMaster] = useState(80);
+  const [music, setMusic] = useState(65);
+  const [voice, setVoice] = useState(90);
+  const [effects, setEffects] = useState(50);
+  const [muteEffects, setMuteEffects] = useState(false);
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  return (
+    <Card
+      variant="elevated"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">Audio mixer</Text>
+          <Chip variant="success" size="sm" dot>Active</Chip>
+        </div>
+      }
+      footer={
+        <div style={{ display: "flex", gap: 6 }}>
+          <Tooltip content="Reset all levels to default" delay={0}>
+            <Button size="xs" variant="ghost">Reset</Button>
+          </Tooltip>
+          <div style={{ flex: 1 }} />
+          <Button size="xs" variant="primary">Apply</Button>
+        </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <Slider label="Master" min={0} max={100} value={master} onChange={(e) => setMaster(Number(e.target.value))} size="sm" showValue />
+
+        <CardBleed style={{ borderTop: "1px solid var(--lucent-border-default)", borderBottom: "1px solid var(--lucent-border-default)", padding: "10px 16px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Channels</Text>
+            <Slider label="Music" min={0} max={100} value={music} onChange={(e) => setMusic(Number(e.target.value))} size="sm" showValue />
+            <Slider label="Voice" min={0} max={100} value={voice} onChange={(e) => setVoice(Number(e.target.value))} size="sm" showValue />
+            <Slider label="Effects" min={0} max={100} value={muteEffects ? 0 : effects} onChange={(e) => setEffects(Number(e.target.value))} size="sm" showValue disabled={muteEffects} />
+          </div>
+        </CardBleed>
+
+        <Toggle contained label="Mute effects" helperText="Silence all sound effects" checked={muteEffects} onChange={(e) => setMuteEffects(e.target.checked)} />
+      </div>
+    </Card>
+  );
+};
+
+// ─── 6. Travel Booking (2×1) ────────────────────────────────────────────────
+// Card: outline with header, inner ghost Card with status="info"
+
+const TravelBooking: React.FC = () => {
+  const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
+  const [dest, setDest] = useState("");
+  const [travelers, setTravelers] = useState("2");
+  const [tripType, setTripType] = useState("roundtrip");
+
+  return (
+    <Card
+      variant="outline"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">Book a trip</Text>
+          <Chip variant="accent" size="sm" borderless>Flights + Hotels</Chip>
+        </div>
+      }
+      footer={
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button size="sm" variant="primary" disabled={!dest.trim() || !range}>Search flights</Button>
+          <Button size="sm" variant="ghost">Flexible dates</Button>
+        </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <SegmentedControl
+          size="sm"
+          value={tripType}
+          onChange={setTripType}
+          options={[
+            { value: "roundtrip", label: "Round trip" },
+            { value: "oneway", label: "One way" },
+            { value: "multi", label: "Multi-city" },
+          ]}
+        />
+
+        <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+          <div style={{ flex: "2 1 180px" }}>
+            <Input size="sm" label="Destination" placeholder="Where to?" value={dest} onChange={(e) => setDest(e.target.value)} />
+          </div>
+          <div style={{ flex: "1 1 80px" }}>
+            <Select
+              size="sm"
+              label="Travelers"
+              options={[
+                { value: "1", label: "1 adult" },
+                { value: "2", label: "2 adults" },
+                { value: "3", label: "3 adults" },
+                { value: "4", label: "Family (2+2)" },
+              ]}
+              value={travelers}
+              onChange={(e) => setTravelers(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <FormField label="Travel dates" htmlFor="travel-dates">
+          <DateRangePicker size="sm" value={range} onChange={setRange} placeholder="Select dates…" />
+        </FormField>
+
+        {range && (
+          <Card variant="ghost" status="info" padding="sm">
+            <Text size="sm">Flights are 18% cheaper if you depart one day earlier.</Text>
+          </Card>
+        )}
+      </div>
+    </Card>
+  );
+};
+
+// ─── 7. Toast Tester (1×2) ──────────────────────────────────────────────────
+// Card: filled with header + footer
+
+const ToastTesterInner: React.FC = () => {
+  const { toast } = useToast();
+  const [variant, setVariant] = useState("default");
+  const [message, setMessage] = useState("Operation completed");
+  const [withAction, setWithAction] = useState(false);
+
+  const fire = () => {
+    toast({
+      title: message || "Notification",
+      variant: variant as "default" | "success" | "warning" | "danger" | "info",
+      ...(withAction ? { action: { label: "Undo", onClick: () => {} } } : {}),
+    });
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", height: "100%" }}>
-      <Text size="sm" weight="semibold">Notifications</Text>
+    <Card
+      variant="filled"
+      header={<Text size="sm" weight="semibold">Toast tester</Text>}
+      footer={
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button size="sm" variant="primary" onClick={fire}>Fire toast</Button>
+          <Button size="sm" variant="ghost" onClick={() => { setMessage(""); setVariant("default"); }}>Reset</Button>
+        </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <Input size="sm" label="Message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Toast message…" />
 
-      {saved && <Alert variant="success" title="Preferences saved">Your notification settings have been updated.</Alert>}
+        <RadioGroup name="toast-variant" value={variant} onChange={setVariant}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {["default", "success", "warning", "danger", "info"].map((v) => (
+              <Radio key={v} value={v} label={v.charAt(0).toUpperCase() + v.slice(1)} contained size="sm" />
+            ))}
+          </div>
+        </RadioGroup>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <Toggle contained label="Email digest" helperText="Daily summary of activity" defaultChecked />
-        <Toggle contained label="Push notifications" helperText="Real-time alerts on your device" defaultChecked />
-        <Toggle contained label="Slack integration" helperText="Post updates to #team-alerts" align="right" />
-        <Toggle contained label="Marketing emails" helperText="Occasional product news and tips" align="right" />
+        <Toggle contained label="Add action button" helperText="Include an Undo action" checked={withAction} onChange={(e) => setWithAction(e.target.checked)} />
       </div>
-
-      <div style={{ display: "flex", gap: 6, marginTop: "auto" }}>
-        <Button size="xs" variant="primary" onClick={handleSave}>Save preferences</Button>
-        <Button size="xs" variant="ghost">Reset defaults</Button>
-      </div>
-    </div>
+    </Card>
   );
 };
 
-// ─── 7. Invoice builder (2×1) ───────────────────────────────────────────────
-// Showcases: Chip for status, DatePicker size, Button xs
+const ToastTester: React.FC = () => (
+  <ToastProvider position="bottom-right" duration={3000}>
+    <ToastTesterInner />
+  </ToastProvider>
+);
 
-const InvoiceBuilder: React.FC = () => {
-  const [client, setClient] = useState("");
-  const [date, setDate] = useState<Date | undefined>(undefined);
+// ─── 8. Service Monitor (2×2) ───────────────────────────────────────────────
+// Card features: combo variant with header + footer, ghost Cards with status accents
 
-  const items = [
-    { description: "UI design — homepage", hours: "12", rate: "$120", total: "$1,440" },
-    { description: "Frontend development", hours: "24", rate: "$150", total: "$3,600" },
-    { description: "QA & testing", hours: "8", rate: "$100", total: "$800" },
-  ];
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">Invoice</Text>
-        <Chip variant="neutral" size="sm" borderless>INV-2024-037</Chip>
-        <Chip variant="warning" size="sm" dot>Pending</Chip>
-      </div>
-
-      <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-        <div style={{ flex: 1 }}>
-          <Input size="sm" label="Client" placeholder="Client name…" value={client} onChange={(e) => setClient(e.target.value)} />
-        </div>
-        <div style={{ flex: 1 }}>
-          <FormField label="Due date" htmlFor="inv-date">
-            <DatePicker size="sm" value={date} onChange={setDate} placeholder="Select date…" />
-          </FormField>
-        </div>
-      </div>
-
-      <DataTable
-        columns={[
-          { key: "description", header: "Description" },
-          { key: "hours", header: "Hours" },
-          { key: "rate", header: "Rate" },
-          { key: "total", header: "Total" },
-        ]}
-        rows={items}
-        pageSize={5}
-      />
-
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", gap: 6 }}>
-          <Button size="sm" variant="outline">+ Add line</Button>
-          <Button size="sm" variant="ghost">Preview</Button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Text size="sm" weight="semibold">Total: $5,840</Text>
-          <Button size="sm" variant="primary" disabled={!client.trim()}>Send invoice</Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ─── 8. Monitoring dashboard (2×2) ──────────────────────────────────────────
-// Showcases: Chip dot (service status), SearchInput label, Button xs
-
-const MonitoringDashboard: React.FC = () => {
-  const [activeNav, setActiveNav] = useState("overview");
-  const [query, setQuery] = useState("");
-  const [cmdOpen, setCmdOpen] = useState(false);
-
-  const OverviewIcon = () => (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}><rect x={1} y={1} width={6} height={6} rx={1} /><rect x={9} y={1} width={6} height={6} rx={1} /><rect x={1} y={9} width={6} height={6} rx={1} /><rect x={9} y={9} width={6} height={6} rx={1} /></svg>
-  );
-  const AlertsIcon = () => (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M8 1L1 14h14L8 1z" /><path d="M8 6v4M8 12v0" /></svg>
-  );
-  const LogsIcon = () => (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M2 4h12M2 8h8M2 12h10" /></svg>
-  );
-  const MetricsIcon = () => (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}><polyline points="2,12 5,8 8,10 12,5 14,7" /></svg>
-  );
+const ServiceMonitor: React.FC = () => {
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const services = [
     { name: "api-gateway", status: "healthy", latency: "12ms", uptime: "99.99%" },
     { name: "auth-service", status: "healthy", latency: "8ms", uptime: "100%" },
     { name: "payment-svc", status: "degraded", latency: "340ms", uptime: "99.2%" },
     { name: "email-worker", status: "down", latency: "—", uptime: "94.1%" },
-    { name: "search-index", status: "healthy", latency: "24ms", uptime: "99.98%" },
   ];
 
-  const filtered = query
-    ? services.filter((s) => s.name.toLowerCase().includes(query.toLowerCase()))
+  const statusVariant: Record<string, "success" | "warning" | "danger"> = {
+    healthy: "success",
+    degraded: "warning",
+    down: "danger",
+  };
+
+  const filtered = search
+    ? services.filter((s) => s.name.toLowerCase().includes(search.toLowerCase()))
     : services;
 
-  const incidents = [
-    { id: "1", title: "Payment timeouts", description: "p95 latency > 300ms on payment-svc", date: "5 min ago", status: "warning" as const },
-    { id: "2", title: "Email worker crash", description: "OOM kill — restarting container", date: "12 min ago", status: "danger" as const },
-    { id: "3", title: "Cert renewed", description: "TLS cert auto-renewed for *.api.acme.co", date: "2 hr ago", status: "success" as const },
+  return (
+    <Card
+      variant="combo"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">Services</Text>
+          <Chip variant="danger" size="sm" dot>2 issues</Chip>
+          <div style={{ flex: 1 }} />
+          <Tooltip content="Refresh services" delay={0}>
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={() => {
+                setLoading(true);
+                setTimeout(() => setLoading(false), 1000);
+              }}
+            >
+              {loading ? <Spinner size="xs" /> : "↻"}
+            </Button>
+          </Tooltip>
+        </div>
+      }
+      footer={
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Text size="xs" color="secondary">Last updated: just now</Text>
+          <Button size="xs" variant="outline">Export report</Button>
+        </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <SearchInput size="sm" value={search} onChange={setSearch} placeholder="Filter services…" />
+
+        <Table>
+          <Table.Head>
+            <Table.Row>
+              <Table.Cell as="th">Service</Table.Cell>
+              <Table.Cell as="th">Status</Table.Cell>
+              <Table.Cell as="th">Latency</Table.Cell>
+              <Table.Cell as="th">Uptime</Table.Cell>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            {filtered.map((s) => (
+              <Table.Row key={s.name}>
+                <Table.Cell>
+                  <Text size="sm" style={{ fontFamily: "monospace", fontSize: 12 }}>{s.name}</Text>
+                </Table.Cell>
+                <Table.Cell>
+                  <Chip variant={statusVariant[s.status]} size="sm" dot>{s.status}</Chip>
+                </Table.Cell>
+                <Table.Cell><Text size="sm">{s.latency}</Text></Table.Cell>
+                <Table.Cell><Text size="sm">{s.uptime}</Text></Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+
+        <Divider label="Recent incidents" />
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <Card variant="ghost" status="warning" padding="sm">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <Text size="sm" weight="semibold">Payment timeouts</Text>
+                <Text size="xs" color="secondary">p95 latency &gt; 300ms</Text>
+              </div>
+              <Text size="xs" color="secondary">5 min ago</Text>
+            </div>
+          </Card>
+          <Card variant="ghost" status="danger" padding="sm">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <Text size="sm" weight="semibold">Email worker OOM</Text>
+                <Text size="xs" color="secondary">Container restarting</Text>
+              </div>
+              <Text size="xs" color="secondary">12 min ago</Text>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+// ─── 9. Recipe Card (1×2) ───────────────────────────────────────────────────
+// Card features: elevated variant with header + footer, CardBleed for ingredients
+
+const RecipeCard: React.FC = () => {
+  const [servings, setServings] = useState(4);
+  const [checked, setChecked] = useState<string[]>([]);
+
+  const ingredients = [
+    "2 cups all-purpose flour",
+    "1 tsp baking powder",
+    "3 large eggs",
+    "1 cup whole milk",
+    "2 tbsp melted butter",
+  ];
+
+  const toggleIngredient = (item: string) => {
+    setChecked((prev) => (prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item]));
+  };
+
+  return (
+    <Card
+      variant="elevated"
+      header={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold" family="display">Classic Crêpes</Text>
+          <Chip variant="neutral" size="sm" borderless>25 min</Chip>
+        </div>
+      }
+      footer={
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button size="xs" variant="primary">Save recipe</Button>
+          <Button size="xs" variant="ghost">Share</Button>
+        </div>
+      }
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          <Chip size="sm" variant="success" borderless>Vegetarian</Chip>
+          <Chip size="sm" variant="accent" borderless>Breakfast</Chip>
+          <Chip size="sm" variant="warning" borderless>Easy</Chip>
+        </div>
+
+        <Slider label={`Servings: ${servings}`} min={1} max={12} value={servings} onChange={(e) => setServings(Number(e.target.value))} size="sm" />
+
+        <CardBleed style={{ borderTop: "1px solid var(--lucent-border-default)", borderBottom: "1px solid var(--lucent-border-default)", padding: "10px 16px" }}>
+          <Collapsible trigger="Ingredients" defaultOpen>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingTop: 6 }}>
+              {ingredients.map((item) => (
+                <Checkbox
+                  key={item}
+                  label={item}
+                  size="sm"
+                  checked={checked.includes(item)}
+                  onChange={() => toggleIngredient(item)}
+                />
+              ))}
+            </div>
+          </Collapsible>
+        </CardBleed>
+
+        <Collapsible trigger="Instructions">
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 6 }}>
+            <Text size="sm">1. Whisk flour and baking powder together.</Text>
+            <Text size="sm">2. Beat eggs, then add milk and melted butter.</Text>
+            <Text size="sm">3. Combine wet and dry ingredients until smooth.</Text>
+            <Text size="sm">4. Cook on a buttered pan over medium heat.</Text>
+          </div>
+        </Collapsible>
+      </div>
+    </Card>
+  );
+};
+
+// ─── 10. Release Pipeline (2×1) ─────────────────────────────────────────────
+// Card features: status="warning" accent bar, filled Card for deploy notes
+
+const ReleasePipeline: React.FC = () => {
+  const [env, setEnv] = useState("staging");
+  const [notes, setNotes] = useState("");
+
+  const stages = [
+    { id: "1", title: "Build", description: "Compiled in 42s", date: "2 min ago", status: "success" as const },
+    { id: "2", title: "Unit tests", description: "312 passed, 0 failed", date: "1 min ago", status: "success" as const },
+    { id: "3", title: "Deploy to staging", description: "Rolling out…", date: "Just now", status: "warning" as const },
   ];
 
   return (
-    <div style={{ overflow: "hidden", margin: "-16px", width: "calc(100% + 32px)" }}>
-      <PageLayout
-        header={
-          <div style={{ display: "flex", alignItems: "center", gap: 10, width: "100%" }}>
-            <Text size="sm" weight="semibold" family="display">Monitor</Text>
-            <Chip variant="danger" size="sm" dot>2 issues</Chip>
-            <div style={{ flex: 1 }} />
-            <Button size="xs" variant="ghost" onClick={() => setCmdOpen(true)}>⌘K</Button>
-            <Tooltip content="Ops team" delay={0}>
-              <Avatar alt="Ops" size="xs" />
-            </Tooltip>
-          </div>
-        }
-        sidebar={
-          <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "8px" }}>
-            {[
-              { id: "overview", label: "Overview", Icon: OverviewIcon },
-              { id: "alerts", label: "Alerts", Icon: AlertsIcon },
-              { id: "logs", label: "Logs", Icon: LogsIcon },
-              { id: "metrics", label: "Metrics", Icon: MetricsIcon },
-            ].map(({ id, label, Icon }) => (
-              <NavLink key={id} as="button" isActive={activeNav === id} icon={<Icon />} onClick={() => setActiveNav(id)}>
-                {label}
-              </NavLink>
-            ))}
-          </div>
-        }
-        sidebarWidth={140}
-        style={{ height: 340 }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 16px", height: "100%", boxSizing: "border-box", overflow: "auto" }}>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <div style={{ flex: 1 }}>
-              <SearchInput size="sm" value={query} onChange={setQuery} placeholder="Search services…" />
-            </div>
-            <Button size="sm" variant="outline">Export</Button>
-          </div>
-
-          <DataTable
-            columns={[
-              { key: "name", header: "Service", sortable: true },
-              { key: "status", header: "Status", sortable: true },
-              { key: "latency", header: "Latency" },
-              { key: "uptime", header: "Uptime" },
-            ]}
-            rows={filtered}
-            pageSize={4}
-          />
-
-          <Text size="xs" weight="semibold" color="secondary" style={{ marginTop: 4 }}>Recent incidents</Text>
-          <Timeline items={incidents} />
+    <Card status="warning">
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Text size="sm" weight="semibold">Release</Text>
+          <Chip variant="accent" size="sm" borderless>v2.4.0</Chip>
+          <Chip variant="warning" size="sm" dot>Deploying</Chip>
         </div>
-      </PageLayout>
-      <CommandPalette
-        open={cmdOpen}
-        onOpenChange={setCmdOpen}
-        commands={[
-          { id: "restart", label: "Restart email-worker", group: "Actions", onSelect: () => setCmdOpen(false) },
-          { id: "silence", label: "Silence payment alerts", group: "Actions", onSelect: () => setCmdOpen(false) },
-          { id: "logs", label: "View recent logs", group: "Navigate", onSelect: () => { setActiveNav("logs"); setCmdOpen(false); } },
-        ]}
-      />
-    </div>
-  );
-};
 
-// ─── 9. Workspace settings (1×2) ────────────────────────────────────────────
-// Showcases: Contained Checkbox with helperText, Chip for member roles, Button xs
+        <Breadcrumb items={[{ label: "main" }, { label: "release/2.4.0" }]} separator="→" />
 
-const WorkspaceSettings: React.FC = () => {
-  const [name, setName] = useState("Acme Corp");
-  const [saved, setSaved] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("member");
-  const [confirmDelete, setConfirmDelete] = useState(false);
-
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
-      <Text size="sm" weight="semibold" style={{ marginBottom: 10 }}>Workspace</Text>
-
-      {saved && <Alert variant="success" title="Saved" style={{ marginBottom: 8 }}>Workspace name updated.</Alert>}
-
-      <CardBleed style={{ borderBottom: "1px solid var(--lucent-border-default)", padding: "12px 0" }}>
-        <div style={{ padding: "0 16px" }}>
-          <Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>General</Text>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-            <div style={{ flex: 1 }}>
-              <Input size="sm" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <Button size="sm" variant="primary" onClick={handleSave}>Save</Button>
-          </div>
-        </div>
-      </CardBleed>
-
-      <CardBleed style={{ borderBottom: "1px solid var(--lucent-border-default)", padding: "12px 0" }}>
-        <div style={{ padding: "0 16px" }}>
-          <Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>Invite member</Text>
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-            <div style={{ flex: 1 }}>
-              <Input size="sm" placeholder="email@example.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} />
-            </div>
-            <div style={{ width: 100 }}>
-              <Select
-                size="sm"
-                options={[
-                  { value: "member", label: "Member" },
-                  { value: "admin", label: "Admin" },
-                  { value: "viewer", label: "Viewer" },
-                ]}
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value)}
-              />
-            </div>
-            <Button size="sm" variant="outline" disabled={!inviteEmail.includes("@")}>Invite</Button>
-          </div>
-          <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-            <Chip size="sm" leftIcon="👤" variant="accent">You (Owner)</Chip>
-            <Chip size="sm" leftIcon="👤">Alice (Admin)</Chip>
-            <Chip size="sm" leftIcon="👤">Bob (Member)</Chip>
-          </div>
-        </div>
-      </CardBleed>
-
-      <div style={{ marginTop: "auto", padding: "12px 0" }}>
-        <Text size="xs" weight="bold" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 8 }}>Danger zone</Text>
-        <Checkbox
-          contained
-          label="Delete this workspace"
-          helperText="I understand this action is irreversible"
-          checked={confirmDelete}
-          onChange={(e) => setConfirmDelete(e.target.checked)}
+        <SegmentedControl
+          size="sm"
+          value={env}
+          onChange={setEnv}
+          options={[
+            { value: "staging", label: "Staging" },
+            { value: "production", label: "Production" },
+          ]}
         />
-        <div style={{ marginTop: 8 }}>
-          <Button size="sm" variant="danger" disabled={!confirmDelete}>Delete workspace</Button>
+
+        <Timeline items={stages} />
+
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <Spinner size="xs" />
+          <Text size="xs" color="secondary">Deploying to {env}… ETA 45s</Text>
         </div>
-      </div>
-    </div>
-  );
-};
 
-// ─── 10. Data import (1×2) ──────────────────────────────────────────────────
-// Showcases: MultiSelect label/size for column mapping, Chip for file info, DateRangePicker size
-
-const UploadSvg = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1={12} y1={3} x2={12} y2={15} />
-  </svg>
-);
-
-const DataImport: React.FC = () => {
-  const [files, setFiles] = useState<UploadFile[]>([]);
-  const [format, setFormat] = useState("csv");
-  const [columns, setColumns] = useState<string[]>(["name", "email"]);
-  const [importing, setImporting] = useState(false);
-  const [done, setDone] = useState(false);
-
-  const hasFile = files.length > 0;
-
-  const handleImport = () => {
-    setImporting(true);
-    setTimeout(() => { setImporting(false); setDone(true); }, 1500);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Text size="sm" weight="semibold">Import data</Text>
-        {hasFile && <Chip variant="accent" size="sm" dot>{files.length} file{files.length !== 1 ? "s" : ""}</Chip>}
-        {done && <Chip variant="success" size="sm" dot>Complete</Chip>}
-      </div>
-
-      {done && (
-        <Alert variant="success" title="Import complete">
-          {files.length} file{files.length !== 1 ? "s" : ""} imported successfully.
-        </Alert>
-      )}
-
-      <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-        <div style={{ flex: 1 }}>
-          <Select
+        <Card variant="filled" padding="sm">
+          <Textarea
             size="sm"
-            label="Format"
-            options={[
-              { value: "csv", label: "CSV" },
-              { value: "json", label: "JSON" },
-              { value: "xlsx", label: "Excel (.xlsx)" },
-            ]}
-            value={format}
-            onChange={(e) => setFormat(e.target.value)}
+            label="Deploy notes"
+            placeholder="What changed in this release…"
+            autoResize
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            style={{ minHeight: 50 }}
           />
+        </Card>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button size="sm" variant="primary" disabled={env === "staging"}>Promote to prod</Button>
+          <Button size="sm" variant="outline">Rollback</Button>
         </div>
       </div>
-
-      <MultiSelect
-        label="Columns to import"
-        helperText="Choose which columns to include"
-        size="sm"
-        options={[
-          { value: "name", label: "Name" },
-          { value: "email", label: "Email" },
-          { value: "role", label: "Role" },
-          { value: "created", label: "Created at" },
-          { value: "status", label: "Status" },
-        ]}
-        value={columns}
-        onChange={setColumns}
-        placeholder="Select columns…"
-      />
-
-      <FileUpload
-        value={files}
-        onChange={(f) => { setFiles(f); setDone(false); }}
-        accept={format === "csv" ? ".csv" : format === "json" ? ".json" : ".xlsx"}
-        multiple
-        maxSize={50 * 1024 * 1024}
-      />
-
-      {!hasFile && (
-        <EmptyState
-          illustration={<Icon size="lg"><UploadSvg /></Icon>}
-          title="No files selected"
-          description={`Upload a .${format} file to get started.`}
-        />
-      )}
-
-      <div style={{ display: "flex", gap: 6, marginTop: "auto" }}>
-        <Button size="sm" variant="primary" disabled={!hasFile || done} loading={importing} onClick={handleImport}>Import</Button>
-        <Button size="sm" variant="outline" disabled={!hasFile} onClick={() => { setFiles([]); setDone(false); }}>Clear</Button>
-      </div>
-    </div>
+    </Card>
   );
 };
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const BENTO_COMPOSITIONS: BentoComposition[] = [
-  { id: "email-composer",       colSpan: 2, rowSpan: 2, component: EmailComposer },
-  { id: "api-playground",       colSpan: 2, rowSpan: 2, component: APIPlayground },
-  { id: "support-ticket",       colSpan: 2, rowSpan: 2, component: SupportTicket },
-  { id: "plan-selector",        colSpan: 2, rowSpan: 1, component: PlanSelector },
-  { id: "code-review",          colSpan: 1, rowSpan: 2, component: CodeReview },
-  { id: "notifications",        colSpan: 1, rowSpan: 2, component: NotificationSettings },
-  { id: "invoice",              colSpan: 2, rowSpan: 1, component: InvoiceBuilder },
-  { id: "monitoring",           colSpan: 2, rowSpan: 2, component: MonitoringDashboard },
-  { id: "workspace",            colSpan: 1, rowSpan: 2, component: WorkspaceSettings },
-  { id: "data-import",          colSpan: 1, rowSpan: 2, component: DataImport },
+  { id: "team-chat",        colSpan: 2, rowSpan: 2, component: TeamChat,        ownCard: true }, // outline + header/footer
+  { id: "theme-builder",    colSpan: 2, rowSpan: 2, component: ThemeBuilder,     ownCard: true }, // combo + header/footer
+  { id: "sprint-board",     colSpan: 2, rowSpan: 1, component: SprintBoard,     ownCard: true }, // ghost + header, inner outline cards
+  { id: "code-vault",       colSpan: 1, rowSpan: 2, component: CodeVault,       ownCard: true }, // filled + header/footer
+  { id: "volume-mixer",     colSpan: 1, rowSpan: 2, component: VolumeMixer,     ownCard: true }, // elevated + header/footer
+  { id: "travel-booking",   colSpan: 2, rowSpan: 1, component: TravelBooking,   ownCard: true }, // outline + header/footer, inner status card
+  { id: "toast-tester",     colSpan: 1, rowSpan: 2, component: ToastTester,     ownCard: true }, // filled + header/footer
+  { id: "service-monitor",  colSpan: 2, rowSpan: 2, component: ServiceMonitor,  ownCard: true }, // combo + header/footer, inner status cards
+  { id: "recipe-card",      colSpan: 1, rowSpan: 2, component: RecipeCard,      ownCard: true }, // elevated + header/footer + CardBleed
+  { id: "release-pipeline", colSpan: 2, rowSpan: 1, component: ReleasePipeline, ownCard: true }, // status="warning" + inner filled card
 ];

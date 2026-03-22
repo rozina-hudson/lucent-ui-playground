@@ -19,6 +19,20 @@ export function BentoGrid({ previewStyle }: Props) {
     >
       {BENTO_COMPOSITIONS.map((item) => {
         const Preview = item.component;
+        if (item.ownCard) {
+          return (
+            <div
+              key={item.id}
+              style={{
+                breakInside: "avoid",
+                marginBottom: 12,
+                ...previewStyle,
+              }}
+            >
+              <Preview />
+            </div>
+          );
+        }
         return (
           <Card
             key={item.id}
