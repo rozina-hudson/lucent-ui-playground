@@ -16,7 +16,15 @@ import { getShell } from "@/lib/shellColors";
 import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
-import { PlaygroundPanel, defaultPlaygroundState } from "@/components/docs/PlaygroundPanel";
+import {
+  PlaygroundPanel,
+  defaultPlaygroundState,
+  PALETTE_OPTIONS,
+  COMBINED_PRESETS,
+  resolveDimension,
+  resolvePreset,
+  type PlaygroundState,
+} from "@/components/docs/PlaygroundPanel";
 import { LucentSpinner } from "@/components/brand";
 
 type Shell = ReturnType<typeof getShell>;
@@ -105,6 +113,7 @@ const SidebarNav = memo(function SidebarNav({
 
 const HeaderContent = memo(function HeaderContent({
   shell,
+  bg,
   prev,
   next,
   defName,
@@ -115,6 +124,7 @@ const HeaderContent = memo(function HeaderContent({
   onDismissGenerateUI,
 }: {
   shell: Shell;
+  bg: string;
   prev: ComponentDef | null;
   next: ComponentDef | null;
   defName: string;
@@ -125,7 +135,7 @@ const HeaderContent = memo(function HeaderContent({
   onDismissGenerateUI: () => void;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: shell.bg, gap: 12 }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: bg, gap: 12 }}>
       <Link href="/" style={{ fontFamily: "var(--font-unbounded), sans-serif", fontWeight: 600, fontSize: 13, color: shell.gold, textDecoration: "none", letterSpacing: "-0.01em", flexShrink: 0 }}>
         Lucent UI
       </Link>
@@ -257,6 +267,47 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     [a("--lucent-radius-lg")]: `${pg.borderRadius + 4}px`,
   };
 
+  // Theme-aware toggle: detect active palette/preset and swap to its
+  // colors for the new theme instead of resetting to defaults.
+  const handleThemeToggle = () => {
+    const newTheme = pg.theme === "dark" ? "light" : "dark";
+    const d = defaultPlaygroundState;
+
+    // Check if current colors match a palette
+    const matchedPalette = PALETTE_OPTIONS.find((opt) => {
+      const colors = resolveDimension(opt, pg.theme);
+      return Object.entries(colors).every(
+        ([k, v]) => pg[k as keyof PlaygroundState] === v,
+      );
+    });
+    if (matchedPalette) {
+      setPg({ ...pg, theme: newTheme, ...resolveDimension(matchedPalette, newTheme) });
+      return;
+    }
+
+    // Check if current state matches a full preset
+    const matchedPreset = COMBINED_PRESETS.find((preset) => {
+      const resolved = resolvePreset(preset, pg.theme);
+      return Object.entries(resolved).every(
+        ([k, v]) => pg[k as keyof PlaygroundState] === v,
+      );
+    });
+    if (matchedPreset) {
+      setPg({ ...pg, theme: newTheme, ...resolvePreset(matchedPreset, newTheme) });
+      return;
+    }
+
+    // No match — reset non-primary colors so base theme fallback kicks in
+    setPg({
+      ...pg,
+      theme: newTheme,
+      borderColor: d.borderColor,
+      bgColor: d.bgColor,
+      surfaceColor: d.surfaceColor,
+      textColor: d.textColor,
+    });
+  };
+
   // Stable callbacks so memoized components don't re-render on pg changes
   const toggleGenerateUI = useCallback(() => {
     setGenerateUI((v) => {
@@ -280,14 +331,46 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   // Cleanup on unmount
   useEffect(() => () => genTimers.current.forEach(clearTimeout), []);
 
+  // Sync playground CSS custom properties to :root so portaled content
+  // (Menu, ColorPicker, CommandPalette) inherits spacing/radius/font overrides
+  useEffect(() => {
+    const root = document.documentElement;
+    const entries = Object.entries(previewContainerStyle).filter(
+      ([k]) => typeof k === "string" && k.startsWith("--lucent-"),
+    );
+    for (const [prop, val] of entries) {
+      root.style.setProperty(prop, val as string);
+    }
+    root.style.setProperty("--lucent-font-family-base", `"${pg.fontFamily}", sans-serif`);
+    return () => {
+      for (const [prop] of entries) {
+        root.style.removeProperty(prop);
+      }
+      root.style.removeProperty("--lucent-font-family-base");
+    };
+  }, [previewContainerStyle, pg.fontFamily]);
+
+  // Load the playground font globally
+  useEffect(() => {
+    const family = pg.fontFamily;
+    const id = `gfont-${family.replace(/\s+/g, "-")}`;
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;500;600;700&display=swap`;
+      document.head.appendChild(link);
+    }
+  }, [pg.fontFamily]);
+
   const sidebar = (
-    <div style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: shell.bg }}>
+    <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: resolvedBg }}>
       <SidebarNav shell={shell} segment={segment} />
     </div>
   );
 
   const rightSidebarContent = generateUI ? (
-    <div style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden", background: "transparent" }}>
+    <div className="hide-scrollbar" style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden", background: "transparent" }}>
       <PlaygroundPanel state={pg} onChange={setPg} shell={shell} showCodeTab />
     </div>
   ) : undefined;
@@ -307,9 +390,10 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
 
   return (
     <LucentProvider theme={pg.theme} anchors={anchors}>
+      <div className="hide-scrollbar" style={{ ...previewContainerStyle, [a("--lucent-font-family-base")]: `"${pg.fontFamily}", sans-serif`, fontFamily: `"${pg.fontFamily}", sans-serif` }}>
       <PageLayout
         style={{ height: "100vh", background: resolvedBg, color: resolvedText }}
-        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={() => setPg({ ...pg, theme: pg.theme === "dark" ? "light" : "dark", borderColor: defaultPlaygroundState.borderColor, bgColor: defaultPlaygroundState.bgColor, surfaceColor: defaultPlaygroundState.surfaceColor, textColor: defaultPlaygroundState.textColor })} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
+        header={<HeaderContent shell={shell} bg={resolvedBg} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={handleThemeToggle} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
         sidebar={sidebar}
         headerHeight={56}
         sidebarWidth={generateUI ? 10 : 240}
@@ -318,6 +402,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       >
         {generateUIContent}
       </PageLayout>
+      </div>
     </LucentProvider>
   );
 }

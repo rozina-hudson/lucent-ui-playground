@@ -43,6 +43,12 @@ import {
   SegmentedControl,
   CardBleed,
   Chip,
+  Menu,
+  MenuItem,
+  MenuSeparator,
+  MenuGroup,
+  ToastProvider,
+  useToast,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -59,11 +65,14 @@ const ButtonVariants: PreviewFC = () => (
     <Button variant="outline">Outline</Button>
     <Button variant="ghost">Ghost</Button>
     <Button variant="danger">Danger</Button>
+    <Button variant="danger-outline">Danger outline</Button>
+    <Button variant="danger-ghost">Danger ghost</Button>
   </div>
 );
 
 const ButtonSizes: PreviewFC = () => (
   <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <Button size="2xs">2XS</Button>
     <Button size="xs">Extra small</Button>
     <Button size="sm">Small</Button>
     <Button size="md">Medium</Button>
@@ -559,16 +568,29 @@ const AlertDismissible: PreviewFC = () => {
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
-const CardBody: PreviewFC = () => (
-  <Card style={{ width: 280 }}>
-    <Text size="sm" color="secondary">A simple card with body content only.</Text>
-  </Card>
+const CardVariants: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "start" }}>
+    {(["ghost", "outline", "filled", "elevated"] as const).map((v) => (
+      <Card key={v} variant={v} style={{ width: 150 }}>
+        <Text size="xs" weight="medium">{v}</Text>
+      </Card>
+    ))}
+    <Card
+      variant="combo"
+      style={{ width: 150 }}
+      header={<Text size="xs" weight="semibold">combo</Text>}
+      footer={<Text size="xs" color="secondary">Footer</Text>}
+    >
+      <Text size="xs" color="secondary">Body pops</Text>
+    </Card>
+  </div>
 );
 
 const CardHeaderFooter: PreviewFC = () => {
   const { tokens } = useLucent();
   return (
     <Card
+      variant="elevated"
       style={{ width: 300 }}
       header={<Text family="display" weight="semibold">Card title</Text>}
       footer={
@@ -583,13 +605,47 @@ const CardHeaderFooter: PreviewFC = () => {
   );
 };
 
-const CardSizes: PreviewFC = () => (
-  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-    <Card padding="sm" shadow="none" radius="sm" style={{ width: 160 }}>
-      <Text size="xs">sm padding, no shadow</Text>
+const CardInteractive: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+    <Card variant="elevated" onClick={() => {}} style={{ width: 180 }}>
+      <Text weight="semibold" size="sm">Click me</Text>
+      <Text size="xs" color="secondary">Hover lift + active press.</Text>
     </Card>
-    <Card padding="lg" shadow="lg" radius="lg" style={{ width: 160 }}>
-      <Text size="xs">lg padding + shadow</Text>
+    <Card variant="elevated" disabled onClick={() => {}} style={{ width: 180 }}>
+      <Text weight="semibold" size="sm">Disabled</Text>
+      <Text size="xs" color="secondary">No interaction allowed.</Text>
+    </Card>
+  </div>
+);
+
+const CardStatus: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+    {(["success", "warning", "danger", "info"] as const).map((s) => (
+      <Card key={s} status={s} style={{ width: 130 }}>
+        <Text size="xs" weight="medium">{s}</Text>
+      </Card>
+    ))}
+  </div>
+);
+
+const CardSelectedMedia: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "start" }}>
+    <Card
+      media={
+        <img
+          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=520&h=240&fit=crop"
+          alt="Mountain landscape"
+          style={{ width: "100%", height: 120, objectFit: "cover", display: "block" }}
+        />
+      }
+      style={{ width: 240 }}
+    >
+      <Text weight="semibold" size="sm">Media card</Text>
+      <Text size="xs" color="secondary">Full-bleed image at the top.</Text>
+    </Card>
+    <Card selected onClick={() => {}} style={{ width: 240 }}>
+      <Text weight="semibold" size="sm">Selected card</Text>
+      <Text size="xs" color="secondary">Accent ring indicates selection.</Text>
     </Card>
   </div>
 );
@@ -698,6 +754,14 @@ const NavLinkSidebar: PreviewFC = () => (
   </div>
 );
 
+const NavLinkInverse: PreviewFC = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 200 }}>
+    <NavLink href="#" isActive inverse>Dashboard</NavLink>
+    <NavLink href="#" inverse>Components</NavLink>
+    <NavLink href="#" inverse>Settings</NavLink>
+  </div>
+);
+
 // ─── DatePicker ───────────────────────────────────────────────────────────────
 
 const DatePickerControlled: PreviewFC = () => {
@@ -717,6 +781,25 @@ const DatePickerConstrained: PreviewFC = () => (
       max={new Date("2025-12-31")}
       placeholder="Select a 2025 date"
     />
+  </div>
+);
+
+const DatePickerLabeled: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
+    <div style={{ width: 280 }}>
+      <DatePicker
+        label="Start date"
+        helperText="When should the project begin?"
+        placeholder="Pick a date"
+      />
+    </div>
+    <div style={{ width: 280 }}>
+      <DatePicker
+        label="Deadline"
+        errorText="A deadline is required"
+        placeholder="Pick a date"
+      />
+    </div>
   </div>
 );
 
@@ -740,6 +823,25 @@ const DateRangePickerControlled: PreviewFC = () => {
     </div>
   );
 };
+
+const DateRangePickerLabeled: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
+    <div style={{ width: 320 }}>
+      <DateRangePicker
+        label="Trip dates"
+        helperText="Select your check-in and check-out dates"
+        placeholder="Select date range"
+      />
+    </div>
+    <div style={{ width: 320 }}>
+      <DateRangePicker
+        label="Booking period"
+        errorText="Please select a valid date range"
+        placeholder="Select date range"
+      />
+    </div>
+  </div>
+);
 
 const DateRangePickerDisabled: PreviewFC = () => (
   <div style={{ width: 320 }}>
@@ -998,6 +1100,23 @@ const PageLayoutRightSidebar: PreviewFC = () => (
   </PageLayout>
 );
 
+const PageLayoutChrome: PreviewFC = () => (
+  <PageLayout
+    header={<Text weight="semibold">My App</Text>}
+    sidebar={
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: 8 }}>
+        <NavLink href="#" isActive inverse>Dashboard</NavLink>
+        <NavLink href="#" inverse>Settings</NavLink>
+      </div>
+    }
+    chromeBackground="bgSubtle"
+    sidebarWidth={200}
+    style={{ height: 400 }}
+  >
+    <Text>Content on bgBase canvas with bgSubtle chrome</Text>
+  </PageLayout>
+);
+
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 
 const TimelineStatuses: PreviewFC = () => (
@@ -1188,6 +1307,11 @@ const ColorPickerPresets: PreviewFC = () => {
   );
 };
 
+const ColorPickerCompact: PreviewFC = () => {
+  const [color, setColor] = useState("#8b5cf6");
+  return <ColorPicker value={color} onChange={setColor} label="Accent" size="sm" inline />;
+};
+
 // ─── ColorSwatch ─────────────────────────────────────────────────────────────
 
 const ColorSwatchShapes: PreviewFC = () => (
@@ -1282,6 +1406,104 @@ const ChipDecorated: PreviewFC = () => (
   </div>
 );
 
+// ─── Menu ────────────────────────────────────────────────────────────────────
+
+const MenuBasic: PreviewFC = () => (
+  <Menu trigger={<Button variant="outline">Actions</Button>}>
+    <MenuItem onSelect={() => {}}>Edit</MenuItem>
+    <MenuItem onSelect={() => {}}>Duplicate</MenuItem>
+    <MenuSeparator />
+    <MenuItem onSelect={() => {}} danger>Delete</MenuItem>
+  </Menu>
+);
+
+const MenuSelected: PreviewFC = () => (
+  <Menu trigger={<Button variant="outline">View</Button>}>
+    <MenuItem onSelect={() => {}} selected>Grid view</MenuItem>
+    <MenuItem onSelect={() => {}}>List view</MenuItem>
+    <MenuSeparator />
+    <MenuItem onSelect={() => {}} shortcut="⌘E">Edit layout</MenuItem>
+    <MenuItem onSelect={() => {}} shortcut="⌘D" disabled>Duplicate</MenuItem>
+  </Menu>
+);
+
+const MenuGrouped: PreviewFC = () => (
+  <Menu trigger={<Button variant="outline" size="sm">Options</Button>} size="sm">
+    <MenuGroup label="Navigate">
+      <MenuItem onSelect={() => {}}>Dashboard</MenuItem>
+      <MenuItem onSelect={() => {}}>Settings</MenuItem>
+    </MenuGroup>
+    <MenuGroup label="Account">
+      <MenuItem onSelect={() => {}}>Profile</MenuItem>
+      <MenuItem onSelect={() => {}} danger>Sign out</MenuItem>
+    </MenuGroup>
+  </Menu>
+);
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+
+const ToastBasicInner: PreviewFC = () => {
+  const { toast } = useToast();
+  return (
+    <Button
+      variant="outline"
+      onClick={() => toast({ title: "Changes saved", description: "Your profile has been updated successfully." })}
+    >
+      Show toast
+    </Button>
+  );
+};
+
+const ToastBasic: PreviewFC = () => (
+  <ToastProvider>
+    <ToastBasicInner />
+  </ToastProvider>
+);
+
+const ToastVariantsInner: PreviewFC = () => {
+  const { toast } = useToast();
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <Button variant="outline" onClick={() => toast({ title: "Default", variant: "default" })}>Default</Button>
+      <Button variant="outline" onClick={() => toast({ title: "Success", description: "Operation completed.", variant: "success" })}>Success</Button>
+      <Button variant="outline" onClick={() => toast({ title: "Warning", description: "Approaching limit.", variant: "warning" })}>Warning</Button>
+      <Button variant="outline" onClick={() => toast({ title: "Danger", description: "Something went wrong.", variant: "danger" })}>Danger</Button>
+      <Button variant="outline" onClick={() => toast({ title: "Info", description: "New version available.", variant: "info" })}>Info</Button>
+    </div>
+  );
+};
+
+const ToastVariants: PreviewFC = () => (
+  <ToastProvider>
+    <ToastVariantsInner />
+  </ToastProvider>
+);
+
+const ToastActionInner: PreviewFC = () => {
+  const { toast } = useToast();
+  return (
+    <Button
+      variant="outline"
+      onClick={() =>
+        toast({
+          title: "Item deleted",
+          description: "The file has been moved to trash.",
+          variant: "danger",
+          action: { label: "Undo", onClick: () => {} },
+        })
+      }
+    >
+      Delete with undo
+    </Button>
+  );
+};
+
+const ToastAction: PreviewFC = () => (
+  <ToastProvider>
+    <ToastActionInner />
+  </ToastProvider>
+);
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const componentPreviews: Record<string, PreviewFC> = {
@@ -1349,9 +1571,11 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "alert-body": AlertBody,
   "alert-dismissible": AlertDismissible,
   // Card
-  "card-body": CardBody,
+  "card-variants": CardVariants,
   "card-header-footer": CardHeaderFooter,
-  "card-sizes": CardSizes,
+  "card-interactive": CardInteractive,
+  "card-status": CardStatus,
+  "card-selected-media": CardSelectedMedia,
   "card-bleed": CardBleedExample,
   // EmptyState
   "emptystate-full": EmptyStateFull,
@@ -1365,12 +1589,15 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // NavLink
   "navlink-states": NavLinkStates,
   "navlink-sidebar": NavLinkSidebar,
+  "navlink-inverse": NavLinkInverse,
   // DatePicker
   "datepicker-controlled": DatePickerControlled,
+  "datepicker-labeled": DatePickerLabeled,
   "datepicker-constrained": DatePickerConstrained,
   "datepicker-sizes": DatePickerSizes,
   // DateRangePicker
   "daterangepicker-controlled": DateRangePickerControlled,
+  "daterangepicker-labeled": DateRangePickerLabeled,
   "daterangepicker-disabled": DateRangePickerDisabled,
   "daterangepicker-sizes": DateRangePickerSizes,
   // MultiSelect
@@ -1396,6 +1623,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "pagelayout-full": PageLayoutFull,
   "pagelayout-collapsed": PageLayoutCollapsed,
   "pagelayout-right-sidebar": PageLayoutRightSidebar,
+  "pagelayout-chrome": PageLayoutChrome,
   // Timeline
   "timeline-statuses": TimelineStatuses,
   "timeline-descriptions": TimelineDescriptions,
@@ -1414,6 +1642,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // ColorPicker
   "colorpicker-default": ColorPickerDefault,
   "colorpicker-presets": ColorPickerPresets,
+  "colorpicker-compact": ColorPickerCompact,
   // ColorSwatch
   "colorswatch-shapes": ColorSwatchShapes,
   "colorswatch-selected": ColorSwatchSelected,
@@ -1424,4 +1653,12 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "chip-variants": ChipVariants,
   "chip-interactive": ChipInteractive,
   "chip-decorated": ChipDecorated,
+  // Toast
+  "toast-basic": ToastBasic,
+  "toast-variants": ToastVariants,
+  "toast-action": ToastAction,
+  // Menu
+  "menu-basic": MenuBasic,
+  "menu-selected": MenuSelected,
+  "menu-grouped": MenuGrouped,
 };

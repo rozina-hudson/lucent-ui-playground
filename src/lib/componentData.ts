@@ -54,7 +54,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
     slugs: [
       "alert", "card", "emptystate", "tooltip",
       "tabs", "collapsible", "commandpalette", "datatable",
-      "fileupload", "pagelayout", "timeline",
+      "fileupload", "pagelayout", "timeline", "menu", "toast",
     ],
   },
 ];
@@ -68,7 +68,7 @@ export const componentRegistry: ComponentDef[] = [
     name: "Button",
     category: "Atoms",
     description:
-      "Trigger actions and navigation. Supports five semantic variants (primary, secondary, outline, ghost, danger), four sizes (xs–lg), hover lift + glow animation, loading and disabled states, a trailing chevron for dropdown triggers, and an optional full-width layout.",
+      "Trigger actions and navigation. Supports seven semantic variants (primary, secondary, outline, ghost, danger, danger-outline, danger-ghost), five sizes (2xs–lg), hover lift + glow animation, loading and disabled states, a trailing chevron for dropdown triggers, and an optional full-width layout.",
     importStatement: "import { Button } from 'lucent-ui'",
     usageCode: `<Button variant="primary">Save changes</Button>`,
     aiPrompts: {
@@ -87,8 +87,8 @@ export const componentRegistry: ComponentDef[] = [
 // Then ask: "Add a primary Button from lucent-ui"`,
     },
     props: [
-      { name: "variant", type: `"primary" | "secondary" | "outline" | "ghost" | "danger"`, description: "Visual style of the button. secondary is a filled surface button; outline is a bordered button.", defaultValue: `"primary"` },
-      { name: "size", type: `"xs" | "sm" | "md" | "lg"`, description: "Height and horizontal padding scale. xs (26px) is ideal for compact toolbars.", defaultValue: `"md"` },
+      { name: "variant", type: `"primary" | "secondary" | "outline" | "ghost" | "danger" | "danger-outline" | "danger-ghost"`, description: "Visual style of the button. secondary is a filled surface button; outline is a bordered button. danger-outline is a red-bordered variant for destructive actions needing visual weight; danger-ghost is red text on transparent background for low-emphasis destructive actions.", defaultValue: `"primary"` },
+      { name: "size", type: `"2xs" | "xs" | "sm" | "md" | "lg"`, description: "Height and horizontal padding scale. 2xs (22px) for dashboard toolbars and table-inline actions; xs (26px) for compact toolbars.", defaultValue: `"md"` },
       { name: "loading", type: "boolean", description: "Replaces the label with a spinner and disables interaction.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction and mutes the appearance.", defaultValue: "false" },
       { name: "chevron", type: "boolean", description: "Appends a down-chevron icon for dropdown trigger patterns.", defaultValue: "false" },
@@ -99,19 +99,22 @@ export const componentRegistry: ComponentDef[] = [
     examples: [
       {
         title: "Variants",
-        description: "Five semantic variants for different action weights.",
+        description: "Seven semantic variants for different action weights, including danger compound variants.",
         previewKey: "button-variants",
         code: `<Button variant="primary">Primary</Button>
 <Button variant="secondary">Secondary</Button>
 <Button variant="outline">Outline</Button>
 <Button variant="ghost">Ghost</Button>
-<Button variant="danger">Danger</Button>`,
+<Button variant="danger">Danger</Button>
+<Button variant="danger-outline">Danger outline</Button>
+<Button variant="danger-ghost">Danger ghost</Button>`,
       },
       {
         title: "Sizes",
-        description: "Four sizes from compact toolbars (xs) to prominent CTAs (lg).",
+        description: "Five sizes from ultra-dense toolbars (2xs) to prominent CTAs (lg).",
         previewKey: "button-sizes",
-        code: `<Button size="xs">Extra small</Button>
+        code: `<Button size="2xs">2XS</Button>
+<Button size="xs">Extra small</Button>
 <Button size="sm">Small</Button>
 <Button size="md">Medium</Button>
 <Button size="lg">Large</Button>`,
@@ -1023,39 +1026,57 @@ const results = allItems
     name: "Card",
     category: "Molecules",
     description:
-      "Padded surface container with optional header, footer, configurable shadow, and border radius. Adapts to the active theme.",
+      "Surface container with five elevation variants (ghost → combo), optional header/footer, interactive onClick/href support, status accent bars, and selectable state. Adapts to the active theme.",
     importStatement: "import { Card } from 'lucent-ui'",
     usageCode: `<Card
+  variant="elevated"
   header={<Text weight="semibold">Card title</Text>}
   footer={<Button size="sm">Save</Button>}
 >
   Card content goes here.
 </Card>`,
     aiPrompts: {
-      claude: `"Add a Card from lucent-ui with a header containing the title, body content, and a footer with Save and Cancel buttons."`,
-      cursor: `@lucent-ui Add a Card with header, footer with actions, and body content.`,
-      vscode: `Using lucent-ui, add a Card component with header, children, and footer props.`,
+      claude: `"Add an elevated Card from lucent-ui with a header, body content, and a footer with Save and Cancel buttons."`,
+      cursor: `@lucent-ui Add an elevated Card with header, footer with actions, and body content.`,
+      vscode: `Using lucent-ui, add a Card component with variant="elevated", header, children, and footer props.`,
       mcp: `// lucent-ui MCP
-// Ask: "Add a Card from lucent-ui with header and footer"`,
+// Ask: "Add an elevated Card from lucent-ui with header and footer"`,
     },
     props: [
       { name: "children", type: "React.ReactNode", description: "Card body content.", required: true },
+      { name: "variant", type: `"ghost" | "outline" | "filled" | "elevated" | "combo"`, description: "Elevation level. ghost = transparent, no border. outline = transparent with border. filled = surfaceTint background. elevated = surface with border and shadow. combo = filled wrapper with elevated body inset.", defaultValue: `"outline"` },
       { name: "header", type: "React.ReactNode", description: "Content rendered in the card header area." },
       { name: "footer", type: "React.ReactNode", description: "Content rendered in the card footer area." },
-      { name: "padding", type: `"none" | "sm" | "md" | "lg"`, description: "Inner padding.", defaultValue: `"md"` },
+      { name: "media", type: "React.ReactNode", description: "Full-bleed content rendered at the top of the card before the header, with no padding." },
+      { name: "onClick", type: "() => void", description: "Renders the card as a <button> with hover lift, focus ring, and active press state." },
+      { name: "href", type: "string", description: "Renders the card as an <a> with hover lift, focus ring, and active press state." },
+      { name: "disabled", type: "boolean", description: "Reduces opacity, blocks interaction, sets cursor: not-allowed.", defaultValue: "false" },
+      { name: "status", type: `"success" | "warning" | "danger" | "info"`, description: "Adds a 3px colored bar on the left edge using the corresponding status token." },
+      { name: "selected", type: "boolean", description: "Adds an outer accent-subtle ring and subtle background tint. Sets aria-pressed on interactive cards.", defaultValue: "false" },
+      { name: "padding", type: `"none" | "sm" | "md" | "lg"`, description: "Inner padding. Vertical padding is tighter than horizontal.", defaultValue: `"md"` },
       { name: "shadow", type: `"none" | "sm" | "md" | "lg"`, description: "Drop shadow.", defaultValue: `"sm"` },
       { name: "radius", type: `"none" | "sm" | "md" | "lg"`, description: "Border radius.", defaultValue: `"md"` },
       { name: "style", type: "React.CSSProperties", description: "Inline style override." },
     ],
     examples: [
       {
-        title: "Body only",
-        description: "Simplest card — content only.",
-        previewKey: "card-body",
-        code: `<Card>
-  <Text size="sm" color="secondary">
-    A simple card with body content only.
-  </Text>
+        title: "Elevation variants",
+        description: "Five variants form a visual importance hierarchy, from ghost (invisible) to combo (inset body). Headers and footers recede into the tint on combo while the body pops.",
+        previewKey: "card-variants",
+        code: `<Card
+  variant="ghost"
+  header={<Text size="xs" weight="semibold">ghost</Text>}
+  footer={<Text size="xs" color="secondary">Footer</Text>}
+>
+  <Text size="xs" color="secondary">Body content</Text>
+</Card>
+
+<Card
+  variant="combo"
+  header={<Text size="xs" weight="semibold">combo</Text>}
+  footer={<Text size="xs" color="secondary">Footer</Text>}
+>
+  <Text size="xs" color="secondary">Body content</Text>
 </Card>`,
       },
       {
@@ -1063,6 +1084,7 @@ const results = allItems
         description: "Full card with title and action footer.",
         previewKey: "card-header-footer",
         code: `<Card
+  variant="elevated"
   header={<Text family="display" weight="semibold">Card title</Text>}
   footer={
     <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
@@ -1075,14 +1097,42 @@ const results = allItems
 </Card>`,
       },
       {
-        title: "Padding & shadow",
-        description: "Control padding, shadow, and radius independently.",
-        previewKey: "card-sizes",
-        code: `<Card padding="sm" shadow="none" radius="sm">
-  <Text size="xs">sm padding, no shadow</Text>
+        title: "Interactive card",
+        description: "onClick renders as a button with hover lift and active press. href renders as a link.",
+        previewKey: "card-interactive",
+        code: `<Card variant="elevated" onClick={() => alert("Clicked!")}>
+  <Text weight="semibold" size="sm">Click me</Text>
+  <Text size="xs" color="secondary">
+    I have hover lift and active press.
+  </Text>
+</Card>`,
+      },
+      {
+        title: "Status accent",
+        description: "A colored bar on the left edge signals status context.",
+        previewKey: "card-status",
+        code: `<Card status="success"><Text size="xs">Success</Text></Card>
+<Card status="warning"><Text size="xs">Warning</Text></Card>
+<Card status="danger"><Text size="xs">Danger</Text></Card>
+<Card status="info"><Text size="xs">Info</Text></Card>`,
+      },
+      {
+        title: "Media & selected",
+        description: "media renders full-bleed content at the top. selected adds an accent ring for toggle behavior.",
+        previewKey: "card-selected-media",
+        code: `{/* Full-bleed image */}
+<Card
+  media={
+    <img src="hero.jpg" alt="Hero"
+      style={{ width: "100%", height: 120, objectFit: "cover" }} />
+  }
+>
+  <Text weight="semibold" size="sm">Media card</Text>
 </Card>
-<Card padding="lg" shadow="lg" radius="lg">
-  <Text size="xs">lg padding + shadow</Text>
+
+{/* Selected toggle card */}
+<Card selected onClick={() => toggle()}>
+  <Text weight="semibold" size="sm">Selected card</Text>
 </Card>`,
       },
       {
@@ -1268,7 +1318,7 @@ const results = allItems
     name: "NavLink",
     category: "Atoms",
     description:
-      "Styled navigation anchor with active, disabled, and icon states. Renders as an <a> by default but accepts a custom `as` prop for framework routers.",
+      "Styled navigation anchor with active, disabled, icon, and inverse states. The inverse prop uses a surface background with textPrimary for sidebar links on tinted chrome. Renders as an <a> by default but accepts a custom `as` prop for framework routers.",
     importStatement: "import { NavLink } from 'lucent-ui'",
     usageCode: `<NavLink href="/dashboard" isActive>
   Dashboard
@@ -1285,6 +1335,7 @@ const results = allItems
       { name: "href", type: "string", description: "URL the link points to." },
       { name: "isActive", type: "boolean", description: "Applies the active visual style.", defaultValue: "false" },
       { name: "icon", type: "React.ReactNode", description: "Optional icon rendered before the label." },
+      { name: "inverse", type: "boolean", description: "Uses surface background with textPrimary instead of accent for the active state. Active inverse links show border-default border, shadow-md elevation, and a 3px accent right border indicator. Ideal for sidebar navigation on tinted chrome.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction and dims the link.", defaultValue: "false" },
       { name: "onClick", type: "() => void", description: "Click handler." },
       { name: "as", type: "React.ElementType", description: "Override rendered element — e.g. a Next.js Link.", defaultValue: '"a"' },
@@ -1308,6 +1359,16 @@ const results = allItems
   <NavLink href="#">Settings</NavLink>
 </div>`,
       },
+      {
+        title: "Inverse sidebar",
+        description: "Inverse links for sidebar navigation on tinted chrome backgrounds.",
+        previewKey: "navlink-inverse",
+        code: `<div style={{ display: "flex", flexDirection: "column", gap: 4, width: 200 }}>
+  <NavLink href="#" isActive inverse>Dashboard</NavLink>
+  <NavLink href="#" inverse>Components</NavLink>
+  <NavLink href="#" inverse>Settings</NavLink>
+</div>`,
+      },
     ],
   },
 
@@ -1317,7 +1378,7 @@ const results = allItems
     name: "DatePicker",
     category: "Atoms",
     description:
-      "Controlled date input that opens a calendar popover. Supports three sizes, min/max constraints, and a placeholder.",
+      "Controlled date input that opens a calendar popover. Supports label, helperText, errorText, three sizes, min/max constraints, and border-box sizing matching Input/Select.",
     importStatement: "import { DatePicker } from 'lucent-ui'",
     usageCode: `const [date, setDate] = useState<Date | undefined>(undefined);
 
@@ -1338,6 +1399,9 @@ const results = allItems
       { name: "defaultValue", type: "Date", description: "Uncontrolled initial Date value." },
       { name: "onChange", type: "(date: Date) => void", description: "Called with the selected Date object." },
       { name: "placeholder", type: "string", description: "Placeholder text when no date is selected.", defaultValue: '"Select date"' },
+      { name: "label", type: "string", description: "Label displayed above the picker." },
+      { name: "helperText", type: "string", description: "Hint or description below the picker." },
+      { name: "errorText", type: "string", description: "Error message — triggers the error visual state with aria-invalid." },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font size — matches Input sizing.", defaultValue: `"md"` },
       { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
       { name: "min", type: "Date", description: "Minimum selectable date." },
@@ -1352,6 +1416,22 @@ const results = allItems
         code: `const [date, setDate] = useState<Date | undefined>(undefined);
 
 <DatePicker value={date} onChange={setDate} placeholder="Pick a date" />`,
+      },
+      {
+        title: "With label & helper text",
+        description: "Label, helperText, and errorText props matching Input's pattern.",
+        previewKey: "datepicker-labeled",
+        code: `<DatePicker
+  label="Start date"
+  helperText="When should the project begin?"
+  placeholder="Pick a date"
+/>
+
+<DatePicker
+  label="Deadline"
+  errorText="A deadline is required"
+  placeholder="Pick a date"
+/>`,
       },
       {
         title: "With constraints",
@@ -1381,7 +1461,7 @@ const results = allItems
     name: "DateRangePicker",
     category: "Atoms",
     description:
-      "Selects a start and end date from a calendar popover. Supports three sizes and real-time range highlighting on hover. Returns a DateRange object with start/end Date values.",
+      "Selects a start and end date from a calendar popover. Supports label, helperText, errorText, three sizes, and real-time range highlighting on hover. Returns a DateRange object with start/end Date values. Border-box sizing matches Input/Select.",
     importStatement: "import { DateRangePicker } from 'lucent-ui'",
     usageCode: `const [range, setRange] = useState<{ start: Date; end: Date } | undefined>(undefined);
 
@@ -1402,6 +1482,9 @@ const results = allItems
       { name: "defaultValue", type: "DateRange", description: "Uncontrolled initial range." },
       { name: "onChange", type: "(range: DateRange) => void", description: "Called with the selected range." },
       { name: "placeholder", type: "string", description: "Placeholder when no range is selected.", defaultValue: '"Select range"' },
+      { name: "label", type: "string", description: "Label displayed above the picker." },
+      { name: "helperText", type: "string", description: "Hint or description below the picker." },
+      { name: "errorText", type: "string", description: "Error message — triggers the error visual state with aria-invalid." },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font size — matches Input sizing.", defaultValue: `"md"` },
       { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
       { name: "min", type: "Date", description: "Minimum selectable date." },
@@ -1418,6 +1501,22 @@ const results = allItems
 <DateRangePicker
   value={range}
   onChange={setRange}
+  placeholder="Select date range"
+/>`,
+      },
+      {
+        title: "With label & helper text",
+        description: "Label, helperText, and errorText props matching Input's pattern.",
+        previewKey: "daterangepicker-labeled",
+        code: `<DateRangePicker
+  label="Trip dates"
+  helperText="Select your check-in and check-out dates"
+  placeholder="Select date range"
+/>
+
+<DateRangePicker
+  label="Booking period"
+  errorText="Please select a valid date range"
   placeholder="Select date range"
 />`,
       },
@@ -1853,7 +1952,7 @@ const results = allItems
     name: "PageLayout",
     category: "Molecules",
     description:
-      "Full-page shell with a fixed header, collapsible left sidebar, optional right sidebar, and scrollable main content area. Designed as a top-level layout wrapper.",
+      "Full-page shell with a fixed header, collapsible left sidebar, optional right sidebar, and scrollable main content area. Chrome regions can use a distinct background via chromeBackground for visual separation from the main content. Hidden scrollbars on all scrollable regions.",
     importStatement: "import { PageLayout } from 'lucent-ui'",
     usageCode: `<PageLayout
   header={<div>App header</div>}
@@ -1881,6 +1980,7 @@ const results = allItems
       { name: "rightSidebarCollapsed", type: "boolean", description: "Collapses the right sidebar when true.", defaultValue: "false" },
       { name: "footer", type: "React.ReactNode", description: "Content for the footer bar rendered below the body row." },
       { name: "footerHeight", type: "number | string", description: "Footer height in px or any CSS value.", defaultValue: "48" },
+      { name: "chromeBackground", type: `"bgBase" | "bgSubtle" | "surface"`, description: "Background token for chrome regions (header, sidebar, footer). Use \"bgSubtle\" or \"surface\" to visually distinguish chrome from the main content area." },
       { name: "mainStyle", type: "React.CSSProperties", description: "Inline styles for the main content area." },
       { name: "style", type: "React.CSSProperties", description: "Inline styles for the outer wrapper." },
     ],
@@ -1938,6 +2038,25 @@ const results = allItems
   style={{ height: 400 }}
 >
   <Text>Main content area</Text>
+</PageLayout>`,
+      },
+      {
+        title: "Chrome theming",
+        description: "Subtle chrome background distinguishes header and sidebar from the main content.",
+        previewKey: "pagelayout-chrome",
+        code: `<PageLayout
+  header={<Text weight="semibold">My App</Text>}
+  sidebar={
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: 8 }}>
+      <NavLink href="#" isActive inverse>Dashboard</NavLink>
+      <NavLink href="#" inverse>Settings</NavLink>
+    </div>
+  }
+  chromeBackground="bgSubtle"
+  sidebarWidth={200}
+  style={{ height: 400 }}
+>
+  <Text>Content on bgBase canvas with bgSubtle chrome</Text>
 </PageLayout>`,
       },
     ],
@@ -2272,7 +2391,7 @@ const results = allItems
     name: "ColorPicker",
     category: "Atoms",
     description:
-      "Fully-featured color selection component. Opens a popover with a spectrum panel, hue and alpha sliders, four input formats (Hex, RGB, HSL, HSB), eyedropper support, and multi-group preset palettes switchable via dropdown.",
+      "Fully-featured color selection component. Opens a portaled popover with a spectrum panel, hue and alpha sliders, four input formats (Hex, RGB, HSL, HSB), eyedropper support, and multi-group preset palettes. Supports compact size and inline label placement.",
     importStatement: "import { ColorPicker } from 'lucent-ui'",
     usageCode: `<ColorPicker value={color} onChange={setColor} label="Brand color" />`,
     aiPrompts: {
@@ -2294,6 +2413,8 @@ const results = allItems
       { name: "value", type: "string", description: "Current color value (any CSS color string).", required: true },
       { name: "onChange", type: "(color: string) => void", description: "Callback fired when the color changes.", required: true },
       { name: "label", type: "string", description: "Label displayed above the trigger swatch." },
+      { name: "size", type: `"sm" | "md"`, description: "Trigger swatch size. sm renders a compact 24px swatch.", defaultValue: `"md"` },
+      { name: "inline", type: "boolean", description: "Places the label beside the swatch instead of above it.", defaultValue: "false" },
       { name: "presetGroups", type: "ColorPresetGroup[]", description: "Array of { label, colors } groups. Single group hides the switcher; multiple groups show a dropdown." },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
     ],
@@ -2320,6 +2441,20 @@ const results = allItems
     { label: "Brand", colors: ["#111827", "#3b82f6", "#8b5cf6"] },
     { label: "Semantic", colors: ["#22c55e", "#f59e0b", "#ef4444"] },
   ]}
+/>`,
+      },
+      {
+        title: "Compact inline",
+        description: "Small trigger with inline label — ideal for settings panels and customizers.",
+        previewKey: "colorpicker-compact",
+        code: `const [color, setColor] = useState("#8b5cf6");
+
+<ColorPicker
+  value={color}
+  onChange={setColor}
+  label="Accent"
+  size="sm"
+  inline
 />`,
       },
     ],
@@ -2383,7 +2518,7 @@ const results = allItems
     name: "SegmentedControl",
     category: "Atoms",
     description:
-      "Pill-style toggle group with a smooth sliding selection indicator. Fills its container by default. Use for format switchers, view mode toggles, or filter bars.",
+      "Pill-style toggle group with an elevation-aware sliding indicator. Uses getBoundingClientRect with ResizeObserver for pixel-perfect positioning. Zero-padding track with 3px inset indicator. Focus ring only on keyboard navigation (:focus-visible).",
     importStatement: "import { SegmentedControl } from 'lucent-ui'",
     usageCode: `<SegmentedControl
   defaultValue="grid"
@@ -2467,7 +2602,7 @@ const results = allItems
     },
     props: [
       { name: "children", type: "React.ReactNode", description: "Chip label.", required: true },
-      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant.", defaultValue: `"neutral"` },
+      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant. The accent variant uses a solid accent background with auto-derived text-on-accent color.", defaultValue: `"neutral"` },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Chip size. Heights scale with spacing tokens.", defaultValue: `"md"` },
       { name: "onDismiss", type: "() => void", description: "If provided, renders a dismiss (×) button for removable chips." },
       { name: "onClick", type: "() => void", description: "Makes the chip clickable — renders as a button element." },
@@ -2511,6 +2646,149 @@ const results = allItems
 <Chip dot variant="danger">Offline</Chip>
 <Chip leftIcon="🇺🇸">United States</Chip>
 <Chip borderless variant="accent">Borderless</Chip>`,
+      },
+    ],
+  },
+
+  // ── Menu ───────────────────────────────────────────────────────────────────
+  {
+    slug: "menu",
+    name: "Menu",
+    category: "Molecules",
+    description:
+      "Compound-component dropdown menu with portal rendering, 8-direction placement with auto-flip, full WAI-ARIA keyboard navigation, and scale + fade animations. Supports selected, danger, disabled items, shortcut hints, and grouped sections.",
+    importStatement: "import { Menu, MenuItem, MenuSeparator, MenuGroup } from 'lucent-ui'",
+    usageCode: `<Menu trigger={<Button>Actions</Button>}>
+  <MenuItem onSelect={() => handleEdit()}>Edit</MenuItem>
+  <MenuItem onSelect={() => handleDuplicate()}>Duplicate</MenuItem>
+  <MenuSeparator />
+  <MenuItem onSelect={() => handleDelete()} danger>Delete</MenuItem>
+</Menu>`,
+    aiPrompts: {
+      claude: `"Add a Menu from lucent-ui triggered by a Button. Include items for Edit, Duplicate, and a danger Delete item separated by a MenuSeparator."`,
+      cursor: `@lucent-ui Add a dropdown Menu with MenuItem children, a MenuSeparator, and a danger item for delete.`,
+      vscode: `Using lucent-ui, add a Menu component with compound children (MenuItem, MenuSeparator, MenuGroup) triggered by a Button.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Menu from lucent-ui with edit, duplicate, and delete items"`,
+    },
+    props: [
+      { name: "trigger", type: "React.ReactNode", description: "The element that opens the menu on click.", required: true },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Size variant — flows through context to all items. Font sizes aligned with Button.", defaultValue: `"md"` },
+      { name: "placement", type: `"top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end" | "left" | "right"`, description: "Preferred placement of the popover. Automatically flips at viewport edges.", defaultValue: `"bottom-start"` },
+      { name: "open", type: "boolean", description: "Controlled open state." },
+      { name: "onOpenChange", type: "(open: boolean) => void", description: "Callback when open state changes." },
+      { name: "children", type: "React.ReactNode", description: "MenuItem, MenuSeparator, and MenuGroup children.", required: true },
+    ],
+    examples: [
+      {
+        title: "Basic menu",
+        description: "Simple dropdown with items, separator, and a danger action.",
+        previewKey: "menu-basic",
+        code: `<Menu trigger={<Button variant="outline">Actions</Button>}>
+  <MenuItem onSelect={() => {}}>Edit</MenuItem>
+  <MenuItem onSelect={() => {}}>Duplicate</MenuItem>
+  <MenuSeparator />
+  <MenuItem onSelect={() => {}} danger>Delete</MenuItem>
+</Menu>`,
+      },
+      {
+        title: "Selected & shortcuts",
+        description: "Items with selected state and keyboard shortcut hints.",
+        previewKey: "menu-selected",
+        code: `<Menu trigger={<Button variant="outline">View</Button>}>
+  <MenuItem onSelect={() => {}} selected>Grid view</MenuItem>
+  <MenuItem onSelect={() => {}}>List view</MenuItem>
+  <MenuSeparator />
+  <MenuItem onSelect={() => {}} shortcut="⌘E">Edit layout</MenuItem>
+  <MenuItem onSelect={() => {}} shortcut="⌘D" disabled>Duplicate</MenuItem>
+</Menu>`,
+      },
+      {
+        title: "Grouped with sizes",
+        description: "MenuGroup sections with labels, shown in small size.",
+        previewKey: "menu-grouped",
+        code: `<Menu trigger={<Button variant="outline" size="sm">Options</Button>} size="sm">
+  <MenuGroup label="Navigate">
+    <MenuItem onSelect={() => {}}>Dashboard</MenuItem>
+    <MenuItem onSelect={() => {}}>Settings</MenuItem>
+  </MenuGroup>
+  <MenuGroup label="Account">
+    <MenuItem onSelect={() => {}}>Profile</MenuItem>
+    <MenuItem onSelect={() => {}} danger>Sign out</MenuItem>
+  </MenuGroup>
+</Menu>`,
+      },
+    ],
+  },
+  {
+    slug: "toast",
+    name: "Toast",
+    customizerName: "ToastProvider",
+    category: "Molecules",
+    description:
+      "Imperative toast notifications via ToastProvider + useToast hook. Five semantic variants with built-in icons, action buttons, cascading card stack with hover-to-expand, six screen positions, enter/exit animations, and configurable auto-dismiss.",
+    importStatement: "import { ToastProvider, useToast } from 'lucent-ui'",
+    usageCode: `// Wrap your app once
+<ToastProvider>
+  <App />
+</ToastProvider>
+
+// Then call from anywhere
+const { toast, dismiss } = useToast();
+toast({ title: "Saved", variant: "success" });`,
+    aiPrompts: {
+      claude: `"Add a ToastProvider from lucent-ui at the app root, then use the useToast hook to show a success toast on form submit."`,
+      cursor: `@lucent-ui Add ToastProvider and use the useToast hook to show a toast notification with an undo action button.`,
+      vscode: `Using lucent-ui, wrap the app with ToastProvider and call useToast().toast() to show an imperative notification with variant and action.`,
+      mcp: `// lucent-ui MCP
+/ Ask: "Add toast notifications from lucent-ui with success and danger variants"`,
+    },
+    props: [
+      { name: "position", type: `"top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right"`, description: "Screen position for the toast stack.", defaultValue: `"bottom-right"` },
+      { name: "duration", type: "number", description: "Default auto-dismiss duration in ms. Pass Infinity to disable.", defaultValue: "5000" },
+      { name: "portalContainer", type: "HTMLElement", description: "Custom portal target. Defaults to document.body." },
+      { name: "toast()", type: "(options: ToastOptions) => string", description: "Show a toast. Returns a dismissible id. Options: title, description, variant, action ({ label, onClick }), duration." },
+      { name: "dismiss()", type: "(id: string) => void", description: "Programmatically dismiss a toast by id." },
+    ],
+    examples: [
+      {
+        title: "Basic toast",
+        description: "Simple notification with title and description.",
+        previewKey: "toast-basic",
+        code: `const { toast } = useToast();
+
+<Button onClick={() => toast({
+  title: "Changes saved",
+  description: "Your profile has been updated successfully."
+})}>
+  Show toast
+</Button>`,
+      },
+      {
+        title: "Variants",
+        description: "Default, success, warning, danger, and info variants with semantic icons.",
+        previewKey: "toast-variants",
+        code: `const { toast } = useToast();
+
+<Button onClick={() => toast({ title: "Success", variant: "success" })}>Success</Button>
+<Button onClick={() => toast({ title: "Warning", variant: "warning" })}>Warning</Button>
+<Button onClick={() => toast({ title: "Danger", variant: "danger" })}>Danger</Button>
+<Button onClick={() => toast({ title: "Info", variant: "info" })}>Info</Button>`,
+      },
+      {
+        title: "With action",
+        description: "Toast with an inline undo action button.",
+        previewKey: "toast-action",
+        code: `const { toast } = useToast();
+
+<Button onClick={() => toast({
+  title: "Item deleted",
+  description: "The file has been moved to trash.",
+  variant: "danger",
+  action: { label: "Undo", onClick: () => {} },
+})}>
+  Delete with undo
+</Button>`,
       },
     ],
   },

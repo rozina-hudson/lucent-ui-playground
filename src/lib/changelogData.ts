@@ -8,43 +8,293 @@ export type ChangelogEntry = {
 export type ChangelogItem = {
   label: string;
   description: string;
+  subItems?: string[];
 };
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "0.19.0",
+    date: "March 2026",
+    title: "Toast molecule — imperative notifications",
+    items: [
+      {
+        label: "Toast",
+        description:
+          "New molecule for ephemeral notifications via ToastProvider + useToast hook. Imperative API — call toast() from anywhere, get a dismissible id back.",
+        subItems: [
+          "Five variants (default, success, warning, danger, info) with semantic border colors and built-in 16×16 SVG icons (same set as Alert).",
+          "Multi-line text with semibold title + optional secondary description (supports \\n via white-space: pre-line).",
+          "Inline action buttons in two styles: bordered pill (Sonner-style \"Undo\") or underlined link. Clicking fires the callback and auto-dismisses.",
+          "Cascading card stack — multiple toasts stack as empty card shells with progressive scaleX reduction and opacity fade. Up to 3 shells visible. Hover to expand fans out all toasts with content fading in and heights animating.",
+          "Six positions (top-left, top-center, top-right, bottom-left, bottom-center, bottom-right). Anchored edge pinned at fixed distance from screen edge. Enter/exit slide animations with opacity fade and scale-up.",
+          "Auto-dismiss configurable per-provider (default 5s) and per-toast — pass Infinity to disable. Portal rendering via createPortal.",
+          "Accessible: role=\"status\" + aria-live=\"polite\" on each toast, aria-hidden on stacked shells, aria-label=\"Dismiss\" on close button.",
+        ],
+      },
+    ],
+  },
+  {
+    version: "0.18.0",
+    date: "March 2026",
+    title: "Menu molecule & MultiSelect font scaling",
+    items: [
+      {
+        label: "Menu",
+        description:
+          "New compound-component dropdown menu with portal rendering, 8-direction placement, and full WAI-ARIA keyboard navigation.",
+        subItems: [
+          "Compound API — Menu, MenuItem, MenuSeparator, and MenuGroup compose as JSX children.",
+          "Portal rendering via createPortal escapes overflow: hidden ancestors. 8-direction placement with automatic viewport-edge flipping.",
+          "Full WAI-ARIA Menu Button keyboard navigation (arrow keys, Enter/Space, Escape, Home/End). Outside-click and scroll dismissal.",
+          "Scale + fade entrance/exit animations over 120ms.",
+          "Selected state with trailing accent-colored checkmark. Danger items with danger-colored text and icon. Shortcut hints via shortcut prop. Disabled state.",
+          "Three size variants (sm | md | lg) flow from the root Menu through context, with font sizes aligned to Button.",
+        ],
+      },
+      {
+        label: "MultiSelect dropdown font scaling",
+        description:
+          "Dropdown item text now scales with the size prop instead of being hardcoded to font-size-sm.",
+        subItems: [
+          "sm → font-size-sm, md → font-size-md, lg → font-size-lg.",
+          "Placeholder/input font for lg corrected from font-size-md to font-size-lg.",
+          "\"No options\" and \"Max N selected\" text scale proportionally.",
+        ],
+      },
+    ],
+  },
+  {
+    version: "0.17.0",
+    date: "March 2026",
+    title: "Button ultra-dense size & danger compound variants",
+    items: [
+      {
+        label: "Button",
+        description:
+          "New 2xs size and two danger compound variants.",
+        subItems: [
+          "size=\"2xs\" — 22px height with space-1 padding and radius-md for dashboard toolbars, table-inline actions, and icon triggers where xs (26px) is still too tall.",
+          "danger-outline — red border + red text on surface background for destructive actions that need visual weight without a filled background.",
+          "danger-ghost — red text on transparent background, no border for low-emphasis destructive actions in list rows or dense UIs.",
+        ],
+      },
+    ],
+  },
+  {
+    version: "0.16.0",
+    date: "March 2026",
+    title: "Chrome theming, unified customizer & inverse NavLink",
+    items: [
+      {
+        label: "PageLayout chrome theming",
+        description:
+          "New chromeBackground prop to visually distinguish chrome regions from the main content area.",
+        subItems: [
+          "Accepts \"bgBase\" | \"bgSubtle\" | \"surface\" for header, sidebar, and footer backgrounds.",
+          "Outer wrapper background matches the chrome token, eliminating white gaps behind rounded content cards.",
+          "Hidden scrollbars on all scrollable regions.",
+        ],
+      },
+      {
+        label: "Unified Design Customizer",
+        description:
+          "The dev preview's right sidebar rebuilt into a single unified customizer.",
+        subItems: [
+          "Quick-start presets (Modern / Enterprise / Playful), 12-palette picker.",
+          "Anchor color pickers with live derived-variant dots. Accent cascading auto-derives bgBase and borderDefault.",
+          "Layout sliders for radius, elevation, font scale, and spacing scale — all using Lucent UI components.",
+        ],
+      },
+      {
+        label: "NavLink inverse prop",
+        description:
+          "New inverse prop for sidebar navigation on tinted chrome.",
+        subItems: [
+          "Uses surface background with textPrimary instead of accent for the active state.",
+          "Active inverse links render with border-default border, shadow-md elevation, and a 3px accent-colored right border indicator.",
+        ],
+      },
+      {
+        label: "ColorPicker size & inline",
+        description:
+          "New size and inline props for compact color picker layouts.",
+        subItems: [
+          "size prop (\"sm\" | \"md\") — sm renders a compact 24px swatch trigger.",
+          "inline prop places the label beside the swatch.",
+          "Popover now renders via createPortal to document.body, escaping overflow: hidden ancestors.",
+        ],
+      },
+      {
+        label: "SegmentedControl improvements",
+        description:
+          "Elevation-aware indicator with improved positioning and keyboard focus.",
+        subItems: [
+          "shadow-sm from the active shadow preset. Accurate positioning via getBoundingClientRect with ResizeObserver.",
+          "Zero-padding track with 3px inset indicator.",
+          "Focus ring only appears on keyboard navigation (:focus-visible), not mouse clicks.",
+        ],
+      },
+      {
+        label: "CSS variable fix",
+        description:
+          "--lucent-bg-base was incorrectly referenced as --lucent-bgBase (camelCase). Now uses the correct kebab-case form.",
+      },
+    ],
+  },
+  {
+    version: "0.15.0",
+    date: "March 2026",
+    title: "Card elevation hierarchy & interactive props",
+    items: [
+      {
+        label: "Card",
+        description:
+          "Five elevation variants, interactive props, status accents, and a media slot.",
+        subItems: [
+          "Five variant levels: ghost (transparent, no border), outline (default), filled (surfaceTint background), elevated (surface + border + shadow), combo (filled wrapper with elevated body inset).",
+          "onClick renders as <button> with hover lift, focus ring, and active press. href renders as <a> with the same interactive states. disabled reduces opacity and blocks interaction.",
+          "status prop (success | warning | danger | info) adds a 3px colored bar on the left edge.",
+          "selected prop adds an outer accent-subtle ring and subtle background tint with aria-pressed.",
+          "media prop renders full-bleed content at the top of the card (before header) with no padding.",
+        ],
+      },
+      {
+        label: "Token: surfaceTint",
+        description:
+          "New hue-matched shade of bgBase used by filled and combo card variants.",
+        subItems: [
+          "Derived automatically when bgBase is customized.",
+          "surface is now auto-derived from bgBase and optional in ThemeAnchors.",
+        ],
+      },
+      {
+        label: "Shadow presets updated",
+        description:
+          "Subtle preset uses soft dual-layer shadows at ~60% opacity. Elevated preset uses wider blur radii (up to 32px) for more pronounced depth.",
+      },
+    ],
+  },
+  {
+    version: "0.14.2",
+    date: "March 2026",
+    title: "Neutral text & control track colors",
+    items: [
+      {
+        label: "Neutral text colors",
+        description:
+          "Text colors now stay neutral gray regardless of accent palette.",
+        subItems: [
+          "Removed textPrimary from all palette presets (#111827 light / #f3f4f6 dark).",
+          "textPrimary is now optional in ThemeAnchors, falling through to the base theme default when omitted.",
+        ],
+      },
+      {
+        label: "controlTrack token",
+        description:
+          "New neutral gray background token for inactive control surfaces.",
+        subItems: [
+          "Light: #d1d5db, dark: derived from bgBase. Decoupled from borderDefault so it isn't affected by accent-tinted palette borders.",
+          "Toggle off-state track now uses controlTrack instead of borderStrong.",
+          "Slider unfilled and disabled tracks use controlTrack instead of borderDefault (WebKit and Firefox).",
+        ],
+      },
+    ],
+  },
+  {
+    version: "0.14.0",
+    date: "March 2026",
+    title: "Form field consistency & picker labels",
+    items: [
+      {
+        label: "Form field consistency",
+        description:
+          "Textarea and Select sizing aligned with Input.",
+        subItems: [
+          "Textarea label font size is now size-aware (sm/md use font-size-sm, lg uses font-size-md). Horizontal padding aligned with Input.",
+          "Select lg value font size corrected from font-size-lg to font-size-md to match Input.",
+        ],
+      },
+      {
+        label: "DatePicker / DateRangePicker",
+        description:
+          "Added label, helperText, and errorText props with full sizing consistency.",
+        subItems: [
+          "Fixed box-sizing from content-box to border-box so width no longer grows with padding.",
+          "Horizontal padding and icon-to-text gap are now size-aware, matching Input/Select.",
+          "Focus ring updated to border + boxShadow pattern matching Input/Select. Manifests updated with new props and aria-invalid.",
+        ],
+      },
+      {
+        label: "Chip accent variant",
+        description:
+          "The accent variant now uses a solid accent background with auto-derived text-on-accent color for better visual weight and contrast.",
+      },
+      {
+        label: "Playground",
+        description:
+          "DatePicker and DateRangePicker entries now include label, helperText, and errorText controls.",
+      },
+    ],
+  },
   {
     version: "0.13.0",
     date: "March 2026",
     title: "Chip component, contained controls & token-based spacing",
     items: [
       {
-        label: "Chip — unified label primitive",
+        label: "Chip",
         description:
-          "New Chip component replaces both Tag and Badge with a single flexible component for filters, tags, statuses, and categories. Supports onDismiss for removable chips, onClick for clickable/selectable chips, swatch for color-coded categories, dot for status indicators (online/offline), leftIcon for leading elements (emoji, flags, avatars), and borderless for a softer filled-only appearance. Available in three sizes (sm/md/lg) with six semantic variants. Heights scale with spacing tokens. Tag and Badge are kept for backward compatibility.",
+          "New unified label primitive replacing Tag and Badge for filters, tags, statuses, and categories.",
+        subItems: [
+          "onDismiss for removable chips, onClick for clickable/selectable chips.",
+          "swatch for color-coded categories, dot for status indicators, leftIcon for leading elements.",
+          "borderless for a softer filled-only appearance. Three sizes (sm/md/lg) with six semantic variants.",
+          "Heights scale with spacing tokens. Tag and Badge kept for backward compatibility.",
+        ],
       },
       {
         label: "Contained Checkbox, Radio & Toggle",
         description:
-          "All three controls gain a contained prop that wraps them in a bordered container with accent highlighting when checked. Designed for plan selection cards, feature toggles, and consent items where each option needs its own visual weight. Pair with the new helperText prop for secondary context below the label — the label auto-upgrades to medium weight for visual hierarchy. Checkbox and Radio also gain an lg size (20px). Toggle adds an align prop to position the track on the left or right.",
+          "New contained prop wraps controls in a bordered container with accent highlighting when checked.",
+        subItems: [
+          "Designed for plan selection cards, feature toggles, and consent items.",
+          "helperText prop for secondary context below the label — label auto-upgrades to medium weight.",
+          "Checkbox and Radio gain an lg size (20px). Toggle adds an align prop (left | right).",
+        ],
       },
       {
         label: "Token-based heights",
         description:
-          "All form control heights now use calc(space-token × 0.5 + fixed) for dampened vertical scaling — horizontal padding scales fully with spacing tokens while height scales at 50% rate. This applies to Input, Select, Button, DatePicker, DateRangePicker, MultiSelect, Chip, and contained Checkbox/Radio/Toggle. The playground adds spacing, font size, and roundness sliders to visualise scaling in real time.",
+          "All form control heights use dampened vertical scaling — height scales at 50% rate while horizontal padding scales fully.",
+        subItems: [
+          "calc(space-token × 0.5 + fixed) applied to Input, Select, Button, DatePicker, DateRangePicker, MultiSelect, Chip, and contained controls.",
+          "Playground adds spacing, font size, and roundness sliders to visualise scaling in real time.",
+        ],
       },
       {
         label: "MultiSelect enhancements",
         description:
-          "MultiSelect gains label, helperText, and errorText props matching Input's pattern. Focus ring now matches Input (boxShadow instead of outline). Dropdown padding follows a size × density matrix — tighter at sm, more generous at lg, scaling with density presets. Checkboxes in the dropdown match the MultiSelect's size. Selected values render as Chips instead of Tags.",
+          "Label, helperText, errorText props and improved dropdown scaling.",
+        subItems: [
+          "Focus ring now matches Input (boxShadow instead of outline).",
+          "Dropdown padding follows a size × density matrix. Checkboxes match the MultiSelect's size.",
+          "Selected values render as Chips instead of Tags.",
+        ],
       },
       {
         label: "SearchInput & Textarea",
         description:
-          "SearchInput adds label, helperText, and errorText passthrough to the underlying Input. The search icon scales with size (14/18/20px). Textarea gains a size prop (sm/md/lg) with size-aware font and padding. Label and helper text font sizes now scale with component size across Input, Select, and MultiSelect.",
+          "Label, helperText, and errorText passthrough plus size-aware scaling.",
+        subItems: [
+          "SearchInput search icon scales with size (14/18/20px).",
+          "Textarea gains a size prop (sm/md/lg) with size-aware font and padding.",
+          "Label and helper text font sizes now scale with component size across Input, Select, and MultiSelect.",
+        ],
       },
       {
         label: "Input focus fix",
         description:
-          "Fixed a bug where the focus ring wouldn't appear on SearchInput — {...rest} was spread after the explicit onFocus/onBlur handlers, overwriting them when consumers passed their own handlers.",
+          "Fixed focus ring not appearing on SearchInput — {...rest} was spread after onFocus/onBlur handlers, overwriting them.",
       },
     ],
   },
@@ -56,17 +306,22 @@ export const CHANGELOG: ChangelogEntry[] = [
       {
         label: "Button xs size",
         description:
-          "New xs size (26px height, font-size-xs) for compact UIs like customizer panels and toolbars. The customizer's palette/shape/density/shadow pickers now use the Button atom with size=\"xs\" and color swatch leftIcon instead of raw HTML buttons.",
+          "New xs size (26px height, font-size-xs) for compact UIs like customizer panels and toolbars.",
       },
       {
         label: "Component filter",
         description:
-          "ComponentPreview gains a search bar at the top to filter sections by component name — type to show/hide, with a count of visible components.",
+          "ComponentPreview gains a search bar to filter sections by component name with a count of visible components.",
       },
       {
         label: "MultiSelect, DatePicker & Tag alignment",
         description:
-          "MultiSelect adds a size prop (sm/md/lg) with heights, font sizes, and border radius matching Input. Tags inside MultiSelect now use the Tag atom (not an internal duplicate) with size-matched variants. DatePicker and DateRangePicker gain a size prop with full-width triggers and content-box sizing to match Input heights. DateRangePicker highlights the range between first click and hovered day in real time. Tag adds an lg size (28px), hover animation on dismissible tags, and respects the roundness setting (radius-lg instead of radius-full).",
+          "Size prop and height/font alignment across picker components.",
+        subItems: [
+          "MultiSelect adds a size prop (sm/md/lg) with heights, font sizes, and border radius matching Input. Tags inside use the Tag atom with size-matched variants.",
+          "DatePicker and DateRangePicker gain a size prop with full-width triggers and content-box sizing. DateRangePicker highlights the range in real time.",
+          "Tag adds an lg size (28px), hover animation on dismissible tags, and respects the roundness setting.",
+        ],
       },
       {
         label: "Manifest updates",
@@ -83,22 +338,39 @@ export const CHANGELOG: ChangelogEntry[] = [
       {
         label: "Component consistency",
         description:
-          "Select refactored to wrapper-div architecture matching Input (fixes height mismatch). Select and Textarea get proper disabled states. Textarea border radius aligned to radius-lg with hover border and smooth focus-ring transitions. SearchInput gains a size prop (sm/md/lg) passthrough to Input. Button heights aligned to match Input/Select at every size.",
+          "Select, Textarea, SearchInput, and Button sizing aligned across atoms.",
+        subItems: [
+          "Select refactored to wrapper-div architecture matching Input (fixes height mismatch). Proper disabled states.",
+          "Textarea border radius aligned to radius-lg with hover border and smooth focus-ring transitions.",
+          "SearchInput gains a size prop (sm/md/lg) passthrough to Input.",
+          "Button heights aligned to match Input/Select at every size.",
+        ],
       },
       {
         label: "Button overhaul",
         description:
-          "New outline variant (bordered button); secondary is now a filled surface button. Hover animation with translateY(-1px) lift + accent-derived glow. Press state with translateY(1px) + accent ring. Theme-aware disabled state via color-mix (no accent tinting). Variant-aware focus ring (danger uses danger-subtle). Primary border removed for a cleaner look.",
+          "New outline variant, interactive animations, and theme-aware states.",
+        subItems: [
+          "outline variant (bordered button); secondary is now a filled surface button.",
+          "Hover animation with translateY(-1px) lift + accent-derived glow. Press state with translateY(1px) + accent ring.",
+          "Theme-aware disabled state via color-mix (no accent tinting). Variant-aware focus ring.",
+          "Primary border removed for a cleaner look.",
+        ],
       },
       {
         label: "APCA contrast algorithm",
         description:
-          "Replaced WCAG 2.1 luminance threshold with APCA (Accessible Perceptual Contrast Algorithm) for getContrastText — correctly handles saturated blues/purples. ensureContrast() nudges accent lightness until APCA Lc ≥ 60. LucentProvider auto-adjusts accentDefault so no accent color ever produces unreadable button text. New exports: apcaContrast, ensureContrast, getContrastRatio.",
+          "Replaced WCAG 2.1 luminance with APCA for accessible text contrast — correctly handles saturated blues/purples.",
+        subItems: [
+          "ensureContrast() nudges accent lightness until APCA Lc ≥ 60.",
+          "LucentProvider auto-adjusts accentDefault so no accent color ever produces unreadable button text.",
+          "New exports: apcaContrast, ensureContrast, getContrastRatio.",
+        ],
       },
       {
         label: "6 new palette presets",
         description:
-          "Trendy: violet (#8b5cf6), coral (#e8624a), teal (#0d9488), amber (#d97706). Muted: slate (#475569), sage (#5f8c6e). Total palette count now 12.",
+          "Trendy: violet, coral, teal, amber. Muted: slate, sage. Total palette count now 12.",
       },
     ],
   },
@@ -110,7 +382,12 @@ export const CHANGELOG: ChangelogEntry[] = [
       {
         label: "Design Presets",
         description:
-          "Pick a curated preset and get an instantly polished UI — colors, spacing, borders, and shadows — with zero manual configuration. 3 combined presets (modern, enterprise, playful) and 4 mixable dimensions: palette (6 options), shape (3), density (3), shadow (3). Full-atmosphere palettes tint bg, surface, and border colors toward the accent hue. Works with both light and dark themes automatically.",
+          "Curated presets for an instantly polished UI with zero manual configuration.",
+        subItems: [
+          "3 combined presets (modern, enterprise, playful) and 4 mixable dimensions: palette (6), shape (3), density (3), shadow (3).",
+          "Full-atmosphere palettes tint bg, surface, and border colors toward the accent hue.",
+          "Works with both light and dark themes automatically.",
+        ],
       },
       {
         label: "npx lucent-ui init",
@@ -120,7 +397,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       {
         label: "MCP preset tools",
         description:
-          "Two new MCP tools: list_presets discovers all available presets and dimensions, get_preset_config generates ready-to-use provider config from a selection.",
+          "Two new MCP tools: list_presets discovers all available presets and dimensions, get_preset_config generates ready-to-use provider config.",
       },
     ],
   },
@@ -166,32 +443,36 @@ export const CHANGELOG: ChangelogEntry[] = [
       {
         label: "ColorPicker",
         description:
-          "Fully-featured color selection popover with a spectrum panel, hue/alpha sliders, four input formats (Hex, RGB, HSL, HSB), eyedropper support, and multi-group preset palettes switchable via dropdown.",
+          "Fully-featured color selection popover.",
+        subItems: [
+          "Spectrum panel, hue/alpha sliders, four input formats (Hex, RGB, HSL, HSB).",
+          "Eyedropper support and multi-group preset palettes switchable via dropdown.",
+        ],
       },
       {
         label: "ColorSwatch",
         description:
-          "Standalone color swatch atom. Circle or square shape, six sizes (xs–2xl), selected state with inset ring, and checkerboard background for transparent colors. Forwards ref and accepts any button attribute.",
+          "Standalone color swatch atom with circle or square shape, six sizes (xs–2xl), selected state, and checkerboard background for transparent colors.",
       },
       {
         label: "SegmentedControl",
         description:
-          "Pill-style toggle group with a smooth sliding selection indicator. Fills its container by default — use it for format switchers, view mode toggles, or filter bars.",
+          "Pill-style toggle group with a smooth sliding selection indicator. Fills its container by default.",
       },
       {
         label: "Input — prefix, suffix, sizes",
         description:
-          "Input now accepts prefix and suffix addons flush inside the field border, plus a size prop (sm / md / lg) for height and font control. Icon slots (leftElement, rightElement) also available.",
+          "Input now accepts prefix and suffix addons flush inside the field border, plus a size prop (sm / md / lg) for height and font control.",
       },
       {
         label: "Select — style prop consistency",
         description:
-          "The style prop on Select now applies to the outer wrapper div, matching Input behavior for easier width and layout control.",
+          "The style prop on Select now applies to the outer wrapper div, matching Input behavior.",
       },
       {
         label: "Breaking: ColorPicker presets API",
         description:
-          "ColorPicker's presets and presetsLabel props replaced by presetGroups: ColorPresetGroup[]. Each group has a label and colors array; single group hides the switcher, multiple groups show a dropdown.",
+          "presets and presetsLabel props replaced by presetGroups: ColorPresetGroup[]. Single group hides the switcher, multiple groups show a dropdown.",
       },
     ],
   },
@@ -203,7 +484,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       {
         label: "createTheme()",
         description:
-          "Generate a complete light/dark token set from a single accent color. Pass an accent hex and get back a full LucentTokens object with all surface, border, text, and semantic colors derived automatically.",
+          "Generate a complete light/dark token set from a single accent hex — all surface, border, text, and semantic colors derived automatically.",
       },
       {
         label: "ThemeAnchors",
