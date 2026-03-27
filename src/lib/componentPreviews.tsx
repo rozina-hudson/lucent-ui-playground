@@ -52,6 +52,9 @@ import {
   Stack,
   Row,
   Progress,
+  SplitButton,
+  ButtonGroup,
+  NavMenu,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -665,6 +668,37 @@ const CardBleedExample: PreviewFC = () => (
   </Card>
 );
 
+const CardHoverable: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "start" }}>
+    <Card hoverable variant="elevated" style={{ width: 200 }}>
+      <Text weight="semibold" size="sm">Hoverable card</Text>
+      <Text size="xs" color="secondary">
+        Lift and glow on hover, but not a button or link.
+      </Text>
+    </Card>
+    <Card hoverable variant="filled" style={{ width: 200 }}>
+      <Text weight="semibold" size="sm">Filled hoverable</Text>
+      <Text size="xs" color="secondary">
+        Neutral glow (12% text-primary).
+      </Text>
+    </Card>
+  </div>
+);
+
+const CardCollapsibleRecipe: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "start" }}>
+    {(["ghost", "outline", "filled", "elevated", "combo"] as const).map((v) => (
+      <Card key={v} variant={v} hoverable style={{ width: 200 }}>
+        <Collapsible trigger={v}>
+          <Text size="xs" color="secondary">
+            Expanded content inside a {v} card.
+          </Text>
+        </Collapsible>
+      </Card>
+    ))}
+  </div>
+);
+
 // ─── EmptyState ───────────────────────────────────────────────────────────────
 
 const EmptyStateFull: PreviewFC = () => (
@@ -979,6 +1013,365 @@ const CollapsibleOpen: PreviewFC = () => (
   </div>
 );
 
+const CollapsibleDisabled: PreviewFC = () => (
+  <div style={{ width: 360 }}>
+    <Collapsible trigger="Locked section" disabled>
+      <Text color="secondary">This content cannot be revealed.</Text>
+    </Collapsible>
+  </div>
+);
+
+const CollapsibleCardRecipe: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "start" }}>
+    <Card variant="elevated" hoverable style={{ width: 260 }}>
+      <Collapsible trigger="Expand details">
+        <Text size="sm" color="secondary">
+          Content inside a hoverable card.
+        </Text>
+      </Collapsible>
+    </Card>
+    <Card variant="filled" hoverable style={{ width: 260 }}>
+      <Collapsible trigger="Filled variant">
+        <Text size="sm" color="secondary">
+          Works with any card variant.
+        </Text>
+      </Collapsible>
+    </Card>
+  </div>
+);
+
+// ─── Recipe Previews ──────────────────────────────────────────────────────────
+
+const RecipeProfileCard: PreviewFC = () => (
+  <Card variant="elevated" style={{ width: 320 }}>
+    <Stack gap="4">
+      <Row gap="4">
+        <Avatar size="md" alt="Jane Doe" />
+        <Stack gap="1">
+          <Row gap="2" align="center">
+            <Text size="lg" weight="bold" family="display">Jane Doe</Text>
+            <Chip variant="success" dot size="sm">Pro</Chip>
+          </Row>
+          <Text size="sm" color="secondary">Product Designer</Text>
+        </Stack>
+      </Row>
+      <Text size="sm" color="secondary">
+        Crafting intuitive experiences for complex products. Passionate about design systems and accessibility.
+      </Text>
+      <Row gap="2">
+        <Chip variant="neutral" size="sm" borderless onClick={() => {}}>Design</Chip>
+        <Chip variant="neutral" size="sm" borderless onClick={() => {}}>UX</Chip>
+        <Chip variant="neutral" size="sm" borderless onClick={() => {}}>Research</Chip>
+      </Row>
+      <Divider spacing="0" />
+      <Row justify="around">
+        <Stack align="center" gap="0">
+          <Text size="2xl" weight="bold" family="display">128</Text>
+          <Text size="xs" color="secondary">Projects</Text>
+        </Stack>
+        <Stack align="center" gap="0">
+          <Text size="2xl" weight="bold" family="display">4.9</Text>
+          <Text size="xs" color="secondary">Rating</Text>
+        </Stack>
+        <Stack align="center" gap="0">
+          <Text size="2xl" weight="bold" family="display">56</Text>
+          <Text size="xs" color="secondary">Reviews</Text>
+        </Stack>
+      </Row>
+      <Divider spacing="0" />
+      <Row gap="2">
+        <Button size="sm">Message</Button>
+        <Button variant="outline" size="sm">Follow</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+const RecipeProfileCardCompact: PreviewFC = () => (
+  <Card variant="filled" hoverable style={{ width: 320 }}>
+    <Collapsible
+      trigger={
+        <Row gap="3">
+          <Avatar size="md" alt="Jane Doe" />
+          <Stack gap="0">
+            <Text size="sm" weight="semibold">Jane Doe</Text>
+            <Text size="xs" color="secondary">Designer</Text>
+          </Stack>
+        </Row>
+      }
+    >
+      <Stack gap="3">
+        <Text size="sm" color="secondary">
+          Designing intuitive experiences for complex products.
+        </Text>
+        <Row gap="2">
+          <Button size="sm" variant="outline">View profile</Button>
+        </Row>
+      </Stack>
+    </Collapsible>
+  </Card>
+);
+
+const RecipeSettingsPanel: PreviewFC = () => (
+  <Card variant="elevated" style={{ width: 400 }}>
+    <Stack gap="4">
+      <Text size="lg" weight="bold">Settings</Text>
+      <Divider spacing="0" />
+      <Row justify="between">
+        <Stack gap="0">
+          <Text size="sm" weight="medium">Notifications</Text>
+          <Text size="xs" color="secondary">Receive email alerts</Text>
+        </Stack>
+        <Toggle defaultChecked />
+      </Row>
+      <Row justify="between">
+        <Stack gap="0">
+          <Text size="sm" weight="medium">Dark mode</Text>
+          <Text size="xs" color="secondary">Use dark theme</Text>
+        </Stack>
+        <Toggle />
+      </Row>
+      <Divider spacing="0" />
+      <Select label="Language" defaultValue="en" options={[
+        { value: "en", label: "English" },
+        { value: "es", label: "Spanish" },
+        { value: "fr", label: "French" },
+      ]} />
+      <Divider spacing="0" />
+      <Row gap="2" justify="end">
+        <Button variant="outline" size="sm">Cancel</Button>
+        <Button size="sm">Save changes</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+const RecipeSettingsDrilldown: PreviewFC = () => (
+  <Card variant="elevated" style={{ width: 520 }}>
+    <Row gap="0" align="stretch">
+      <NavMenu size="sm" style={{ width: 140, borderRight: "1px solid var(--lucent-border-default)", padding: 8 }}>
+        <NavMenu.Item isActive>General</NavMenu.Item>
+        <NavMenu.Item>Security</NavMenu.Item>
+        <NavMenu.Item>Billing</NavMenu.Item>
+      </NavMenu>
+      <Stack gap="4" style={{ flex: 1, padding: 16 }}>
+        <Text size="md" weight="bold">General</Text>
+        <Divider spacing="0" />
+        <Row justify="between">
+          <Stack gap="0">
+            <Text size="sm" weight="medium">Dark mode</Text>
+            <Text size="xs" color="secondary">Use dark theme</Text>
+          </Stack>
+          <Toggle />
+        </Row>
+        <Row justify="between">
+          <Stack gap="0">
+            <Text size="sm" weight="medium">Analytics</Text>
+            <Text size="xs" color="secondary">Share usage data</Text>
+          </Stack>
+          <Toggle defaultChecked />
+        </Row>
+      </Stack>
+    </Row>
+  </Card>
+);
+
+const RecipeStatsRow: PreviewFC = () => (
+  <Row gap="4" wrap>
+    <Card variant="outline" style={{ flex: 1, minWidth: 160 }}>
+      <Stack gap="1">
+        <Text size="xs" color="secondary">Total Users</Text>
+        <Text size="2xl" weight="bold" family="display">12,847</Text>
+        <Row gap="2" align="center">
+          <Chip variant="success" size="sm">+12.5%</Chip>
+          <Text size="xs" color="secondary">vs last month</Text>
+        </Row>
+      </Stack>
+    </Card>
+    <Card variant="outline" style={{ flex: 1, minWidth: 160 }}>
+      <Stack gap="1">
+        <Text size="xs" color="secondary">Revenue</Text>
+        <Text size="2xl" weight="bold" family="display">$48.2k</Text>
+        <Row gap="2" align="center">
+          <Chip variant="danger" size="sm">-3.1%</Chip>
+          <Text size="xs" color="secondary">vs last month</Text>
+        </Row>
+      </Stack>
+    </Card>
+    <Card variant="outline" style={{ flex: 1, minWidth: 160 }}>
+      <Stack gap="1">
+        <Text size="xs" color="secondary">Conversion</Text>
+        <Text size="2xl" weight="bold" family="display">3.2%</Text>
+        <Row gap="2" align="center">
+          <Chip variant="success" size="sm">+0.8%</Chip>
+          <Text size="xs" color="secondary">vs last month</Text>
+        </Row>
+      </Stack>
+    </Card>
+  </Row>
+);
+
+const RecipeStatsRowAvatars: PreviewFC = () => (
+  <Row gap="4" wrap>
+    <Card variant="elevated" style={{ flex: 1, minWidth: 200 }}>
+      <Stack gap="2">
+        <Row gap="2" align="center">
+          <Avatar size="sm" alt="Alice" />
+          <Text size="xs" color="secondary">Alice — Sales</Text>
+        </Row>
+        <Text size="2xl" weight="bold" family="display">$24.1k</Text>
+        <Chip variant="success" size="sm">+8.3%</Chip>
+      </Stack>
+    </Card>
+    <Card variant="elevated" style={{ flex: 1, minWidth: 200 }}>
+      <Stack gap="2">
+        <Row gap="2" align="center">
+          <Avatar size="sm" alt="Bob" />
+          <Text size="xs" color="secondary">Bob — Marketing</Text>
+        </Row>
+        <Text size="2xl" weight="bold" family="display">$18.7k</Text>
+        <Chip variant="warning" size="sm">+1.2%</Chip>
+      </Stack>
+    </Card>
+  </Row>
+);
+
+const RecipeActionBarPage: PreviewFC = () => (
+  <Stack gap="3">
+    <Breadcrumb items={[
+      { label: "Home", href: "#" },
+      { label: "Projects", href: "#" },
+      { label: "Details" },
+    ]} />
+    <Row justify="between" align="end">
+      <Text size="3xl" weight="bold" family="display">Project Alpha</Text>
+      <Row gap="2">
+        <Button variant="outline" size="sm">Edit</Button>
+        <Button size="sm">Publish</Button>
+      </Row>
+    </Row>
+    <Divider spacing="0" />
+  </Stack>
+);
+
+const RecipeActionBarCard: PreviewFC = () => (
+  <Card variant="outline" style={{ width: 360 }}>
+    <Stack gap="2">
+      <Text size="xs" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        Overview
+      </Text>
+      <Row justify="between" align="center">
+        <Text size="md" weight="semibold">Team Activity</Text>
+        <Button variant="ghost" size="xs">View all</Button>
+      </Row>
+      <Divider spacing="0" />
+      <Text size="sm" color="secondary">
+        Activity feed content goes here.
+      </Text>
+    </Stack>
+  </Card>
+);
+
+const RecipeFormLayout: PreviewFC = () => (
+  <Card variant="elevated" style={{ width: 480 }}>
+    <Stack as="form" gap="4">
+      <Text size="lg" weight="bold">Create Project</Text>
+
+      <Input label="Project name" placeholder="My project" />
+      <Row gap="3">
+        <DatePicker label="Start date" placeholder="Pick a date" style={{ flex: 1 }} />
+        <DatePicker label="End date" placeholder="Pick a date" style={{ flex: 1 }} />
+      </Row>
+      <Textarea label="Description" placeholder="Describe the project..." />
+
+      <Row gap="2" justify="end">
+        <Button variant="outline">Cancel</Button>
+        <Button type="submit">Create project</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+const RecipeFormLayoutSections: PreviewFC = () => (
+  <Card variant="elevated" style={{ width: 480 }}>
+    <Stack as="form" gap="4">
+      <Text size="lg" weight="bold">Account Settings</Text>
+      <Divider spacing="0" />
+      <Text size="sm" weight="semibold">Personal Info</Text>
+      <Row gap="3">
+        <Input label="First name" style={{ flex: 1 }} />
+        <Input label="Last name" style={{ flex: 1 }} />
+      </Row>
+      <Input label="Email" type="email" />
+      <Divider spacing="0" />
+      <Text size="sm" weight="semibold">Preferences</Text>
+      <Select label="Timezone" options={[
+        { value: "utc", label: "UTC" },
+        { value: "est", label: "EST" },
+        { value: "pst", label: "PST" },
+      ]} />
+      <Divider spacing="0" />
+      <Row gap="2" justify="end">
+        <Button variant="outline">Cancel</Button>
+        <Button type="submit">Save</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+const RecipeEmptyStateNoResults: PreviewFC = () => (
+  <Card variant="outline" style={{ width: 360 }}>
+    <EmptyState
+      illustration={
+        <Icon size="xl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx={11} cy={11} r={8} />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+        </Icon>
+      }
+      title="No results found"
+      description="Try adjusting your search or filters."
+      action={<Button variant="secondary" size="sm">Clear filters</Button>}
+    />
+  </Card>
+);
+
+const RecipeEmptyStateOnboarding: PreviewFC = () => (
+  <Card variant="outline" style={{ width: 360 }}>
+    <EmptyState
+      illustration={
+        <Icon size="xl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </Icon>
+      }
+      title="Get started"
+      description="Create your first project to begin."
+      action={<Button size="sm">Create project</Button>}
+    />
+  </Card>
+);
+
+const RecipeEmptyStateError: PreviewFC = () => (
+  <Card variant="outline" style={{ width: 360 }}>
+    <EmptyState
+      illustration={
+        <Icon size="xl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx={12} cy={12} r={10} />
+            <path d="M12 8v4M12 16h.01" />
+          </svg>
+        </Icon>
+      }
+      title="Something went wrong"
+      description="We couldn't load the data. Please try again."
+      action={<Button variant="danger" size="sm">Retry</Button>}
+    />
+  </Card>
+);
+
 // ─── CommandPalette ───────────────────────────────────────────────────────────
 
 const CommandPaletteGroups: PreviewFC = () => {
@@ -1112,11 +1505,11 @@ const PageLayoutChrome: PreviewFC = () => (
         <NavLink href="#" inverse>Settings</NavLink>
       </div>
     }
-    chromeBackground="bgSubtle"
+    chromeBackground="surfaceSecondary"
     sidebarWidth={200}
     style={{ height: 400 }}
   >
-    <Text>Content on bgBase canvas with bgSubtle chrome</Text>
+    <Text>Content on bgBase canvas with surfaceSecondary chrome</Text>
   </PageLayout>
 );
 
@@ -1409,6 +1802,26 @@ const ChipDecorated: PreviewFC = () => (
   </div>
 );
 
+const ChipStatus: PreviewFC = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <Chip ghost variant="success" dot>Deployed</Chip>
+      <Chip ghost variant="warning" dot>Syncing</Chip>
+      <Chip ghost variant="danger" dot>Failed</Chip>
+    </div>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <Chip variant="success" dot pulse>Live</Chip>
+      <Chip variant="warning" dot pulse>Deploying</Chip>
+      <Chip variant="danger" dot pulse>Incident</Chip>
+    </div>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <Chip variant="success" dot />
+      <Chip variant="warning" dot pulse />
+      <Chip variant="danger" dot />
+    </div>
+  </div>
+);
+
 // ─── Menu ────────────────────────────────────────────────────────────────────
 
 const MenuBasic: PreviewFC = () => (
@@ -1567,6 +1980,139 @@ const ProgressThreshold: PreviewFC = () => {
   );
 };
 
+// ─── SplitButton ──────────────────────────────────────────────────────────────
+
+const SplitButtonVariants: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <SplitButton
+      variant="primary"
+      onClick={() => {}}
+      menuItems={[
+        { label: "Save as draft", onSelect: () => {} },
+        { label: "Save & publish", onSelect: () => {} },
+      ]}
+    >
+      Save
+    </SplitButton>
+    <SplitButton
+      variant="outline"
+      onClick={() => {}}
+      menuItems={[{ label: "Option A", onSelect: () => {} }, { label: "Option B", onSelect: () => {} }]}
+    >
+      Options
+    </SplitButton>
+    <SplitButton
+      variant="secondary"
+      onClick={() => {}}
+      menuItems={[{ label: "Export CSV", onSelect: () => {} }]}
+    >
+      Export
+    </SplitButton>
+    <SplitButton
+      variant="danger"
+      onClick={() => {}}
+      menuItems={[{ label: "Force delete", onSelect: () => {}, danger: true }]}
+    >
+      Delete
+    </SplitButton>
+  </div>
+);
+
+const SplitButtonSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <SplitButton size="2xs" onClick={() => {}} menuItems={[{ label: "Alt", onSelect: () => {} }]}>2XS</SplitButton>
+    <SplitButton size="xs" onClick={() => {}} menuItems={[{ label: "Alt", onSelect: () => {} }]}>XS</SplitButton>
+    <SplitButton size="sm" onClick={() => {}} menuItems={[{ label: "Alt", onSelect: () => {} }]}>SM</SplitButton>
+    <SplitButton size="md" onClick={() => {}} menuItems={[{ label: "Alt", onSelect: () => {} }]}>MD</SplitButton>
+    <SplitButton size="lg" onClick={() => {}} menuItems={[{ label: "Alt", onSelect: () => {} }]}>LG</SplitButton>
+  </div>
+);
+
+const SplitButtonStates: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <SplitButton loading onClick={() => {}} menuItems={[{ label: "Alt", onSelect: () => {} }]}>Saving</SplitButton>
+    <SplitButton disabled onClick={() => {}} menuItems={[{ label: "Alt", onSelect: () => {} }]}>Disabled</SplitButton>
+  </div>
+);
+
+// ─── ButtonGroup ──────────────────────────────────────────────────────────────
+
+const ButtonGroupBasic: PreviewFC = () => (
+  <ButtonGroup>
+    <Button variant="outline">Left</Button>
+    <Button variant="outline">Center</Button>
+    <Button variant="outline">Right</Button>
+  </ButtonGroup>
+);
+
+const ButtonGroupMixed: PreviewFC = () => (
+  <ButtonGroup>
+    <Button variant="primary">Save</Button>
+    <SplitButton
+      variant="outline"
+      onClick={() => {}}
+      menuItems={[{ label: "Save as draft", onSelect: () => {} }]}
+    >
+      More
+    </SplitButton>
+  </ButtonGroup>
+);
+
+const ButtonGroupGhost: PreviewFC = () => (
+  <ButtonGroup>
+    <Button variant="ghost" size="sm">Bold</Button>
+    <Button variant="ghost" size="sm">Italic</Button>
+    <Button variant="ghost" size="sm">Underline</Button>
+  </ButtonGroup>
+);
+
+// ─── NavMenu ──────────────────────────────────────────────────────────────────
+
+const NavMenuSidebar: PreviewFC = () => (
+  <div style={{ width: 240 }}>
+    <NavMenu aria-label="Sidebar">
+      <NavMenu.Item href="#" isActive>Dashboard</NavMenu.Item>
+      <NavMenu.Item href="#">Analytics</NavMenu.Item>
+      <NavMenu.Separator />
+      <NavMenu.Group label="Settings">
+        <NavMenu.Item href="#">Profile</NavMenu.Item>
+        <NavMenu.Item href="#">Billing</NavMenu.Item>
+        <NavMenu.Item href="#">Team</NavMenu.Item>
+      </NavMenu.Group>
+    </NavMenu>
+  </div>
+);
+
+const NavMenuInverse: PreviewFC = () => (
+  <div style={{ width: 240 }}>
+    <NavMenu inverse aria-label="Sidebar">
+      <NavMenu.Item href="#" isActive>Dashboard</NavMenu.Item>
+      <NavMenu.Item href="#">Projects</NavMenu.Item>
+      <NavMenu.Group label="Admin">
+        <NavMenu.Item href="#">Users</NavMenu.Item>
+        <NavMenu.Item href="#">Roles</NavMenu.Item>
+      </NavMenu.Group>
+    </NavMenu>
+  </div>
+);
+
+const NavMenuSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 32 }}>
+    <div style={{ width: 180 }}>
+      <NavMenu size="sm" aria-label="Small nav">
+        <NavMenu.Item href="#" isActive>Small</NavMenu.Item>
+        <NavMenu.Item href="#">Item</NavMenu.Item>
+      </NavMenu>
+    </div>
+    <div style={{ width: 180 }}>
+      <NavMenu size="lg" aria-label="Large nav">
+        <NavMenu.Item href="#" isActive>Large</NavMenu.Item>
+        <NavMenu.Item href="#">Item</NavMenu.Item>
+      </NavMenu>
+    </div>
+  </div>
+);
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const componentPreviews: Record<string, PreviewFC> = {
@@ -1640,6 +2186,8 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "card-status": CardStatus,
   "card-selected-media": CardSelectedMedia,
   "card-bleed": CardBleedExample,
+  "card-hoverable": CardHoverable,
+  "card-collapsible-recipe": CardCollapsibleRecipe,
   // EmptyState
   "emptystate-full": EmptyStateFull,
   "emptystate-minimal": EmptyStateMinimal,
@@ -1674,6 +2222,8 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // Collapsible
   "collapsible-basic": CollapsibleBasic,
   "collapsible-open": CollapsibleOpen,
+  "collapsible-disabled": CollapsibleDisabled,
+  "collapsible-card-recipe": CollapsibleCardRecipe,
   // CommandPalette
   "commandpalette-groups": CommandPaletteGroups,
   // DataTable
@@ -1716,6 +2266,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "chip-variants": ChipVariants,
   "chip-interactive": ChipInteractive,
   "chip-decorated": ChipDecorated,
+  "chip-status": ChipStatus,
   // Toast
   "toast-basic": ToastBasic,
   "toast-variants": ToastVariants,
@@ -1734,4 +2285,35 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "progress-basic": ProgressBasic,
   "progress-variants": ProgressVariants,
   "progress-threshold": ProgressThreshold,
+  // SplitButton
+  "splitbutton-variants": SplitButtonVariants,
+  "splitbutton-sizes": SplitButtonSizes,
+  "splitbutton-states": SplitButtonStates,
+  // ButtonGroup
+  "buttongroup-basic": ButtonGroupBasic,
+  "buttongroup-mixed": ButtonGroupMixed,
+  "buttongroup-ghost": ButtonGroupGhost,
+  // NavMenu
+  "navmenu-sidebar": NavMenuSidebar,
+  "navmenu-inverse": NavMenuInverse,
+  "navmenu-sizes": NavMenuSizes,
+  // Recipe: ProfileCard
+  "recipe-profilecard": RecipeProfileCard,
+  "recipe-profilecard-compact": RecipeProfileCardCompact,
+  // Recipe: SettingsPanel
+  "recipe-settingspanel": RecipeSettingsPanel,
+  "recipe-settingspanel-drilldown": RecipeSettingsDrilldown,
+  // Recipe: StatsRow
+  "recipe-statsrow": RecipeStatsRow,
+  "recipe-statsrow-avatars": RecipeStatsRowAvatars,
+  // Recipe: ActionBar
+  "recipe-actionbar-page": RecipeActionBarPage,
+  "recipe-actionbar-card": RecipeActionBarCard,
+  // Recipe: FormLayout
+  "recipe-formlayout": RecipeFormLayout,
+  "recipe-formlayout-sections": RecipeFormLayoutSections,
+  // Recipe: EmptyStateCard
+  "recipe-emptystate-noresults": RecipeEmptyStateNoResults,
+  "recipe-emptystate-onboarding": RecipeEmptyStateOnboarding,
+  "recipe-emptystate-error": RecipeEmptyStateError,
 };

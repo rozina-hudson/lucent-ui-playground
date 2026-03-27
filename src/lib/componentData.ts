@@ -27,7 +27,7 @@ export type ComponentDef = {
   name: string;
   /** Override the component rendered in the Playground customizer (e.g. "RadioGroup" for the radio page) */
   customizerName?: string;
-  category: "Atoms" | "Molecules";
+  category: "Atoms" | "Molecules" | "Recipes";
   description: string;
   importStatement: string;
   usageCode: string;
@@ -47,6 +47,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "formfield", "text", "icon", "divider", "spinner", "avatar", "skeleton",
       "breadcrumb", "navlink", "datepicker", "daterangepicker", "multiselect",
       "slider", "codeblock", "table", "colorpicker", "colorswatch", "segmentedcontrol", "chip",
+      "splitbutton", "buttongroup",
       "stack", "row", "progress",
     ],
   },
@@ -55,9 +56,36 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
     slugs: [
       "alert", "card", "emptystate", "tooltip",
       "tabs", "collapsible", "commandpalette", "datatable",
-      "fileupload", "pagelayout", "timeline", "menu", "toast",
+      "fileupload", "pagelayout", "timeline", "menu", "toast", "navmenu",
     ],
   },
+  {
+    label: "Recipes",
+    slugs: [
+      "profilecard", "settingspanel", "statsrow",
+      "actionbar", "formlayout", "emptystatecard",
+      "collapsiblecard",
+    ],
+  },
+];
+
+// ─── Sidebar: Atom sub-groups for nested nav ─────────────────────────────────
+
+export const ATOM_SUBGROUPS: { label: string; slugs: string[] }[] = [
+  { label: "Buttons", slugs: ["button", "splitbutton", "buttongroup"] },
+  { label: "Text Fields", slugs: ["input", "textarea", "searchinput"] },
+  { label: "Selectors", slugs: ["select", "multiselect", "datepicker", "daterangepicker", "colorpicker", "slider"] },
+  { label: "Controls", slugs: ["checkbox", "radio", "toggle", "segmentedcontrol"] },
+  { label: "Display", slugs: ["text", "icon", "chip", "avatar", "colorswatch", "codeblock", "table"] },
+  { label: "Feedback", slugs: ["spinner", "skeleton", "progress"] },
+  { label: "Layout", slugs: ["stack", "row", "divider", "formfield", "breadcrumb", "navlink"] },
+];
+
+// ─── Sidebar: Recipe sub-groups for nested nav ──────────────────────────────
+
+export const RECIPE_SUBGROUPS: { label: string; slugs: string[] }[] = [
+  { label: "Cards", slugs: ["profilecard", "statsrow", "emptystatecard", "collapsiblecard"] },
+  { label: "Layouts", slugs: ["settingspanel", "actionbar", "formlayout"] },
 ];
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
@@ -69,7 +97,7 @@ export const componentRegistry: ComponentDef[] = [
     name: "Button",
     category: "Atoms",
     description:
-      "Trigger actions and navigation. Supports seven semantic variants (primary, secondary, outline, ghost, danger, danger-outline, danger-ghost), five sizes (2xs–lg), hover lift + glow animation, loading and disabled states, a trailing chevron for dropdown triggers, and an optional full-width layout.",
+      "Trigger actions and navigation. Supports seven semantic variants (primary, secondary, outline, ghost, danger, danger-outline, danger-ghost), five sizes (2xs–lg), hover lift + glow animation, loading and disabled states, a trailing chevron for dropdown triggers, full-width layout, icon-only auto-sizing (renders as square when no children), transparent outline backgrounds, color-mix(transparent) neutral fills for disabled states, and a single translucent accent halo press ring.",
     importStatement: "import { Button } from 'lucent-ui'",
     usageCode: `<Button variant="primary">Save changes</Button>`,
     aiPrompts: {
@@ -94,7 +122,10 @@ export const componentRegistry: ComponentDef[] = [
       { name: "disabled", type: "boolean", description: "Prevents interaction and mutes the appearance.", defaultValue: "false" },
       { name: "chevron", type: "boolean", description: "Appends a down-chevron icon for dropdown trigger patterns.", defaultValue: "false" },
       { name: "fullWidth", type: "boolean", description: "Stretches the button to fill its container.", defaultValue: "false" },
-      { name: "children", type: "React.ReactNode", description: "Button label.", required: true },
+      { name: "leftIcon", type: "ReactNode", description: "Icon displayed before the label." },
+      { name: "rightIcon", type: "ReactNode", description: "Icon displayed after the label." },
+      { name: "spread", type: "boolean", description: "Spaces content to the edges (space-between). Useful with fullWidth + rightIcon/chevron.", defaultValue: "false" },
+      { name: "children", type: "React.ReactNode", description: "Button label. Omit for icon-only buttons (auto-sizes to square)." },
       { name: "onClick", type: "() => void", description: "Callback fired when the button is clicked." },
     ],
     examples: [
@@ -410,7 +441,7 @@ const results = allItems
     name: "Checkbox",
     category: "Atoms",
     description:
-      "Labelled checkbox with checked, indeterminate, and disabled states. Available in three sizes (sm/md/lg). The contained prop wraps the checkbox in a bordered card with accent highlighting when checked — ideal for plan selection and feature toggles.",
+      "Labelled checkbox with checked, indeterminate, and disabled states. Available in three sizes (sm/md/lg). The contained prop wraps the checkbox in a border-strong container — checked fills with a neutral color-mix(textPrimary 6%) background, unchecked is transparent outline only. No hover state on contained wrappers. Ideal for plan selection and feature toggles.",
     importStatement: "import { Checkbox } from 'lucent-ui'",
     usageCode: `<Checkbox
   label="Accept terms and conditions"
@@ -431,7 +462,7 @@ const results = allItems
       { name: "indeterminate", type: "boolean", description: "Visually indeterminate state (dash icon), used for parent checkboxes.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Checkbox size.", defaultValue: `"md"` },
-      { name: "contained", type: "boolean", description: "Wraps the checkbox in a bordered container with accent highlighting when checked.", defaultValue: "false" },
+      { name: "contained", type: "boolean", description: "Wraps the checkbox in a border-strong container. Checked fills with neutral color-mix(textPrimary 6%) background; unchecked is transparent.", defaultValue: "false" },
       { name: "helperText", type: "string", description: "Secondary text displayed below the label." },
       { name: "onChange", type: "(e: React.ChangeEvent<HTMLInputElement>) => void", description: "Change handler." },
     ],
@@ -455,7 +486,7 @@ const results = allItems
       },
       {
         title: "Contained",
-        description: "Bordered container with accent highlight — great for plan selection cards.",
+        description: "Border-strong container with neutral checked fill — great for plan selection cards.",
         previewKey: "checkbox-contained",
         code: `<Checkbox contained label="Free" helperText="Up to 3 projects" checked={plan === "free"} onChange={() => setPlan("free")} />
 <Checkbox contained label="Pro" helperText="Unlimited projects" checked={plan === "pro"} onChange={() => setPlan("pro")} />`,
@@ -470,7 +501,7 @@ const results = allItems
     customizerName: "RadioGroup",
     category: "Atoms",
     description:
-      "Radio button used inside a RadioGroup for mutually exclusive selection. Supports vertical and horizontal orientation, three sizes (sm/md/lg), a group-level disabled state, and a contained prop for bordered card-style options with helperText.",
+      "Radio button used inside a RadioGroup for mutually exclusive selection. Supports vertical and horizontal orientation, three sizes (sm/md/lg), a group-level disabled state, and a contained prop for border-strong card-style options with neutral checked fill and helperText.",
     importStatement: "import { Radio, RadioGroup } from 'lucent-ui'",
     usageCode: `<RadioGroup name="plan" value={plan} onChange={setPlan}>
   <Radio value="free" label="Free — up to 3 projects" />
@@ -525,7 +556,7 @@ const results = allItems
       },
       {
         title: "Contained",
-        description: "Bordered containers with accent highlight for plan-style selection.",
+        description: "Border-strong containers with neutral checked fill for plan-style selection.",
         previewKey: "radio-contained",
         code: `<RadioGroup name="plan" value={plan} onChange={setPlan}>
   <Radio value="free" label="Free" helperText="Up to 3 projects" contained />
@@ -542,7 +573,7 @@ const results = allItems
     name: "Toggle",
     category: "Atoms",
     description:
-      "On/off switch in three sizes with optional contained card style and helperText. Best used for immediate boolean settings like dark mode, notifications, or feature flags. The align prop positions the track on the left or right.",
+      "On/off switch in three sizes with optional contained card style (border-strong, neutral checked fill) and helperText. Best used for immediate boolean settings like dark mode, notifications, or feature flags. The align prop positions the track on the left or right.",
     importStatement: "import { Toggle } from 'lucent-ui'",
     usageCode: `<Toggle
   label="Dark mode"
@@ -561,7 +592,7 @@ const results = allItems
       { name: "checked", type: "boolean", description: "Controlled on/off state." },
       { name: "defaultChecked", type: "boolean", description: "Uncontrolled initial state." },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Toggle size.", defaultValue: `"md"` },
-      { name: "contained", type: "boolean", description: "Wraps the toggle in a bordered container with accent highlighting when checked.", defaultValue: "false" },
+      { name: "contained", type: "boolean", description: "Wraps the toggle in a border-strong container. Checked fills with neutral color-mix(textPrimary 6%) background; unchecked is transparent.", defaultValue: "false" },
       { name: "helperText", type: "string", description: "Secondary text displayed below the label." },
       { name: "align", type: `"left" | "right"`, description: "Position of the toggle track relative to the label.", defaultValue: `"left"` },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
@@ -1027,7 +1058,7 @@ const results = allItems
     name: "Card",
     category: "Molecules",
     description:
-      "Surface container with five elevation variants (ghost → combo), optional header/footer, interactive onClick/href support, status accent bars, and selectable state. Adapts to the active theme.",
+      "Surface container with five elevation variants (ghost → combo), optional header/footer, interactive onClick/href support, status accent bars (inset box-shadow, curves with border-radius), selectable state, and hoverable prop for hover lift with neutral glow without making the card interactive. Default radius bumped to lg. Overflow visible by default (hidden only when media prop is set) so nested child shadows are never clipped. Collapsible auto-bleeds inside Card — just wrap and it works. Adapts to the active theme.",
     importStatement: "import { Card } from 'lucent-ui'",
     usageCode: `<Card
   variant="elevated"
@@ -1051,12 +1082,13 @@ const results = allItems
       { name: "media", type: "React.ReactNode", description: "Full-bleed content rendered at the top of the card before the header, with no padding." },
       { name: "onClick", type: "() => void", description: "Renders the card as a <button> with hover lift, focus ring, and active press state." },
       { name: "href", type: "string", description: "Renders the card as an <a> with hover lift, focus ring, and active press state." },
+      { name: "hoverable", type: "boolean", description: "Enables hover lift and neutral glow shadow without making the card a button or link. Interactive cards (onClick/href) get accent-colored glow; hoverable-only cards get a neutral glow (12% text-primary). Use when the card wraps its own interactive content.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Reduces opacity, blocks interaction, sets cursor: not-allowed.", defaultValue: "false" },
-      { name: "status", type: `"success" | "warning" | "danger" | "info"`, description: "Adds a 3px colored bar on the left edge using the corresponding status token." },
-      { name: "selected", type: "boolean", description: "Adds an outer accent-subtle ring and subtle background tint. Sets aria-pressed on interactive cards.", defaultValue: "false" },
+      { name: "status", type: `"success" | "warning" | "danger" | "info"`, description: "Adds a 3px colored bar on the left edge as an inset box-shadow that curves with the card's border-radius." },
+      { name: "selected", type: "boolean", description: "Applies a unified accent-subtle background across all variants. Sets aria-pressed on interactive cards.", defaultValue: "false" },
       { name: "padding", type: `"none" | "sm" | "md" | "lg"`, description: "Inner padding. Vertical padding is tighter than horizontal.", defaultValue: `"md"` },
       { name: "shadow", type: `"none" | "sm" | "md" | "lg"`, description: "Drop shadow.", defaultValue: `"sm"` },
-      { name: "radius", type: `"none" | "sm" | "md" | "lg"`, description: "Border radius.", defaultValue: `"md"` },
+      { name: "radius", type: `"none" | "sm" | "md" | "lg"`, description: "Border radius.", defaultValue: `"lg"` },
       { name: "style", type: "React.CSSProperties", description: "Inline style override." },
     ],
     examples: [
@@ -1119,7 +1151,7 @@ const results = allItems
       },
       {
         title: "Media & selected",
-        description: "media renders full-bleed content at the top. selected adds an accent ring for toggle behavior.",
+        description: "media renders full-bleed content at the top. selected applies a unified accent-subtle background for toggle behavior.",
         previewKey: "card-selected-media",
         code: `{/* Full-bleed image */}
 <Card
@@ -1145,6 +1177,24 @@ const results = allItems
   <CardBleed style={{ borderTop: '1px solid var(--lucent-border-default)' }}>
     <Text size="sm" color="secondary">This row stretches to the card edges.</Text>
   </CardBleed>
+</Card>`,
+      },
+      {
+        title: "Hoverable",
+        description: "Hover lift and neutral glow without making the card interactive. Use when the card wraps its own clickable content like a Collapsible.",
+        previewKey: "card-hoverable",
+        code: `<Card hoverable variant="elevated">
+  <Text weight="semibold" size="sm">Hoverable card</Text>
+  <Text size="xs" color="secondary">
+    Lift and glow on hover, but not a button or link.
+  </Text>
+</Card>
+
+<Card hoverable variant="filled">
+  <Text weight="semibold" size="sm">Filled hoverable</Text>
+  <Text size="xs" color="secondary">
+    Neutral glow (12% text-primary).
+  </Text>
 </Card>`,
       },
     ],
@@ -1719,7 +1769,7 @@ const results = allItems
     name: "Collapsible",
     category: "Molecules",
     description:
-      "Expandable/collapsible content section with a trigger. Supports controlled and uncontrolled open state with smooth animation.",
+      "Expandable/collapsible content section with a trigger. Smooth height animation via direct DOM measurement (180ms), CSS-driven hover feedback with translucent tint, focus-visible ring, disabled state, and padded prop to control content spacing. Auto-bleeds inside Card by consuming CardPaddingContext — just wrap in a Card and it works. Dynamic overflow (hidden during animation, visible when resting) so nested shadows aren't clipped. Supports controlled and uncontrolled open state.",
     importStatement: "import { Collapsible } from 'lucent-ui'",
     usageCode: `<Collapsible trigger="Advanced options">
   <Text>Hidden content revealed on expand.</Text>
@@ -1737,6 +1787,8 @@ const results = allItems
       { name: "defaultOpen", type: "boolean", description: "Uncontrolled initial open state.", defaultValue: "false" },
       { name: "open", type: "boolean", description: "Controlled open state." },
       { name: "onOpenChange", type: "(open: boolean) => void", description: "Called when open state changes." },
+      { name: "disabled", type: "boolean", description: "Reduces trigger opacity to 0.5, sets cursor: not-allowed, and prevents toggling.", defaultValue: "false" },
+      { name: "padded", type: "boolean", description: "When false, removes built-in content padding so children (e.g. a nested Card) can provide their own spacing.", defaultValue: "true" },
       { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
     ],
     examples: [
@@ -1754,6 +1806,14 @@ const results = allItems
         previewKey: "collapsible-open",
         code: `<Collapsible trigger="Release notes" defaultOpen>
   <Text>v0.4.0 — Added Tabs, Collapsible, DataTable, and more.</Text>
+</Collapsible>`,
+      },
+      {
+        title: "Disabled",
+        description: "Prevents toggling with reduced opacity and not-allowed cursor.",
+        previewKey: "collapsible-disabled",
+        code: `<Collapsible trigger="Locked section" disabled>
+  <Text color="secondary">This content cannot be revealed.</Text>
 </Collapsible>`,
       },
     ],
@@ -1981,7 +2041,7 @@ const results = allItems
       { name: "rightSidebarCollapsed", type: "boolean", description: "Collapses the right sidebar when true.", defaultValue: "false" },
       { name: "footer", type: "React.ReactNode", description: "Content for the footer bar rendered below the body row." },
       { name: "footerHeight", type: "number | string", description: "Footer height in px or any CSS value.", defaultValue: "48" },
-      { name: "chromeBackground", type: `"bgBase" | "bgSubtle" | "surface"`, description: "Background token for chrome regions (header, sidebar, footer). Use \"bgSubtle\" or \"surface\" to visually distinguish chrome from the main content area." },
+      { name: "chromeBackground", type: `"bgBase" | "bgSubtle" | "surface" | "surfaceSecondary"`, description: "Background token for chrome regions (header, sidebar, footer). Use \"bgSubtle\", \"surface\", or \"surfaceSecondary\" to visually distinguish chrome from the main content area." },
       { name: "mainStyle", type: "React.CSSProperties", description: "Inline styles for the main content area." },
       { name: "style", type: "React.CSSProperties", description: "Inline styles for the outer wrapper." },
     ],
@@ -2043,7 +2103,7 @@ const results = allItems
       },
       {
         title: "Chrome theming",
-        description: "Subtle chrome background distinguishes header and sidebar from the main content.",
+        description: "surfaceSecondary chrome background distinguishes header and sidebar from the main content.",
         previewKey: "pagelayout-chrome",
         code: `<PageLayout
   header={<Text weight="semibold">My App</Text>}
@@ -2053,11 +2113,11 @@ const results = allItems
       <NavLink href="#" inverse>Settings</NavLink>
     </div>
   }
-  chromeBackground="bgSubtle"
+  chromeBackground="surfaceSecondary"
   sidebarWidth={200}
   style={{ height: 400 }}
 >
-  <Text>Content on bgBase canvas with bgSubtle chrome</Text>
+  <Text>Content on bgBase canvas with surfaceSecondary chrome</Text>
 </PageLayout>`,
       },
     ],
@@ -2589,27 +2649,29 @@ const results = allItems
     name: "Chip",
     category: "Atoms",
     description:
-      "Unified label primitive replacing Tag and Badge. Supports dismissible, clickable, and selectable modes with swatch, dot, leftIcon, and borderless options. Available in three sizes and six semantic variants. Heights scale with spacing tokens.",
+      "Status-first label primitive. Supports dismissible, clickable, and selectable modes with swatch, dot, leftIcon, borderless, ghost, and pulse options. Dot-only mode (omit children with dot) renders a compact circular indicator. Available in three sizes and six semantic variants. Heights scale with spacing tokens.",
     importStatement: "import { Chip } from 'lucent-ui'",
     usageCode: `<Chip variant="accent" onDismiss={() => remove(id)}>
   TypeScript
 </Chip>`,
     aiPrompts: {
-      claude: `"Add a list of Chip components from lucent-ui for filter tags. Support dismiss and click-to-select. Use the swatch prop for color-coded categories."`,
-      cursor: `@lucent-ui Add Chips with onDismiss for removable tags and onClick for selectable filters.`,
-      vscode: `Using lucent-ui, add Chip components with variant, onDismiss, and swatch props for a category filter bar.`,
+      claude: `"Add a list of Chip components from lucent-ui for filter tags. Support dismiss and click-to-select. Use ghost chips for inline table statuses and dot-only with pulse for live indicators."`,
+      cursor: `@lucent-ui Add Chips with onDismiss for removable tags, ghost for inline statuses, and dot pulse for live indicators.`,
+      vscode: `Using lucent-ui, add Chip components with variant, ghost, dot, pulse props for status indicators and a category filter bar.`,
       mcp: `// lucent-ui MCP
-// Ask: "Add Chip components from lucent-ui for a filter tag list"`,
+// Ask: "Add Chip components from lucent-ui with ghost mode for table statuses and pulsing dots for live states"`,
     },
     props: [
-      { name: "children", type: "React.ReactNode", description: "Chip label.", required: true },
-      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant. The accent variant uses a solid accent background with auto-derived text-on-accent color.", defaultValue: `"neutral"` },
+      { name: "children", type: "React.ReactNode", description: "Chip label. Optional — omit with dot to render a dot-only indicator." },
+      { name: "variant", type: `"neutral" | "accent" | "success" | "warning" | "danger" | "info"`, description: "Semantic colour variant. The accent variant uses a solid accent background with hue-tinted accentFg foreground color.", defaultValue: `"neutral"` },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Chip size. Heights scale with spacing tokens.", defaultValue: `"md"` },
       { name: "onDismiss", type: "() => void", description: "If provided, renders a dismiss (×) button for removable chips." },
       { name: "onClick", type: "() => void", description: "Makes the chip clickable — renders as a button element." },
       { name: "leftIcon", type: "React.ReactNode", description: "Icon or element rendered before the label (emoji, flags, avatars)." },
       { name: "swatch", type: "string", description: "Hex color rendered as a small dot before the label for color-coded categories." },
-      { name: "dot", type: "boolean", description: "Status dot rendered before the label using the variant color.", defaultValue: "false" },
+      { name: "dot", type: "boolean", description: "Status dot rendered before the label using the variant color. When used without children, renders a compact circular dot-only indicator.", defaultValue: "false" },
+      { name: "pulse", type: "boolean", description: "Pulsing ring animation on the status dot for live/in-progress states (deploying, syncing, live incident). Only applies when dot is true. Uses injected @keyframes lucent-chip-pulse.", defaultValue: "false" },
+      { name: "ghost", type: "boolean", description: "Transparent background with text color only, no border. Subtle 8% tint on hover when interactive. Ideal for inline status indicators in tables and lists.", defaultValue: "false" },
       { name: "borderless", type: "boolean", description: "Removes the border for a softer filled-only appearance.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Prevents interaction.", defaultValue: "false" },
     ],
@@ -2647,6 +2709,25 @@ const results = allItems
 <Chip dot variant="danger">Offline</Chip>
 <Chip leftIcon="🇺🇸">United States</Chip>
 <Chip borderless variant="accent">Borderless</Chip>`,
+      },
+      {
+        title: "Ghost, pulse & dot-only",
+        description: "Ghost mode for inline table statuses, pulse for live indicators, and dot-only mode for compact signals.",
+        previewKey: "chip-status",
+        code: `{/* Ghost — inline status indicators */}
+<Chip ghost variant="success" dot>Deployed</Chip>
+<Chip ghost variant="warning" dot>Syncing</Chip>
+<Chip ghost variant="danger" dot>Failed</Chip>
+
+{/* Pulse — live/in-progress states */}
+<Chip variant="success" dot pulse>Live</Chip>
+<Chip variant="warning" dot pulse>Deploying</Chip>
+<Chip variant="danger" dot pulse>Incident</Chip>
+
+{/* Dot-only — compact circular indicators */}
+<Chip variant="success" dot />
+<Chip variant="warning" dot pulse />
+<Chip variant="danger" dot />`,
       },
     ],
   },
@@ -2934,6 +3015,890 @@ toast({ title: "Saved", variant: "success" });`,
         description: "Automatic color switching based on value thresholds (ascending: high is bad).",
         previewKey: "progress-threshold",
         code: `<Progress value={85} warnAt={60} dangerAt={80} label />`,
+      },
+    ],
+  },
+  // ── SplitButton ──────────────────────────────────────────────────────────────
+  {
+    slug: "splitbutton",
+    name: "SplitButton",
+    category: "Atoms",
+    description:
+      "Compound button pairing a primary action with a chevron dropdown for secondary actions. Each half is an independent button with its own hover lift and press ring. Composes the Menu molecule for dropdown keyboard navigation, positioning, and portal rendering. Supports all 7 variants and 5 sizes.",
+    importStatement: "import { SplitButton } from 'lucent-ui'",
+    usageCode: `<SplitButton
+  onClick={() => handleSave()}
+  menuItems={[
+    { label: "Save as draft", onSelect: () => handleDraft() },
+    { label: "Save & publish", onSelect: () => handlePublish() },
+  ]}
+>
+  Save
+</SplitButton>`,
+    aiPrompts: {
+      claude: `"Add a SplitButton from lucent-ui with a primary save action and dropdown menu items for 'Save as draft' and 'Save & publish'."`,
+      cursor: `@lucent-ui Add a SplitButton with primary action and menuItems for secondary actions.`,
+      vscode: `Using lucent-ui, add a SplitButton component with onClick for the main action and menuItems array for dropdown options.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a SplitButton from lucent-ui with save and publish options"`,
+    },
+    props: [
+      { name: "variant", type: `"primary" | "secondary" | "outline" | "ghost" | "danger" | "danger-outline" | "danger-ghost"`, description: "Visual style of both button halves.", defaultValue: `"primary"` },
+      { name: "size", type: `"2xs" | "xs" | "sm" | "md" | "lg"`, description: "Height and padding scale.", defaultValue: `"md"` },
+      { name: "onClick", type: "() => void", description: "Callback for the primary (left) button click." },
+      { name: "menuItems", type: "Array<{ label: string; onSelect: () => void; disabled?: boolean; danger?: boolean; icon?: ReactNode }>", description: "Items shown in the dropdown menu.", required: true },
+      { name: "leftIcon", type: "ReactNode", description: "Icon displayed before the primary label." },
+      { name: "disabled", type: "boolean", description: "Disables both halves.", defaultValue: "false" },
+      { name: "loading", type: "boolean", description: "Shows spinner on primary half and disables interaction.", defaultValue: "false" },
+      { name: "bordered", type: "boolean", description: "Adds visible border around the split button." },
+      { name: "menuPlacement", type: `"bottom-start" | "bottom-end" | "top-start" | "top-end"`, description: "Preferred dropdown placement.", defaultValue: `"bottom-end"` },
+      { name: "children", type: "React.ReactNode", description: "Primary button label.", required: true },
+    ],
+    examples: [
+      {
+        title: "Variants",
+        description: "All seven variants with dropdown actions.",
+        previewKey: "splitbutton-variants",
+        code: `<SplitButton
+  variant="primary"
+  menuItems={[
+    { label: "Save as draft", onSelect: () => {} },
+    { label: "Save & publish", onSelect: () => {} },
+  ]}
+>
+  Save
+</SplitButton>
+<SplitButton variant="outline" menuItems={[{ label: "Option A", onSelect: () => {} }]}>
+  Options
+</SplitButton>
+<SplitButton variant="danger" menuItems={[{ label: "Force delete", onSelect: () => {} }]}>
+  Delete
+</SplitButton>`,
+      },
+      {
+        title: "Sizes",
+        description: "Five sizes from 2xs to lg.",
+        previewKey: "splitbutton-sizes",
+        code: `<SplitButton size="2xs" menuItems={[{ label: "Alt", onSelect: () => {} }]}>2XS</SplitButton>
+<SplitButton size="xs" menuItems={[{ label: "Alt", onSelect: () => {} }]}>XS</SplitButton>
+<SplitButton size="sm" menuItems={[{ label: "Alt", onSelect: () => {} }]}>SM</SplitButton>
+<SplitButton size="md" menuItems={[{ label: "Alt", onSelect: () => {} }]}>MD</SplitButton>
+<SplitButton size="lg" menuItems={[{ label: "Alt", onSelect: () => {} }]}>LG</SplitButton>`,
+      },
+      {
+        title: "States",
+        description: "Loading and disabled states.",
+        previewKey: "splitbutton-states",
+        code: `<SplitButton loading menuItems={[{ label: "Alt", onSelect: () => {} }]}>Saving</SplitButton>
+<SplitButton disabled menuItems={[{ label: "Alt", onSelect: () => {} }]}>Disabled</SplitButton>`,
+      },
+    ],
+  },
+  // ── ButtonGroup ──────────────────────────────────────────────────────────────
+  {
+    slug: "buttongroup",
+    name: "ButtonGroup",
+    category: "Atoms",
+    description:
+      "Layout wrapper that visually groups Button or SplitButton children with a small token-based gap and flattened inner corner radius so the set reads as a single unit. Works with any variant combination including ghost toolbars.",
+    importStatement: "import { ButtonGroup } from 'lucent-ui'",
+    usageCode: `<ButtonGroup>
+  <Button variant="outline">Left</Button>
+  <Button variant="outline">Center</Button>
+  <Button variant="outline">Right</Button>
+</ButtonGroup>`,
+    aiPrompts: {
+      claude: `"Add a ButtonGroup from lucent-ui wrapping three outline Buttons so they appear as a single connected unit."`,
+      cursor: `@lucent-ui Add a ButtonGroup with three outline Button children for a toolbar.`,
+      vscode: `Using lucent-ui, add a ButtonGroup to visually group several Button components.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a ButtonGroup from lucent-ui wrapping outline buttons for a toolbar"`,
+    },
+    props: [
+      { name: "children", type: "React.ReactNode", description: "Button or SplitButton children to group.", required: true },
+    ],
+    examples: [
+      {
+        title: "Basic group",
+        description: "Three outline buttons grouped as a visual unit.",
+        previewKey: "buttongroup-basic",
+        code: `<ButtonGroup>
+  <Button variant="outline">Left</Button>
+  <Button variant="outline">Center</Button>
+  <Button variant="outline">Right</Button>
+</ButtonGroup>`,
+      },
+      {
+        title: "Mixed variants",
+        description: "Combining different variants and a SplitButton in one group.",
+        previewKey: "buttongroup-mixed",
+        code: `<ButtonGroup>
+  <Button variant="primary">Save</Button>
+  <SplitButton variant="outline" menuItems={[{ label: "Save as draft", onSelect: () => {} }]}>
+    More
+  </SplitButton>
+</ButtonGroup>`,
+      },
+      {
+        title: "Ghost toolbar",
+        description: "Ghost variant group for a compact toolbar.",
+        previewKey: "buttongroup-ghost",
+        code: `<ButtonGroup>
+  <Button variant="ghost" size="sm">Bold</Button>
+  <Button variant="ghost" size="sm">Italic</Button>
+  <Button variant="ghost" size="sm">Underline</Button>
+</ButtonGroup>`,
+      },
+    ],
+  },
+  // ── NavMenu ─────────────────────────────────────────────────────────────────
+  {
+    slug: "navmenu",
+    name: "NavMenu",
+    category: "Molecules",
+    description:
+      "Hierarchical navigation for sidebar and top-bar layouts with a DOM-driven sliding highlight pill. Compound API with Item, Group, Sub, and Separator. Three highlight states (child active, collapsed-with-active-child, self-active parent), CSS hover with translucent tint, inverse mode with accent right-border, three sizes, and collapsible groups with height animation.",
+    importStatement: "import { NavMenu } from 'lucent-ui'",
+    usageCode: `<NavMenu aria-label="Main navigation">
+  <NavMenu.Item href="/dashboard" isActive>Dashboard</NavMenu.Item>
+  <NavMenu.Group label="Settings">
+    <NavMenu.Item href="/settings/profile">Profile</NavMenu.Item>
+    <NavMenu.Item href="/settings/billing">Billing</NavMenu.Item>
+  </NavMenu.Group>
+</NavMenu>`,
+    aiPrompts: {
+      claude: `"Add a NavMenu from lucent-ui with a sidebar layout. Include NavMenu.Group for collapsible sections and NavMenu.Item for navigation links. Set hasIcons for icon alignment."`,
+      cursor: `@lucent-ui Add a NavMenu sidebar with Groups for sections and Items for links. Use the sliding highlight pill for active state.`,
+      vscode: `Using lucent-ui, add a NavMenu component with compound children (NavMenu.Item, NavMenu.Group, NavMenu.Sub, NavMenu.Separator) for a sidebar navigation.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a NavMenu from lucent-ui with collapsible groups and active item highlight"`,
+    },
+    props: [
+      { name: "orientation", type: `"vertical" | "horizontal"`, description: "Layout direction.", defaultValue: `"vertical"` },
+      { name: "inverse", type: "boolean", description: "Surface background with accent right-border and elevation shadow.", defaultValue: "false" },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Text and padding size.", defaultValue: `"md"` },
+      { name: "hasIcons", type: "boolean", description: "Controls left-padding alignment for icon consistency.", defaultValue: "false" },
+      { name: "aria-label", type: "string", description: "Accessible label for the nav element." },
+      { name: "style", type: "React.CSSProperties", description: "Custom styles for the root element." },
+      { name: "NavMenu.Item", type: "compound", description: "Navigation item. Props: href, isActive, icon, badge, onClick, disabled, as, children." },
+      { name: "NavMenu.Group", type: "compound", description: "Collapsible group with header. Props: label, defaultOpen, icon, children." },
+      { name: "NavMenu.Sub", type: "compound", description: "Nested submenu with horizontal dropdown and viewport collision detection. Props: label, icon, children." },
+      { name: "NavMenu.Separator", type: "compound", description: "Visual separator between items." },
+    ],
+    examples: [
+      {
+        title: "Basic sidebar",
+        description: "Vertical navigation with groups and active state.",
+        previewKey: "navmenu-sidebar",
+        code: `<NavMenu aria-label="Sidebar">
+  <NavMenu.Item href="#" isActive>Dashboard</NavMenu.Item>
+  <NavMenu.Item href="#">Analytics</NavMenu.Item>
+  <NavMenu.Separator />
+  <NavMenu.Group label="Settings">
+    <NavMenu.Item href="#">Profile</NavMenu.Item>
+    <NavMenu.Item href="#">Billing</NavMenu.Item>
+    <NavMenu.Item href="#">Team</NavMenu.Item>
+  </NavMenu.Group>
+</NavMenu>`,
+      },
+      {
+        title: "Inverse mode",
+        description: "Surface background with accent right-border for tinted chrome.",
+        previewKey: "navmenu-inverse",
+        code: `<NavMenu inverse aria-label="Sidebar">
+  <NavMenu.Item href="#" isActive>Dashboard</NavMenu.Item>
+  <NavMenu.Item href="#">Projects</NavMenu.Item>
+  <NavMenu.Group label="Admin">
+    <NavMenu.Item href="#">Users</NavMenu.Item>
+    <NavMenu.Item href="#">Roles</NavMenu.Item>
+  </NavMenu.Group>
+</NavMenu>`,
+      },
+      {
+        title: "Sizes",
+        description: "Small, medium, and large navigation items.",
+        previewKey: "navmenu-sizes",
+        code: `<NavMenu size="sm" aria-label="Small nav">
+  <NavMenu.Item href="#" isActive>Small</NavMenu.Item>
+  <NavMenu.Item href="#">Item</NavMenu.Item>
+</NavMenu>
+<NavMenu size="lg" aria-label="Large nav">
+  <NavMenu.Item href="#" isActive>Large</NavMenu.Item>
+  <NavMenu.Item href="#">Item</NavMenu.Item>
+</NavMenu>`,
+      },
+    ],
+  },
+
+  // ── Recipes ──────────────────────────────────────────────────────────────────
+
+  // ── ProfileCard ──────────────────────────────────────────────────────────────
+  {
+    slug: "profilecard",
+    name: "ProfileCard",
+    category: "Recipes",
+    description:
+      "User profile card composed from Card, Avatar, Text (display font), Chip, Row, Stack, Divider, and Button. Features a stat row with 2xl display numbers, borderless clickable chips for tags, and action buttons. Compact collapsible variant uses a filled Card with Collapsible.",
+    importStatement: "import { Card, Avatar, Text, Chip, Row, Stack, Divider, Button, Collapsible } from 'lucent-ui'",
+    usageCode: `<Card variant="elevated" style={{ width: 320 }}>
+  <Stack gap="4">
+    <Row gap="4">
+      <Avatar src="/avatar.jpg" size="md" alt="Jane Doe" />
+      <Stack gap="1">
+        <Row gap="2" align="center">
+          <Text size="lg" weight="bold" family="display">Jane Doe</Text>
+          <Chip variant="success" dot size="sm">Pro</Chip>
+        </Row>
+        <Text size="sm" color="secondary">Product Designer</Text>
+      </Stack>
+    </Row>
+    <Text size="sm" color="secondary">
+      Crafting intuitive experiences for complex products.
+    </Text>
+    <Row gap="2">
+      <Chip variant="neutral" size="sm" borderless onClick={() => {}}>Design</Chip>
+      <Chip variant="neutral" size="sm" borderless onClick={() => {}}>UX</Chip>
+    </Row>
+    <Divider spacing="0" />
+    <Row justify="around">
+      <Stack align="center" gap="0">
+        <Text size="2xl" weight="bold" family="display">128</Text>
+        <Text size="xs" color="secondary">Projects</Text>
+      </Stack>
+      <Stack align="center" gap="0">
+        <Text size="2xl" weight="bold" family="display">4.9</Text>
+        <Text size="xs" color="secondary">Rating</Text>
+      </Stack>
+    </Row>
+    <Divider spacing="0" />
+    <Row gap="2">
+      <Button size="sm">Message</Button>
+      <Button variant="outline" size="sm">Follow</Button>
+    </Row>
+  </Stack>
+</Card>`,
+    aiPrompts: {
+      claude: `"Create a ProfileCard using lucent-ui: Card elevated wrapping Avatar, display-font name, subtitle, borderless clickable Chips, a stat row with 2xl display numbers, and action Buttons. Use Stack and Row for layout, Divider for separation."`,
+      cursor: `@lucent-ui Create a ProfileCard: Card elevated with Avatar, display-font name, clickable Chips, stat row (2xl display), and action Buttons.`,
+      vscode: `Using lucent-ui, compose a profile card with Card, Avatar, Text (display font), Chip (borderless), Row for stats, and Button actions.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Get the ProfileCard composition recipe"
+// Tool: get_composition_recipe({ name: "ProfileCard" })`,
+    },
+    props: [
+      { name: "Card variant", type: `"ghost" | "outline" | "filled" | "elevated" | "combo"`, description: "Elevation level of the outer card.", defaultValue: `"elevated"` },
+      { name: "Avatar src", type: "string", description: "Profile image URL." },
+      { name: "Avatar size", type: `"xs" | "sm" | "md" | "lg" | "xl" | "2xl"`, description: "Avatar dimensions.", defaultValue: `"xl"` },
+      { name: "Text family", type: `"base" | "mono" | "display"`, description: "Use display for the name heading.", defaultValue: `"base"` },
+      { name: "Chip borderless", type: "boolean", description: "Removes border for a softer tag appearance.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Profile card",
+        description: "Full profile with avatar, stats, tags, and actions.",
+        previewKey: "recipe-profilecard",
+        code: `<Card variant="elevated" style={{ width: 320 }}>
+  <Stack gap="4">
+    <Row gap="4">
+      <Avatar size="lg" alt="Jane Doe" />
+      <Stack gap="1">
+        <Row gap="2" align="center">
+          <Text size="lg" weight="bold" family="display">Jane Doe</Text>
+          <Chip variant="accent" size="sm">Pro</Chip>
+        </Row>
+        <Text size="sm" color="secondary">Product Designer</Text>
+      </Stack>
+    </Row>
+    <Text size="sm" color="secondary">
+      Crafting intuitive experiences for complex products.
+    </Text>
+    <Row gap="2">
+      <Chip variant="neutral" size="sm" borderless onClick={() => {}}>Design</Chip>
+      <Chip variant="neutral" size="sm" borderless onClick={() => {}}>UX</Chip>
+    </Row>
+    <Divider spacing="0" />
+    <Row justify="around">
+      <Stack align="center" gap="0">
+        <Text size="2xl" weight="bold" family="display">128</Text>
+        <Text size="xs" color="secondary">Projects</Text>
+      </Stack>
+      <Stack align="center" gap="0">
+        <Text size="2xl" weight="bold" family="display">4.9</Text>
+        <Text size="xs" color="secondary">Rating</Text>
+      </Stack>
+    </Row>
+    <Divider spacing="0" />
+    <Row gap="2">
+      <Button size="sm">Message</Button>
+      <Button variant="outline" size="sm">Follow</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+      {
+        title: "Compact collapsible variant",
+        description: "Filled card with collapsible bio and stats.",
+        previewKey: "recipe-profilecard-compact",
+        code: `<Card variant="filled" hoverable style={{ width: 320 }}>
+  <Collapsible
+    trigger={
+      <Row gap="3">
+        <Avatar size="md" />
+        <Stack gap="0">
+          <Text size="sm" weight="semibold">Jane Doe</Text>
+          <Text size="xs" color="secondary">Designer</Text>
+        </Stack>
+      </Row>
+    }
+  >
+    <Stack gap="3">
+      <Text size="sm" color="secondary">
+        Designing intuitive experiences for complex products.
+      </Text>
+      <Row gap="2">
+        <Button size="sm" variant="outline">View profile</Button>
+      </Row>
+    </Stack>
+  </Collapsible>
+</Card>`,
+      },
+    ],
+  },
+
+  // ── SettingsPanel ─────────────────────────────────────────────────────────────
+  {
+    slug: "settingspanel",
+    name: "SettingsPanel",
+    category: "Recipes",
+    description:
+      "Settings panel composed from Card, Stack, Row, Text, Toggle, Select, Divider, and Button. Features toggle rows with descriptions, a select dropdown, and an action footer. Drill-down variant adds a NavMenu sidebar for multi-section navigation.",
+    importStatement: "import { Card, Stack, Row, Text, Toggle, Select, Divider, Button } from 'lucent-ui'",
+    usageCode: `<Card variant="elevated" style={{ width: 400 }}>
+  <Stack gap="4">
+    <Text size="lg" weight="bold">Settings</Text>
+    <Divider spacing="0" />
+    <Row justify="between">
+      <Stack gap="0">
+        <Text size="sm" weight="medium">Notifications</Text>
+        <Text size="xs" color="secondary">Receive email alerts</Text>
+      </Stack>
+      <Toggle defaultChecked />
+    </Row>
+    <Row justify="between">
+      <Stack gap="0">
+        <Text size="sm" weight="medium">Dark mode</Text>
+        <Text size="xs" color="secondary">Use dark theme</Text>
+      </Stack>
+      <Toggle />
+    </Row>
+    <Divider spacing="0" />
+    <Select label="Language" defaultValue="en" options={[
+      { value: "en", label: "English" },
+      { value: "es", label: "Spanish" },
+    ]} />
+    <Divider spacing="0" />
+    <Row gap="2" justify="end">
+      <Button variant="outline" size="sm">Cancel</Button>
+      <Button size="sm">Save changes</Button>
+    </Row>
+  </Stack>
+</Card>`,
+    aiPrompts: {
+      claude: `"Create a SettingsPanel using lucent-ui: Card elevated with toggle rows (label + description + Toggle), a Select dropdown, dividers, and a save/cancel footer. Use Stack and Row for layout."`,
+      cursor: `@lucent-ui Create a SettingsPanel: Card with toggle rows, Select dropdown, dividers, and action footer.`,
+      vscode: `Using lucent-ui, compose a settings panel with Card, Toggle rows, Select, Divider, and Button footer.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Get the SettingsPanel composition recipe"
+// Tool: get_composition_recipe({ name: "SettingsPanel" })`,
+    },
+    props: [
+      { name: "Card variant", type: `"ghost" | "outline" | "filled" | "elevated" | "combo"`, description: "Elevation level of the outer card.", defaultValue: `"elevated"` },
+      { name: "Toggle defaultChecked", type: "boolean", description: "Initial state for toggle rows.", defaultValue: "false" },
+      { name: "Select label", type: "string", description: "Label for dropdown fields." },
+      { name: "Select defaultValue", type: "string", description: "Default selected option." },
+    ],
+    examples: [
+      {
+        title: "Settings panel",
+        description: "Toggle rows with descriptions, a select dropdown, and save/cancel footer.",
+        previewKey: "recipe-settingspanel",
+        code: `<Card variant="elevated" style={{ width: 400 }}>
+  <Stack gap="4">
+    <Text size="lg" weight="bold">Settings</Text>
+    <Divider spacing="0" />
+    <Row justify="between">
+      <Stack gap="0">
+        <Text size="sm" weight="medium">Notifications</Text>
+        <Text size="xs" color="secondary">Receive email alerts</Text>
+      </Stack>
+      <Toggle defaultChecked />
+    </Row>
+    <Divider spacing="0" />
+    <Select label="Language" defaultValue="en" options={[
+      { value: "en", label: "English" },
+    ]} />
+    <Divider spacing="0" />
+    <Row gap="2" justify="end">
+      <Button variant="outline" size="sm">Cancel</Button>
+      <Button size="sm">Save changes</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+      {
+        title: "Drill-down with NavMenu",
+        description: "Multi-section settings with a sidebar NavMenu for navigation.",
+        previewKey: "recipe-settingspanel-drilldown",
+        code: `<Card variant="elevated" style={{ width: 520 }}>
+  <Row gap="0" align="stretch">
+    <NavMenu size="sm" style={{ width: 140, borderRight: "1px solid var(--lucent-border-default)", padding: 8 }}>
+      <NavMenu.Item isActive>General</NavMenu.Item>
+      <NavMenu.Item>Security</NavMenu.Item>
+      <NavMenu.Item>Billing</NavMenu.Item>
+    </NavMenu>
+    <Stack gap="4" style={{ flex: 1, padding: 16 }}>
+      <Text size="md" weight="bold">General</Text>
+      <Row justify="between">
+        <Stack gap="0">
+          <Text size="sm" weight="medium">Dark mode</Text>
+          <Text size="xs" color="secondary">Use dark theme</Text>
+        </Stack>
+        <Toggle />
+      </Row>
+    </Stack>
+  </Row>
+</Card>`,
+      },
+    ],
+  },
+
+  // ── StatsRow ──────────────────────────────────────────────────────────────────
+  {
+    slug: "statsrow",
+    name: "StatsRow",
+    category: "Recipes",
+    description:
+      "Stats row composed from Card, Row, Stack, Text, and Chip. Individual stat cards display a metric label, a 2xl display number, and a trend chip with comparison text. Revenue variant adds avatar headers for team attribution.",
+    importStatement: "import { Card, Row, Stack, Text, Chip } from 'lucent-ui'",
+    usageCode: `<Row gap="4" wrap>
+  <Card variant="outline" style={{ flex: 1, minWidth: 180 }}>
+    <Stack gap="1">
+      <Text size="xs" color="secondary">Total Users</Text>
+      <Text size="2xl" weight="bold" family="display">12,847</Text>
+      <Row gap="2" align="center">
+        <Chip variant="success" size="sm">+12.5%</Chip>
+        <Text size="xs" color="secondary">vs last month</Text>
+      </Row>
+    </Stack>
+  </Card>
+  <Card variant="outline" style={{ flex: 1, minWidth: 180 }}>
+    <Stack gap="1">
+      <Text size="xs" color="secondary">Revenue</Text>
+      <Text size="2xl" weight="bold" family="display">$48.2k</Text>
+      <Row gap="2" align="center">
+        <Chip variant="danger" size="sm">-3.1%</Chip>
+        <Text size="xs" color="secondary">vs last month</Text>
+      </Row>
+    </Stack>
+  </Card>
+</Row>`,
+    aiPrompts: {
+      claude: `"Create a StatsRow using lucent-ui: Row of outline Cards, each with a label (xs secondary), a 2xl display number, and a trend Chip (success/danger) with comparison text."`,
+      cursor: `@lucent-ui Create a StatsRow: Row of Cards with metric labels, 2xl display numbers, and trend Chips.`,
+      vscode: `Using lucent-ui, compose a stats row with Card, Text (2xl display), and Chip for trend indicators.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Get the StatsRow composition recipe"
+// Tool: get_composition_recipe({ name: "StatsRow" })`,
+    },
+    props: [
+      { name: "Card variant", type: `"ghost" | "outline" | "filled" | "elevated"`, description: "Elevation level of each stat card.", defaultValue: `"outline"` },
+      { name: "Chip variant", type: `"success" | "danger" | "warning" | "info"`, description: "Semantic color for the trend indicator." },
+      { name: "Text font", type: `"body" | "display"`, description: "Use display for large metric numbers.", defaultValue: `"display"` },
+    ],
+    examples: [
+      {
+        title: "Stats row",
+        description: "Three stat cards with trend indicators.",
+        previewKey: "recipe-statsrow",
+        code: `<Row gap="4" wrap>
+  <Card variant="outline" style={{ flex: 1, minWidth: 160 }}>
+    <Stack gap="1">
+      <Text size="xs" color="secondary">Users</Text>
+      <Text size="2xl" weight="bold" family="display">12,847</Text>
+      <Chip variant="success" size="sm">+12.5%</Chip>
+    </Stack>
+  </Card>
+  <Card variant="outline" style={{ flex: 1, minWidth: 160 }}>
+    <Stack gap="1">
+      <Text size="xs" color="secondary">Revenue</Text>
+      <Text size="2xl" weight="bold" family="display">$48.2k</Text>
+      <Chip variant="danger" size="sm">-3.1%</Chip>
+    </Stack>
+  </Card>
+</Row>`,
+      },
+      {
+        title: "Revenue variant with avatars",
+        description: "Stat cards with avatar headers for team attribution.",
+        previewKey: "recipe-statsrow-avatars",
+        code: `<Row gap="4" wrap>
+  <Card variant="elevated" style={{ flex: 1, minWidth: 200 }}>
+    <Stack gap="2">
+      <Row gap="2" align="center">
+        <Avatar size="sm" />
+        <Text size="xs" color="secondary">Alice — Sales</Text>
+      </Row>
+      <Text size="2xl" weight="bold" family="display">$24.1k</Text>
+      <Chip variant="success" size="sm">+8.3%</Chip>
+    </Stack>
+  </Card>
+  <Card variant="elevated" style={{ flex: 1, minWidth: 200 }}>
+    <Stack gap="2">
+      <Row gap="2" align="center">
+        <Avatar size="sm" />
+        <Text size="xs" color="secondary">Bob — Marketing</Text>
+      </Row>
+      <Text size="2xl" weight="bold" family="display">$18.7k</Text>
+      <Chip variant="warning" size="sm">+1.2%</Chip>
+    </Stack>
+  </Card>
+</Row>`,
+      },
+    ],
+  },
+
+  // ── ActionBar ─────────────────────────────────────────────────────────────────
+  {
+    slug: "actionbar",
+    name: "ActionBar",
+    category: "Recipes",
+    description:
+      "Action bar header composed from Stack, Row, Breadcrumb, Text, Divider, and Button. Page header variant features breadcrumb navigation, a 3xl display title, a divider, and action buttons. Card header variant uses an uppercase label with md title and tight letter-spacing.",
+    importStatement: "import { Stack, Row, Breadcrumb, Text, Divider, Button } from 'lucent-ui'",
+    usageCode: `<Stack gap="3">
+  <Breadcrumb items={[
+    { label: "Home", href: "#" },
+    { label: "Projects", href: "#" },
+    { label: "Details" },
+  ]} />
+  <Row justify="between" align="end">
+    <Text size="3xl" weight="bold" family="display">Project Alpha</Text>
+    <Row gap="2">
+      <Button variant="outline" size="sm">Edit</Button>
+      <Button size="sm">Publish</Button>
+    </Row>
+  </Row>
+  <Divider spacing="0" />
+</Stack>`,
+    aiPrompts: {
+      claude: `"Create an ActionBar using lucent-ui: Stack with Breadcrumb, a 3xl display title Row with action Buttons, and a Divider below. For card headers, use uppercase xs label + md title with tight letter-spacing."`,
+      cursor: `@lucent-ui Create an ActionBar: Breadcrumb + 3xl display title + action Buttons + Divider.`,
+      vscode: `Using lucent-ui, compose an action bar header with Breadcrumb, Text (3xl display), Button actions, and Divider.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Get the ActionBar composition recipe"
+// Tool: get_composition_recipe({ name: "ActionBar" })`,
+    },
+    props: [
+      { name: "Text size", type: `"md" | "lg" | "xl" | "2xl" | "3xl"`, description: "Title size — 3xl for page headers, md for card headers.", defaultValue: `"3xl"` },
+      { name: "Text family", type: `"base" | "mono" | "display"`, description: "Use display for page-level titles.", defaultValue: `"base"` },
+      { name: "Breadcrumb.Item href", type: "string", description: "Navigation link for each breadcrumb segment." },
+    ],
+    examples: [
+      {
+        title: "Page header",
+        description: "Breadcrumb navigation, large display title, and action buttons.",
+        previewKey: "recipe-actionbar-page",
+        code: `<Stack gap="3">
+  <Breadcrumb items={[
+    { label: "Home", href: "#" },
+    { label: "Projects", href: "#" },
+    { label: "Details" },
+  ]} />
+  <Row justify="between" align="end">
+    <Text size="3xl" weight="bold" family="display">Project Alpha</Text>
+    <Row gap="2">
+      <Button variant="outline" size="sm">Edit</Button>
+      <Button size="sm">Publish</Button>
+    </Row>
+  </Row>
+  <Divider spacing="0" />
+</Stack>`,
+      },
+      {
+        title: "Card header",
+        description: "Uppercase label with medium title and tight letter-spacing for card sections.",
+        previewKey: "recipe-actionbar-card",
+        code: `<Card variant="outline" style={{ width: 360 }}>
+  <Stack gap="2">
+    <Text size="xs" color="secondary"
+      style={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      Overview
+    </Text>
+    <Row justify="between" align="center">
+      <Text size="md" weight="semibold">Team Activity</Text>
+      <Button variant="ghost" size="xs">View all</Button>
+    </Row>
+    <Divider spacing="0" />
+    <Text size="sm" color="secondary">
+      Activity feed content goes here.
+    </Text>
+  </Stack>
+</Card>`,
+      },
+    ],
+  },
+
+  // ── FormLayout ────────────────────────────────────────────────────────────────
+  {
+    slug: "formlayout",
+    name: "FormLayout",
+    category: "Recipes",
+    description:
+      "Form layout composed from Card, Stack, Row, Text, Input, Textarea, Select, Divider, and Button. Stacked form with section grouping, side-by-side fields using Row, dividers between sections, and a submit/cancel footer.",
+    importStatement: "import { Card, Stack, Row, Text, Input, Textarea, Select, DatePicker, Divider, Button } from 'lucent-ui'",
+    usageCode: `<Card variant="elevated" style={{ width: 480 }}>
+  <Stack as="form" gap="4">
+    <Text size="lg" weight="bold">Create Project</Text>
+    <Divider spacing="0" />
+    <Input label="Project name" placeholder="My project" />
+    <Row gap="3">
+      <DatePicker label="Start date" placeholder="Pick a date" style={{ flex: 1 }} />
+      <DatePicker label="End date" placeholder="Pick a date" style={{ flex: 1 }} />
+    </Row>
+    <Textarea label="Description" placeholder="Describe the project..." />
+    <Select label="Priority" options={[
+      { value: "low", label: "Low" },
+      { value: "medium", label: "Medium" },
+      { value: "high", label: "High" },
+    ]} />
+    <Divider spacing="0" />
+    <Row gap="2" justify="end">
+      <Button variant="outline">Cancel</Button>
+      <Button type="submit">Create project</Button>
+    </Row>
+  </Stack>
+</Card>`,
+    aiPrompts: {
+      claude: `"Create a FormLayout using lucent-ui: Card elevated wrapping a Stack form with Input fields, side-by-side Row fields, Textarea, Select, Dividers for section breaks, and a submit/cancel Button footer."`,
+      cursor: `@lucent-ui Create a FormLayout: Card with stacked form fields, side-by-side Row inputs, Textarea, Select, and action footer.`,
+      vscode: `Using lucent-ui, compose a form layout with Card, Stack (as="form"), Input, Row for side-by-side fields, Textarea, Select, Divider, and Buttons.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Get the FormLayout composition recipe"
+// Tool: get_composition_recipe({ name: "FormLayout" })`,
+    },
+    props: [
+      { name: "Card variant", type: `"ghost" | "outline" | "filled" | "elevated"`, description: "Elevation level of the form card.", defaultValue: `"elevated"` },
+      { name: "Stack as", type: `"form" | "div"`, description: "Render as a form element for native submission.", defaultValue: `"form"` },
+      { name: "Input label", type: "string", description: "Field label." },
+      { name: "Input placeholder", type: "string", description: "Placeholder text." },
+    ],
+    examples: [
+      {
+        title: "Form layout",
+        description: "Stacked form with sections, side-by-side fields, and action footer.",
+        previewKey: "recipe-formlayout",
+        code: `<Card variant="elevated" style={{ width: 480 }}>
+  <Stack as="form" gap="4">
+    <Text size="lg" weight="bold">Create Project</Text>
+    <Divider spacing="0" />
+    <Input label="Project name" placeholder="My project" />
+    <Row gap="3">
+      <DatePicker label="Start" placeholder="Pick a date" style={{ flex: 1 }} />
+      <DatePicker label="End" placeholder="Pick a date" style={{ flex: 1 }} />
+    </Row>
+    <Textarea label="Description" placeholder="Describe..." />
+    <Divider spacing="0" />
+    <Row gap="2" justify="end">
+      <Button variant="outline">Cancel</Button>
+      <Button type="submit">Create</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+      {
+        title: "Section grouping",
+        description: "Multiple form sections with headings and dividers.",
+        previewKey: "recipe-formlayout-sections",
+        code: `<Card variant="elevated" style={{ width: 480 }}>
+  <Stack as="form" gap="4">
+    <Text size="lg" weight="bold">Account Settings</Text>
+    <Divider spacing="0" />
+    <Text size="sm" weight="semibold">Personal Info</Text>
+    <Row gap="3">
+      <Input label="First name" style={{ flex: 1 }} />
+      <Input label="Last name" style={{ flex: 1 }} />
+    </Row>
+    <Input label="Email" type="email" />
+    <Divider spacing="0" />
+    <Text size="sm" weight="semibold">Preferences</Text>
+    <Select label="Timezone" options={[
+      { value: "utc", label: "UTC" },
+      { value: "est", label: "EST" },
+    ]} />
+    <Divider spacing="0" />
+    <Row gap="2" justify="end">
+      <Button variant="outline">Cancel</Button>
+      <Button type="submit">Save</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+    ],
+  },
+
+  // ── EmptyStateCard ────────────────────────────────────────────────────────────
+  {
+    slug: "emptystatecard",
+    name: "EmptyStateCard",
+    category: "Recipes",
+    description:
+      "Empty state card composed from Card, EmptyState, Icon, Text, and Button. Features an icon illustration, heading, description, and a call-to-action button. Three variants: no results, getting started, and error.",
+    importStatement: "import { Card, EmptyState, Icon, Button } from 'lucent-ui'",
+    usageCode: `<Card variant="outline" style={{ width: 400 }}>
+  <EmptyState
+    illustration={
+      <Icon size="xl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx={11} cy={11} r={8} />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+      </Icon>
+    }
+    title="No results found"
+    description="Try adjusting your search or filters to find what you're looking for."
+    action={<Button variant="secondary" size="sm">Clear filters</Button>}
+  />
+</Card>`,
+    aiPrompts: {
+      claude: `"Create an EmptyStateCard using lucent-ui: Card wrapping EmptyState with an Icon illustration, title, description, and a CTA Button. Use three variants: no results, getting started, and error."`,
+      cursor: `@lucent-ui Create an EmptyStateCard: Card with EmptyState, Icon illustration, and CTA Button in three variants.`,
+      vscode: `Using lucent-ui, compose an empty state card with Card, EmptyState, Icon, and Button for no-results, onboarding, and error states.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Get the EmptyStateCard composition recipe"
+// Tool: get_composition_recipe({ name: "EmptyStateCard" })`,
+    },
+    props: [
+      { name: "Card variant", type: `"ghost" | "outline" | "filled" | "elevated"`, description: "Elevation level of the outer card.", defaultValue: `"outline"` },
+      { name: "EmptyState title", type: "string", description: "Heading text.", required: true },
+      { name: "EmptyState description", type: "string", description: "Supporting description text." },
+      { name: "EmptyState illustration", type: "React.ReactNode", description: "Icon or image above the title." },
+      { name: "EmptyState action", type: "React.ReactNode", description: "CTA button or link." },
+    ],
+    examples: [
+      {
+        title: "No results",
+        description: "Search returned no matches — prompt the user to adjust filters.",
+        previewKey: "recipe-emptystate-noresults",
+        code: `<Card variant="outline" style={{ width: 360 }}>
+  <EmptyState
+    illustration={<Icon size="xl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><circle cx={11} cy={11} r={8}/><path d="M21 21l-4.35-4.35"/></svg></Icon>}
+    title="No results found"
+    description="Try adjusting your search or filters."
+    action={<Button variant="secondary" size="sm">Clear filters</Button>}
+  />
+</Card>`,
+      },
+      {
+        title: "Getting started",
+        description: "Onboarding state prompting the user to create their first item.",
+        previewKey: "recipe-emptystate-onboarding",
+        code: `<Card variant="outline" style={{ width: 360 }}>
+  <EmptyState
+    illustration={<Icon size="xl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M12 5v14M5 12h14"/></svg></Icon>}
+    title="Get started"
+    description="Create your first project to begin."
+    action={<Button size="sm">Create project</Button>}
+  />
+</Card>`,
+      },
+      {
+        title: "Error state",
+        description: "Something went wrong — offer a retry action.",
+        previewKey: "recipe-emptystate-error",
+        code: `<Card variant="outline" style={{ width: 360 }}>
+  <EmptyState
+    illustration={<Icon size="xl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><circle cx={12} cy={12} r={10}/><path d="M12 8v4M12 16h.01"/></svg></Icon>}
+    title="Something went wrong"
+    description="We couldn't load the data. Please try again."
+    action={<Button variant="danger" size="sm">Retry</Button>}
+  />
+</Card>`,
+      },
+    ],
+  },
+
+  // ── CollapsibleCard ────────────────────────────────────────────────────────────
+  {
+    slug: "collapsiblecard",
+    name: "CollapsibleCard",
+    category: "Recipes",
+    description:
+      "Expandable card composed from Card + Collapsible. The Collapsible auto-bleeds inside the Card via CardPaddingContext — just wrap and it works. Use hoverable on the Card for hover lift without making it interactive. Works with all five card variants; combo gives a two-tone layout with a nested elevated Card.",
+    importStatement: "import { Card, Collapsible } from 'lucent-ui'",
+    usageCode: `<Card variant="elevated" hoverable>
+  <Collapsible trigger="Show details">
+    <Text size="sm" color="secondary">
+      Expanded content auto-bleeds to fill the card.
+    </Text>
+  </Collapsible>
+</Card>`,
+    aiPrompts: {
+      claude: `"Create a CollapsibleCard using lucent-ui by wrapping a Collapsible inside a Card with hoverable. The Collapsible auto-bleeds to fill the card body — no extra padding props needed."`,
+      cursor: `@lucent-ui Create a CollapsibleCard: Card hoverable wrapping a Collapsible. Auto-bleed handles padding.`,
+      vscode: `Using lucent-ui, compose a Card (variant="elevated", hoverable) wrapping a Collapsible for an expandable card pattern.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Create a CollapsibleCard recipe from lucent-ui using Card + Collapsible"`,
+    },
+    props: [
+      { name: "Card variant", type: `"ghost" | "outline" | "filled" | "elevated" | "combo"`, description: "Elevation level of the outer card.", defaultValue: `"outline"` },
+      { name: "Card hoverable", type: "boolean", description: "Enables hover lift and neutral glow without making the card a button or link.", defaultValue: "false" },
+      { name: "Card status", type: `"success" | "warning" | "danger" | "info"`, description: "Colored left-edge accent bar." },
+      { name: "Collapsible trigger", type: "React.ReactNode", description: "Always-visible trigger element.", required: true },
+      { name: "Collapsible defaultOpen", type: "boolean", description: "Start in expanded state.", defaultValue: "false" },
+      { name: "Collapsible disabled", type: "boolean", description: "Prevent toggling.", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "All variants",
+        description: "Five card elevation levels with a Collapsible inside each. The Collapsible auto-bleeds to match the card body.",
+        previewKey: "card-collapsible-recipe",
+        code: `<Card variant="ghost" hoverable>
+  <Collapsible trigger="Ghost">
+    <Text size="xs" color="secondary">Content</Text>
+  </Collapsible>
+</Card>
+
+<Card variant="elevated" hoverable>
+  <Collapsible trigger="Elevated">
+    <Text size="xs" color="secondary">Content</Text>
+  </Collapsible>
+</Card>
+
+<Card variant="combo" hoverable>
+  <Collapsible trigger="Combo">
+    <Text size="xs" color="secondary">Content</Text>
+  </Collapsible>
+</Card>`,
+      },
+      {
+        title: "Composed layouts",
+        description: "Elevated and filled cards with expanded content. Use for settings panels, FAQ sections, or detail drawers.",
+        previewKey: "collapsible-card-recipe",
+        code: `<Card variant="elevated" hoverable>
+  <Collapsible trigger="Expand details">
+    <Text size="sm" color="secondary">
+      Content inside a hoverable card.
+    </Text>
+  </Collapsible>
+</Card>
+
+<Card variant="filled" hoverable>
+  <Collapsible trigger="Filled variant">
+    <Text size="sm" color="secondary">
+      Works with any card variant.
+    </Text>
+  </Collapsible>
+</Card>`,
       },
     ],
   },

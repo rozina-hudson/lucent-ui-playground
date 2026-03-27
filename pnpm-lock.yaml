@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       lucent-ui:
-        specifier: ^0.21.0
-        version: 0.21.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^0.27.2
+        version: 0.27.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1644,8 +1644,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucent-ui@0.21.0:
-    resolution: {integrity: sha512-fuD2km5yovEoCoxbb2HL66fTy9Nk6X1sFsTbyimYp4J2KUyp0XNAuS9sTcZ6awX5ZY4V9AbkPM1mxMnKrT4q/w==}
+  lucent-ui@0.27.2:
+    resolution: {integrity: sha512-QcljwZOljaZ2N4Ctj2P6REGup+8H1c6XIaGwVR8Yyuddej/uoRj0Q1PXrYwcuNoAlQT/gojmvqzU6xU0wLfduA==}
     hasBin: true
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
@@ -3911,7 +3911,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucent-ui@0.21.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  lucent-ui@0.27.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@modelcontextprotocol/sdk': 1.27.1(zod@4.3.6)
       react: 19.2.3
