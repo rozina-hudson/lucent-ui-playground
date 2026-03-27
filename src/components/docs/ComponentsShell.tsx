@@ -7,14 +7,13 @@ import {
   LucentProvider,
   Badge,
   PageLayout,
-  Collapsible,
-  NavLink,
+  NavMenu,
   lightTokens,
   darkTokens,
 } from "lucent-ui";
 import { getShell } from "@/lib/shellColors";
 import { usePlayground } from "@/lib/playgroundContext";
-import { CATEGORIES, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
+import { CATEGORIES, ATOM_SUBGROUPS, RECIPE_SUBGROUPS, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
 import {
   PlaygroundPanel,
@@ -29,14 +28,6 @@ import { LucentSpinner } from "@/components/brand";
 
 type Shell = ReturnType<typeof getShell>;
 
-const SIDEBAR_LABEL: React.CSSProperties = {
-  fontFamily: "var(--font-dm-sans), sans-serif",
-  fontSize: 11,
-  fontWeight: 700,
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-};
-
 // ─── Stable sub-components — only re-render on theme/slug/toggle changes ─────
 
 const RESOURCES = [
@@ -44,69 +35,97 @@ const RESOURCES = [
 ];
 
 const SidebarNav = memo(function SidebarNav({
-  shell,
   segment,
 }: {
-  shell: Shell;
   segment: string | null;
 }) {
-  const [openMap, setOpenMap] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(CATEGORIES.map((cat) => [cat.label, true]))
-  );
-
   return (
-    <div>
-      {/* Resources section */}
-      <div style={{ padding: "12px 4px", borderBottom: `1px solid ${shell.border}` }}>
-        <div style={{ color: shell.text, ...SIDEBAR_LABEL, padding: "8px 12px 4px" }}>
-          Resources
-        </div>
-        <nav>
-          {RESOURCES.map(({ slug, label }) => (
-            <NavLink
+    <NavMenu aria-label="Component navigation" size="sm" style={{ padding: "8px 8px" }}>
+      {/* Resources */}
+      {RESOURCES.map(({ slug, label }) => (
+        <NavMenu.Item
+          key={slug}
+          as={Link}
+          href={`/components/${slug}`}
+          isActive={slug === segment}
+        >
+          {label}
+        </NavMenu.Item>
+      ))}
+
+      <NavMenu.Separator />
+
+      {/* Atoms — sub-nav groups */}
+      <NavMenu.Group label="Atoms" defaultOpen>
+        {ATOM_SUBGROUPS.map((sub) => {
+          const hasActiveChild = sub.slugs.includes(segment ?? "");
+          return (
+            <NavMenu.Item key={sub.label} isActive={hasActiveChild}>
+              {sub.label}
+              <NavMenu.Sub>
+                {sub.slugs.map((slug) => {
+                  const comp = componentRegistry.find((c) => c.slug === slug);
+                  return (
+                    <NavMenu.Item
+                      key={slug}
+                      as={Link}
+                      href={`/components/${slug}`}
+                      isActive={slug === segment}
+                    >
+                      {comp?.name ?? slug}
+                    </NavMenu.Item>
+                  );
+                })}
+              </NavMenu.Sub>
+            </NavMenu.Item>
+          );
+        })}
+      </NavMenu.Group>
+
+      {/* Molecules — flat list */}
+      <NavMenu.Group label="Molecules" defaultOpen>
+        {CATEGORIES.find((c) => c.label === "Molecules")!.slugs.map((slug) => {
+          const comp = componentRegistry.find((c) => c.slug === slug);
+          return (
+            <NavMenu.Item
               key={slug}
               as={Link}
               href={`/components/${slug}`}
               isActive={slug === segment}
             >
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
+              {comp?.name ?? slug}
+            </NavMenu.Item>
+          );
+        })}
+      </NavMenu.Group>
 
-      {CATEGORIES.map((cat) => (
-        <Collapsible
-          key={cat.label}
-          open={openMap[cat.label]}
-          onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [cat.label]: v }))}
-          style={{ padding: "0 4px", borderBottom: `1px solid ${shell.border}` }}
-          trigger={
-            <div style={{  color: shell.text, ...SIDEBAR_LABEL }}>
-              {cat.label}
-            </div>
-          }
-        >
-          <div style={{ paddingBottom: 12 }}>
-            <nav>
-              {cat.slugs.map((slug) => {
-                const comp = componentRegistry.find((c) => c.slug === slug);
-                return (
-                  <NavLink
-                    key={slug}
-                    as={Link}
-                    href={`/components/${slug}`}
-                    isActive={slug === segment}
-                  >
-                    {comp?.name ?? slug}
-                  </NavLink>
-                );
-              })}
-            </nav>
-          </div>
-        </Collapsible>
-      ))}
-    </div>
+      {/* Recipes — sub-nav groups */}
+      <NavMenu.Group label="Recipes" defaultOpen>
+        {RECIPE_SUBGROUPS.map((sub) => {
+          const hasActiveChild = sub.slugs.includes(segment ?? "");
+          return (
+            <NavMenu.Item key={sub.label} isActive={hasActiveChild}>
+              {sub.label}
+              <NavMenu.Sub>
+                {sub.slugs.map((slug) => {
+                  const comp = componentRegistry.find((c) => c.slug === slug);
+                  return (
+                    <NavMenu.Item
+                      key={slug}
+                      as={Link}
+                      href={`/components/${slug}`}
+                      isActive={slug === segment}
+                    >
+                      {comp?.name ?? slug}
+                    </NavMenu.Item>
+                  );
+                })}
+              </NavMenu.Sub>
+            </NavMenu.Item>
+          );
+        })}
+      </NavMenu.Group>
+    </NavMenu>
   );
 });
 
@@ -365,7 +384,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
 
   const sidebar = (
     <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: resolvedBg }}>
-      <SidebarNav shell={shell} segment={segment} />
+      <SidebarNav segment={segment} />
     </div>
   );
 
@@ -383,7 +402,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       </span>
     </div>
   ) : generateUI ? (
-    <div style={{ flex: 1, minHeight: "100%", background: resolvedBg }}>
+    <div style={{ flex: 1, minHeight: "100%", background: resolvedSurface }}>
       <BentoGrid previewStyle={previewContainerStyle} />
     </div>
   ) : children;

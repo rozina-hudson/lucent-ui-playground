@@ -233,7 +233,7 @@ export function generateCode(state: PlaygroundState): string {
       ``,
       `/*`,
       ` * anchors mode: all variant tokens are auto-derived from these`,
-      ` * colors — hover/active/subtle states, WCAG-compliant textOnAccent,`,
+      ` * colors — hover/subtle states, accentBorder for focus rings,`,
       ` * surface elevations, and status tints. textPrimary is optional`,
       ` * and defaults to neutral gray.`,
       ` */`,
@@ -257,8 +257,8 @@ export function generateCode(state: PlaygroundState): string {
       ``,
       `/*`,
       ` * tokens mode: supply any subset of tokens — all variants are`,
-      ` * auto-derived from anchor keys (accentDefault → hover/active/subtle,`,
-      ` * textOnAccent, accentBorder). For full theming use anchors={{}} instead.`,
+      ` * auto-derived from anchor keys (accentDefault → hover/subtle,`,
+      ` * accentBorder, accentFg). For full theming use anchors={{}} instead.`,
       ` */`,
     ];
   }

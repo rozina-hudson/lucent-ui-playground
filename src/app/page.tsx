@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePlayground } from "@/lib/playgroundContext";
 import { getShell } from "@/lib/shellColors";
-import { CHANGELOG } from "@/lib/changelogData";
 import { DesignPresetShowcase } from "@/components/DesignPresetShowcase";
+import { ChangelogTimeline } from "@/components/ChangelogTimeline";
 import {
   defaultPlaygroundState,
   PALETTE_OPTIONS,
@@ -194,82 +194,8 @@ export default function Home() {
         {/* Design presets showcase */}
         <DesignPresetShowcase shellTheme={pg.theme} />
 
-        {/* Changelog preview */}
-        <div className="mt-24 max-w-4xl w-full mx-auto text-left">
-          <div className="flex items-baseline justify-between mb-8">
-            <h2
-              className="text-lg font-semibold tracking-tight"
-              style={{ fontFamily: "var(--font-unbounded)", color: shell.text }}
-            >
-              What&rsquo;s new
-            </h2>
-            <Link
-              href="/components/changelog"
-              className="text-xs"
-              style={{ color: shell.subtle, textDecoration: "none" }}
-            >
-              Full changelog →
-            </Link>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            {CHANGELOG.slice(0, 3).map((entry, i) => (
-              <div
-                key={entry.version}
-                className="flex gap-8 text-left"
-                style={{
-                  paddingBottom: 32,
-                  marginBottom: i < 2 ? 0 : 0,
-                  borderBottom: i < 2 ? `1px solid ${shell.border}` : "none",
-                  paddingTop: i > 0 ? 32 : 0,
-                }}
-              >
-                {/* Version label */}
-                <div style={{ width: 96, flexShrink: 0 }}>
-                  <span
-                    className="text-xs font-mono font-medium"
-                    style={{
-                      color: shell.subtle,
-                      display: "block",
-                      paddingTop: 2,
-                    }}
-                  >
-                    {entry.version}
-                  </span>
-                  {entry.date && (
-                    <span className="text-xs" style={{ color: shell.subtle, opacity: 0.6 }}>
-                      {entry.date}
-                    </span>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div style={{ flex: 1 }}>
-                  <p
-                    className="text-sm font-medium mb-3"
-                    style={{ color: shell.text, margin: "0 0 10px" }}
-                  >
-                    {entry.title}
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {entry.items.slice(0, 3).map((item) => (
-                      <div key={item.label} className="flex gap-3 items-start">
-                        <span style={{ color: shell.subtle, fontSize: 10, marginTop: 4, flexShrink: 0 }}>—</span>
-                        <span className="text-sm" style={{ color: shell.muted, lineHeight: 1.6 }}>
-                          <span className="font-mono text-xs" style={{ color: shell.text }}>
-                            {item.label}
-                          </span>
-                          {" "}
-                          {item.description}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Changelog timeline */}
+        <ChangelogTimeline shellTheme={pg.theme} />
       </main>
 
       {/* Footer */}
@@ -341,3 +267,4 @@ function FeatureCard({
     </div>
   );
 }
+

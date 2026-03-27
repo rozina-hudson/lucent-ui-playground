@@ -37,9 +37,9 @@ type AccentPreset = "default" | "gold" | "indigo";
 const indigoTokens: Partial<LucentTokens> = {
   accentDefault: "#4f46e5",
   accentHover: "#4338ca",
-  accentActive: "#3730a3",
   accentSubtle: "#eef2ff",
-  focusRing: "#4f46e5",
+  accentBorder: "#4f46e5",
+  accentFg: "#1e1b4b",
 };
 
 const accentLabel: Record<AccentPreset, string> = {

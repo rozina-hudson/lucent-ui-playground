@@ -13,6 +13,197 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.27.2",
+    date: "March 2026",
+    title: "Contained variant & Card selected: neutral fills",
+    items: [
+      {
+        label: "Contained wrapper neutral fills",
+        description:
+          "Checkbox, Radio, and Toggle contained wrappers now use border-strong (no accent tint). Checked background uses color-mix(textPrimary 6%, transparent) — neutral and adapts to any parent. Unchecked is transparent (outline only).",
+      },
+      {
+        label: "Contained hover removed",
+        description:
+          "Hover state removed from contained wrappers — simplified to static border-strong. Removed unused hovered/setHovered state and mouse handlers.",
+      },
+      {
+        label: "Card selected state unified",
+        description:
+          "Card selected state now uses accent-subtle for all variants instead of per-variant color-mix into opaque backgrounds.",
+      },
+    ],
+  },
+  {
+    version: "0.27.1",
+    date: "March 2026",
+    title: "Accent token revamp & color-mix architecture",
+    items: [
+      {
+        label: "5-token accent model",
+        description:
+          "Accent layer reduced to 5 tokens derived from a single color: accentDefault, accentHover, accentSubtle, accentBorder, and accentFg. accentActive and focusRing have been removed; textOnAccent renamed to accentFg with hue-tinted output instead of pure black/white.",
+      },
+      {
+        label: "accentTokens() & getAccentFg() helpers",
+        description:
+          "New standalone exported functions: accentTokens(color, theme?) derives all 5 accent tokens from a single hex input; getAccentFg(color) returns a hue-tinted foreground color for text/icons on accent surfaces.",
+      },
+      {
+        label: "Button variant updates",
+        description:
+          "Secondary uses color-mix(accent 16%, transparent) fill; Outline and Ghost use textPrimary text. All disabled states use color-mix(textPrimary 6%, transparent) with no border. Press ring replaced by a single translucent accent halo. Hover shadows use color-mix(accent, transparent).",
+      },
+      {
+        label: "color-mix(transparent) architecture",
+        description:
+          "Neutral fills across SegmentedControl, Toggle, Slider, Progress, CodeBlock, Card, Table/DataTable, and disabled inputs now use color-mix(in srgb, textPrimary N%, transparent) instead of opaque surfaceSecondary. Adapts to any parent background and eliminates accent bleed.",
+      },
+      {
+        label: "PageLayout: surfaceSecondary chrome",
+        description:
+          "New chromeBackground=\"surfaceSecondary\" option for visible stage/chrome separation. Playground sidebars switched from bgSubtle to surfaceSecondary.",
+      },
+      {
+        label: "Collapsible padding increase",
+        description:
+          "Trigger vertical padding bumped from space-3 to space-4. Content padding bumped from space-2/space-3 to space-3/space-4.",
+      },
+    ],
+  },
+  {
+    version: "0.26.0",
+    date: "March 2026",
+    title: "Composition Recipes & Divider zero spacing",
+    items: [
+      {
+        label: "CompositionRecipe type",
+        description:
+          "New manifest type describing how multiple components compose into real UIs. Fields include id, name, description, category, components, structure (ASCII tree), code (working JSX), variants, and designNotes.",
+      },
+      {
+        label: "7 composition recipes",
+        description:
+          "Ready-to-use patterns showing how lucent-ui components combine into production UIs.",
+        subItems: [
+          "Profile Card — avatar, display-font name, bio, borderless clickable chips, stat row (2xl display), action buttons. Compact collapsible variant on filled Card.",
+          "Settings Panel — toggle rows with descriptions, select dropdown, action footer. Drill-down variant with NavMenu sidebar.",
+          "Stats Row — individual stat cards with trend chips and comparison text. Revenue variant with avatar headers.",
+          "Action Bar — page header (breadcrumb + 3xl display title + divider) and card header (uppercase label + md title, tight letter-spacing).",
+          "Form Layout — stacked form with section grouping, side-by-side fields, dividers, and submit/cancel footer.",
+          "Empty State Card — icon illustration + heading + description + CTA in three variants (no results, getting started, error).",
+          "Collapsible Card — all card variants with auto-bleed Collapsible, plus combo two-tone layout.",
+        ],
+      },
+      {
+        label: "New MCP tool: get_composition_recipe",
+        description:
+          "Query recipes by name/id, by category, or list all. Returns full recipe with structure tree, working code, variants, and design notes.",
+      },
+      {
+        label: "search_components extended",
+        description:
+          "Now returns both components and recipes in search results.",
+      },
+      {
+        label: "Recipes nav group",
+        description:
+          "New \"Recipes\" section in the sidebar with Cards and Layouts sub-groups, each recipe rendered as a live interactive demo.",
+      },
+      {
+        label: "Divider: zero default spacing",
+        description:
+          "Divider spacing default changed from var(--lucent-space-4) to 0. Dividers inside gap-based layouts (Stack, Row) no longer double up spacing. Pass spacing explicitly for standalone use outside flex containers.",
+      },
+    ],
+  },
+  {
+    version: "0.25.1",
+    date: "March 2026",
+    title: "Collapsible + Card composition fix",
+    items: [
+      {
+        label: "Collapsible auto-bleed inside Card",
+        description:
+          "Collapsible consumes CardPaddingContext and applies negative margins to cancel the Card body's padding. Just wrap and it works — no padding=\"none\" needed.",
+      },
+      {
+        label: "Card & Collapsible overflow",
+        description:
+          "Cards without media default to overflow: visible so nested shadows aren't clipped. Collapsible uses overflow: hidden only during animation and switches to visible once expanded.",
+      },
+    ],
+  },
+  {
+    version: "0.25.0",
+    date: "March 2026",
+    title: "Collapsible polish, Card hoverable & CollapsibleCard recipe",
+    items: [
+      {
+        label: "Collapsible",
+        description:
+          "Smooth 180ms height animation via direct DOM measurement, CSS-driven hover feedback, focus-visible ring, and two new props.",
+        subItems: [
+          "disabled — reduces opacity to 0.5, prevents toggling.",
+          "padded — when false, removes content padding for composed layouts.",
+        ],
+      },
+      {
+        label: "Card",
+        description:
+          "New hoverable prop, larger default radius, and inset status accent.",
+        subItems: [
+          "hoverable — hover lift + neutral glow without making the card a button or link.",
+          "Default radius bumped from md to lg. Status bar rendered as inset box-shadow that curves with border-radius.",
+        ],
+      },
+      {
+        label: "CollapsibleCard recipe",
+        description:
+          "Composition recipe showing all five card variants with Collapsible inside. Combo variant gives a two-tone layout via pure composition.",
+      },
+    ],
+  },
+  {
+    version: "0.24.0",
+    date: "March 2026",
+    title: "New Molecule: NavMenu",
+    items: [
+      {
+        label: "NavMenu",
+        description:
+          "Hierarchical navigation for sidebar and top-bar layouts with a DOM-driven sliding highlight pill.",
+        subItems: [
+          "Compound API: NavMenu.Item, NavMenu.Group, NavMenu.Sub, NavMenu.Separator.",
+          "Three highlight states: child active, collapsed-with-active-child (tinted), self-active parent. CSS hover with translucent tint.",
+          "Inverse mode with surface background and accent right-border. Three sizes (sm/md/lg), collapsible groups, horizontal dropdown with viewport collision.",
+        ],
+      },
+    ],
+  },
+  {
+    version: "0.23.0",
+    date: "March 2026",
+    title: "New Atoms: SplitButton & ButtonGroup",
+    items: [
+      {
+        label: "SplitButton",
+        description:
+          "Compound button pairing a primary action with a chevron dropdown for secondary actions. All 7 variants, all 5 sizes, composes the Menu molecule for keyboard navigation and portal rendering.",
+      },
+      {
+        label: "ButtonGroup",
+        description:
+          "Layout wrapper that visually groups buttons with a token-based gap and flattened inner corner radius.",
+      },
+      {
+        label: "Button enhancements",
+        description:
+          "Wider horizontal padding across all sizes. Icon-only buttons auto-size to squares. Outline variants use transparent backgrounds for container-agnostic use.",
+      },
+    ],
+  },
+  {
     version: "0.22.0",
     date: "March 2026",
     title: "Chip: Pulse, Ghost & Dot-only Mode",
