@@ -5,6 +5,8 @@ import { Tabs, Select, Slider, CodeBlock, ColorPicker, SegmentedControl, ColorSw
 import type { ShellColors } from "@/lib/shellColors";
 import { adjustBorderForTheme } from "@/lib/colorUtils";
 
+export type ShadowStyle = "default" | "subtle" | "elevated" | "flat" | "liquidGlass" | "brutalist" | "neumorphic" | "natural" | "glow";
+
 export type PlaygroundState = {
   theme: "light" | "dark";
   primaryColor: string;
@@ -16,6 +18,9 @@ export type PlaygroundState = {
   fontScale: number;
   spacingScale: number;
   fontFamily: string;
+  shadowStyle: ShadowStyle;
+  /** When set, uses `<LucentProvider preset="...">` shorthand instead of manual tokens */
+  presetName?: string;
 };
 
 export const defaultPlaygroundState: PlaygroundState = {
@@ -29,6 +34,7 @@ export const defaultPlaygroundState: PlaygroundState = {
   borderRadius: 8,
   spacingScale: 1,
   fontFamily: "Inter",
+  shadowStyle: "default",
 };
 
 /* ─── Design Presets ─── */
@@ -46,11 +52,14 @@ export type PresetDefinition = {
   description: string;
   light: ThemeColors;
   dark: ThemeColors;
-  shared: { borderRadius: number; fontScale: number; spacingScale: number; fontFamily: string };
+  shared: { borderRadius: number; fontScale: number; spacingScale: number; fontFamily: string; shadowStyle?: ShadowStyle };
+  /** When set, enables `<LucentProvider preset="...">` shorthand in generated code */
+  providerPreset?: string;
 };
 
 export function resolvePreset(preset: PresetDefinition, theme: "light" | "dark"): Omit<PlaygroundState, "theme"> {
-  return { ...(theme === "dark" ? preset.dark : preset.light), ...preset.shared };
+  const { shadowStyle, ...rest } = preset.shared;
+  return { ...(theme === "dark" ? preset.dark : preset.light), ...rest, shadowStyle: shadowStyle ?? "default", presetName: preset.providerPreset };
 }
 
 export const COMBINED_PRESETS: PresetDefinition[] = [
@@ -75,6 +84,79 @@ export const COMBINED_PRESETS: PresetDefinition[] = [
     dark: { primaryColor: "#FB7185", borderColor: "#3d3222", bgColor: "#141008", surfaceColor: "#1c1710", textColor: "#f3f4f6" },
     shared: { borderRadius: 16, fontScale: 1.05, spacingScale: 1.15, fontFamily: "Nunito" },
   },
+];
+
+/* ─── Curated design presets (0.28.0) — map to <LucentProvider preset="..."> ─── */
+
+export const DESIGN_PRESETS: PresetDefinition[] = [
+  {
+    name: "Liquid Glass",
+    description: "Frosted translucency, ocean palette, pill shapes",
+    light: { primaryColor: "#0EA5E9", borderColor: "#BAE6FD", bgColor: "#F0F9FF", surfaceColor: "#ffffff", textColor: "#0c4a6e" },
+    dark: { primaryColor: "#38BDF8", borderColor: "#1a3a52", bgColor: "#0a1520", surfaceColor: "#0f1c2a", textColor: "#e0f2fe" },
+    shared: { borderRadius: 20, fontScale: 1, spacingScale: 1.2, fontFamily: "Inter", shadowStyle: "liquidGlass" },
+    providerPreset: "liquidGlass",
+  },
+  {
+    name: "Bento",
+    description: "Structured grid energy, natural shadows",
+    light: { primaryColor: "#6366f1", borderColor: "#e5e7eb", bgColor: "#ffffff", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#818cf8", borderColor: "#2e2e3a", bgColor: "#0f0f14", surfaceColor: "#18181f", textColor: "#f3f4f6" },
+    shared: { borderRadius: 8, fontScale: 1, spacingScale: 1, fontFamily: "Inter", shadowStyle: "natural" },
+    providerPreset: "bento",
+  },
+  {
+    name: "Brutalist",
+    description: "Sharp edges, bold accent outlines, compact",
+    light: { primaryColor: "#e8624a", borderColor: "#FECACA", bgColor: "#FFF5F3", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#F87171", borderColor: "#3d1a1a", bgColor: "#140a0a", surfaceColor: "#1c1210", textColor: "#f3f4f6" },
+    shared: { borderRadius: 2, fontScale: 1, spacingScale: 0.8, fontFamily: "IBM Plex Sans", shadowStyle: "brutalist" },
+    providerPreset: "brutalist",
+  },
+  {
+    name: "Terminal",
+    description: "Hacker aesthetic, emerald glow, sharp",
+    light: { primaryColor: "#16A34A", borderColor: "#BBF7D0", bgColor: "#F0FDF4", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#4ADE80", borderColor: "#1a3a28", bgColor: "#0a1510", surfaceColor: "#0f1c16", textColor: "#d1fae5" },
+    shared: { borderRadius: 2, fontScale: 1, spacingScale: 0.8, fontFamily: "IBM Plex Sans", shadowStyle: "glow" },
+    providerPreset: "terminal",
+  },
+  {
+    name: "Soft UI",
+    description: "Neumorphic depth, violet palette, pill shapes",
+    light: { primaryColor: "#8B5CF6", borderColor: "#DDD6FE", bgColor: "#F5F3FF", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#A78BFA", borderColor: "#2e2848", bgColor: "#100e1a", surfaceColor: "#171422", textColor: "#ede9fe" },
+    shared: { borderRadius: 20, fontScale: 1, spacingScale: 1, fontFamily: "Nunito", shadowStyle: "neumorphic" },
+    providerPreset: "softUI",
+  },
+  {
+    name: "Bloom",
+    description: "Luminous glow, indigo palette, spacious",
+    light: { primaryColor: "#6366f1", borderColor: "#c7d2fe", bgColor: "#eef2ff", surfaceColor: "#ffffff", textColor: "#111827" },
+    dark: { primaryColor: "#818cf8", borderColor: "#312e81", bgColor: "#0f0e1a", surfaceColor: "#171522", textColor: "#e0e7ff" },
+    shared: { borderRadius: 8, fontScale: 1, spacingScale: 1.2, fontFamily: "Sora", shadowStyle: "glow" },
+    providerPreset: "bloom",
+  },
+  {
+    name: "Minimal",
+    description: "Zero shadows, clean lines, slate palette",
+    light: { primaryColor: "#475569", borderColor: "#CBD5E1", bgColor: "#F8FAFC", surfaceColor: "#ffffff", textColor: "#0f172a" },
+    dark: { primaryColor: "#94A3B8", borderColor: "#2a2e38", bgColor: "#0c0e12", surfaceColor: "#14161c", textColor: "#e2e8f0" },
+    shared: { borderRadius: 8, fontScale: 1, spacingScale: 1, fontFamily: "Inter", shadowStyle: "flat" },
+    providerPreset: "minimal",
+  },
+];
+
+export const SHADOW_STYLE_OPTIONS: { value: ShadowStyle; label: string }[] = [
+  { value: "default", label: "Default" },
+  { value: "subtle", label: "Subtle" },
+  { value: "elevated", label: "Elevated" },
+  { value: "flat", label: "Flat" },
+  { value: "liquidGlass", label: "Liquid Glass" },
+  { value: "brutalist", label: "Brutalist" },
+  { value: "neumorphic", label: "Neumorphic" },
+  { value: "natural", label: "Natural" },
+  { value: "glow", label: "Glow" },
 ];
 
 export type DimensionOption = { label: string; light: Partial<PlaygroundState>; dark: Partial<PlaygroundState> };
@@ -200,6 +282,28 @@ const TEXT_PRESETS = [
 
 export function generateCode(state: PlaygroundState): string {
   const d = defaultPlaygroundState;
+
+  // If a named preset is active, generate the simple preset syntax
+  if (state.presetName) {
+    const lines = [
+      `import { LucentProvider } from 'lucent-ui';`,
+      ``,
+      `<LucentProvider`,
+      `  theme="${state.theme}"`,
+      `  preset="${state.presetName}"`,
+      `>`,
+      `  {/* your app */}`,
+      `</LucentProvider>`,
+      ``,
+      `/*`,
+      ` * preset mode: bundles palette, shape, density, shadow, and font`,
+      ` * into a single prop. Override individual axes with an object:`,
+      ` * preset={{ shadow: 'glow', shape: 'pill' }}`,
+      ` */`,
+    ];
+    return lines.join("\n");
+  }
+
   const useAnchors =
     state.bgColor !== d.bgColor ||
     state.surfaceColor !== d.surfaceColor ||
@@ -251,6 +355,7 @@ export function generateCode(state: PlaygroundState): string {
       `  tokens={{`,
       ...Object.entries(tokens).map(([k, v]) => `    ${k}: "${v}",`),
       `  }}`,
+      ...(state.shadowStyle !== "default" ? [`  shadow="${state.shadowStyle}"`] : []),
       `>`,
       `  {/* your app */}`,
       `</LucentProvider>`,
@@ -388,6 +493,21 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
 
       <div style={{ height: 1, background: shell.border, margin: "4px 0" }} />
 
+      <Label shell={shell}>Design Personalities</Label>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {DESIGN_PRESETS.map((p) => (
+          <PresetCard
+            key={p.name}
+            preset={p}
+            shell={shell}
+            theme={state.theme}
+            onSelect={() => onChange({ ...state, ...resolvePreset(p, state.theme) })}
+          />
+        ))}
+      </div>
+
+      <div style={{ height: 1, background: shell.border, margin: "4px 0" }} />
+
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <Label shell={shell}>Palette</Label>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -447,6 +567,17 @@ export function PlaygroundPanel({ state, onChange, shell, showCodeTab = false }:
       }}>
         <DimensionPicker label="Density" options={DENSITY_OPTIONS} state={state} onChange={onChange} shell={shell} />
         <DimensionPicker label="Font Scale" options={FONT_SCALE_OPTIONS} state={state} onChange={onChange} shell={shell} />
+      </div>
+
+      {/* Shadow style */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <Label shell={shell}>Shadow</Label>
+        <Select
+          size="sm"
+          value={state.shadowStyle}
+          onChange={(e) => set({ shadowStyle: e.target.value as ShadowStyle, presetName: undefined })}
+          options={SHADOW_STYLE_OPTIONS}
+        />
       </div>
 
       <button

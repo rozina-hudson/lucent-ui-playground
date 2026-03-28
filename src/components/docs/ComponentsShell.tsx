@@ -11,15 +11,17 @@ import {
   lightTokens,
   darkTokens,
 } from "lucent-ui";
+import dynamic from "next/dynamic";
+const LucentDevTools = dynamic(() => import("lucent-ui/devtools").then((m) => m.LucentDevTools), { ssr: false });
 import { getShell } from "@/lib/shellColors";
 import { usePlayground } from "@/lib/playgroundContext";
 import { CATEGORIES, ATOM_SUBGROUPS, RECIPE_SUBGROUPS, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
 import {
-  PlaygroundPanel,
   defaultPlaygroundState,
   PALETTE_OPTIONS,
   COMBINED_PRESETS,
+  DESIGN_PRESETS,
   resolveDimension,
   resolvePreset,
   type PlaygroundState,
@@ -230,7 +232,6 @@ const HeaderContent = memo(function HeaderContent({
 export function ComponentsShell({ children }: { children: React.ReactNode }) {
   const { pg, setPg } = usePlayground();
   const [generateUI, setGenerateUI] = useState(false);
-  const [customizerOpen, setCustomizerOpen] = useState(false);
   // "idle" | "loading" | "done"
   const [genPhase, setGenPhase] = useState<"idle" | "loading" | "done">("idle");
   const genTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -263,29 +264,6 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     borderDefault:  resolvedBorder,
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const a = (v: string | number) => v as any;
-  const previewContainerStyle: React.CSSProperties = {
-    [a("--lucent-font-size-xs")]: `${0.75 * pg.fontScale}rem`,
-    [a("--lucent-font-size-sm")]: `${0.875 * pg.fontScale}rem`,
-    [a("--lucent-font-size-md")]: `${1 * pg.fontScale}rem`,
-    [a("--lucent-font-size-lg")]: `${1.125 * pg.fontScale}rem`,
-    [a("--lucent-font-size-xl")]: `${1.25 * pg.fontScale}rem`,
-    [a("--lucent-font-size-2xl")]: `${1.5 * pg.fontScale}rem`,
-    [a("--lucent-font-size-3xl")]: `${1.875 * pg.fontScale}rem`,
-    [a("--lucent-space-1")]: `${0.25 * pg.spacingScale}rem`,
-    [a("--lucent-space-2")]: `${0.5 * pg.spacingScale}rem`,
-    [a("--lucent-space-3")]: `${0.75 * pg.spacingScale}rem`,
-    [a("--lucent-space-4")]: `${1 * pg.spacingScale}rem`,
-    [a("--lucent-space-5")]: `${1.25 * pg.spacingScale}rem`,
-    [a("--lucent-space-6")]: `${1.5 * pg.spacingScale}rem`,
-    [a("--lucent-space-8")]: `${2 * pg.spacingScale}rem`,
-    [a("--lucent-space-10")]: `${2.5 * pg.spacingScale}rem`,
-    [a("--lucent-radius-sm")]: `${Math.max(0, pg.borderRadius - 4)}px`,
-    [a("--lucent-radius-md")]: `${pg.borderRadius}px`,
-    [a("--lucent-radius-lg")]: `${pg.borderRadius + 4}px`,
-  };
-
   // Theme-aware toggle: detect active palette/preset and swap to its
   // colors for the new theme instead of resetting to defaults.
   const handleThemeToggle = () => {
@@ -304,8 +282,9 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Check if current state matches a full preset
-    const matchedPreset = COMBINED_PRESETS.find((preset) => {
+    // Check if current state matches a full preset (combined + design)
+    const allPresets = [...COMBINED_PRESETS, ...DESIGN_PRESETS];
+    const matchedPreset = allPresets.find((preset) => {
       const resolved = resolvePreset(preset, pg.theme);
       return Object.entries(resolved).every(
         ([k, v]) => pg[k as keyof PlaygroundState] === v,
@@ -335,7 +314,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       genTimers.current.forEach(clearTimeout);
       setGenPhase("loading");
       const t1 = setTimeout(() => setGenPhase("done"), 2000);
-      const t2 = setTimeout(() => { setGenPhase("idle"); setCustomizerOpen(true); }, 2600);
+      const t2 = setTimeout(() => { setGenPhase("idle"); }, 2600);
       genTimers.current = [t1, t2];
       return true;
     });
@@ -344,55 +323,16 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     genTimers.current.forEach(clearTimeout);
     setGenPhase("idle");
     setGenerateUI(false);
-    setCustomizerOpen(false);
   }, []);
 
   // Cleanup on unmount
   useEffect(() => () => genTimers.current.forEach(clearTimeout), []);
-
-  // Sync playground CSS custom properties to :root so portaled content
-  // (Menu, ColorPicker, CommandPalette) inherits spacing/radius/font overrides
-  useEffect(() => {
-    const root = document.documentElement;
-    const entries = Object.entries(previewContainerStyle).filter(
-      ([k]) => typeof k === "string" && k.startsWith("--lucent-"),
-    );
-    for (const [prop, val] of entries) {
-      root.style.setProperty(prop, val as string);
-    }
-    root.style.setProperty("--lucent-font-family-base", `"${pg.fontFamily}", sans-serif`);
-    return () => {
-      for (const [prop] of entries) {
-        root.style.removeProperty(prop);
-      }
-      root.style.removeProperty("--lucent-font-family-base");
-    };
-  }, [previewContainerStyle, pg.fontFamily]);
-
-  // Load the playground font globally
-  useEffect(() => {
-    const family = pg.fontFamily;
-    const id = `gfont-${family.replace(/\s+/g, "-")}`;
-    if (!document.getElementById(id)) {
-      const link = document.createElement("link");
-      link.id = id;
-      link.rel = "stylesheet";
-      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;500;600;700&display=swap`;
-      document.head.appendChild(link);
-    }
-  }, [pg.fontFamily]);
 
   const sidebar = (
     <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: resolvedBg }}>
       <SidebarNav segment={segment} />
     </div>
   );
-
-  const rightSidebarContent = generateUI ? (
-    <div className="hide-scrollbar" style={{ width: 280, height: "100%", overflowY: "auto", overflowX: "hidden", background: "transparent" }}>
-      <PlaygroundPanel state={pg} onChange={setPg} shell={shell} showCodeTab />
-    </div>
-  ) : undefined;
 
   const generateUIContent = generateUI && genPhase !== "idle" ? (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, minHeight: "calc(100vh - 56px)" }}>
@@ -403,25 +343,25 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     </div>
   ) : generateUI ? (
     <div style={{ flex: 1, minHeight: "100%", background: resolvedSurface }}>
-      <BentoGrid previewStyle={previewContainerStyle} />
+      <BentoGrid />
     </div>
   ) : children;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const shadowPreset = pg.shadowStyle !== "default" ? { shadow: pg.shadowStyle as any } : undefined;
+
   return (
-    <LucentProvider theme={pg.theme} anchors={anchors}>
-      <div className="hide-scrollbar" style={{ ...previewContainerStyle, [a("--lucent-font-family-base")]: `"${pg.fontFamily}", sans-serif`, fontFamily: `"${pg.fontFamily}", sans-serif` }}>
+    <LucentProvider theme={pg.theme} anchors={anchors} preset={shadowPreset}>
+      <LucentDevTools />
       <PageLayout
         style={{ height: "100vh", background: resolvedBg, color: resolvedText }}
         header={<HeaderContent shell={shell} bg={resolvedBg} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={handleThemeToggle} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
         sidebar={sidebar}
         headerHeight={56}
         sidebarWidth={generateUI ? 10 : 240}
-        rightSidebar={rightSidebarContent}
-        rightSidebarWidth={customizerOpen ? 280 : 10}
       >
         {generateUIContent}
       </PageLayout>
-      </div>
     </LucentProvider>
   );
 }

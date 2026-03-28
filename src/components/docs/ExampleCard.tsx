@@ -11,10 +11,9 @@ type Props = {
   previews: typeof componentPreviews;
   shell: ShellColors;
   previewBg: string;
-  previewStyle?: React.CSSProperties;
 };
 
-export function ExampleCard({ example, previews, shell, previewBg, previewStyle }: Props) {
+export function ExampleCard({ example, previews, shell, previewBg }: Props) {
   const PreviewComponent = previews[example.previewKey];
   const [mounted, setMounted] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
@@ -62,7 +61,6 @@ export function ExampleCard({ example, previews, shell, previewBg, previewStyle 
           padding: "28px 24px",
           background: previewBg,
           minHeight: 80,
-          ...previewStyle,
         }}
       >
         {mounted && PreviewComponent ? (

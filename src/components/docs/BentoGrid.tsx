@@ -3,11 +3,7 @@
 import { BENTO_COMPOSITIONS } from "./BentoCompositions";
 import { Card } from "lucent-ui";
 
-type Props = {
-  previewStyle: React.CSSProperties;
-};
-
-export function BentoGrid({ previewStyle }: Props) {
+export function BentoGrid() {
   return (
     <div
       style={{
@@ -26,7 +22,6 @@ export function BentoGrid({ previewStyle }: Props) {
               style={{
                 breakInside: "avoid",
                 marginBottom: 12,
-                ...previewStyle,
               }}
             >
               <Preview />
@@ -40,7 +35,6 @@ export function BentoGrid({ previewStyle }: Props) {
               breakInside: "avoid",
               marginBottom: 12,
               overflow: "visible",
-              ...previewStyle,
             }}
           >
             <Preview />

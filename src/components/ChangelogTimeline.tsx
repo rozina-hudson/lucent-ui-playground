@@ -53,140 +53,93 @@ type Entry = {
 function buildEntries(shell: ShellColors): Entry[] {
   return [
     {
-      version: "V0.22",
+      version: "V0.28",
       date: "MARCH 2026",
       latest: true,
       title: (
         <>
-          Chip <span style={{ color: GREEN }}>Pulse</span>, Ghost{" "}
-          <span style={{ color: GOLD }}>&amp;</span> Dot-only
+          DevTools <span style={{ color: GOLD }}>&amp;</span> Design{" "}
+          <span style={{ color: GREEN }}>Personalities</span>
         </>
       ),
       badges: [
         { label: "NEW", green: true },
-        { label: "COMPONENT_MANIFEST" },
-        { label: "ATOM" },
+        { label: "DEVTOOLS" },
+        { label: "PRESETS" },
       ],
       content: (
-        <p
-          style={{
-            fontSize: 14,
-            color: shell.muted,
-            lineHeight: 1.7,
-            margin: 0,
-          }}
-        >
-          Three new modes for the Chip atom.{" "}
-          <strong style={{ color: shell.text }}>pulse</strong> adds a pulsing
-          ring animation on the status dot for live states.{" "}
-          <strong style={{ color: shell.text }}>ghost</strong> renders
-          transparent background with text-only, 8% hover tint.{" "}
-          <strong style={{ color: shell.text }}>dot-only</strong> omits children
-          for a compact circular indicator. Children are now optional.
-        </p>
-      ),
-    },
-    {
-      version: "V0.21",
-      date: "MARCH 2026",
-      title: (
-        <>
-          Progress <span style={{ color: GREEN }}>Bar</span>
-        </>
-      ),
-      badges: [
-        { label: "NEW", green: true },
-        { label: "COMPONENT_MANIFEST" },
-        { label: "ATOM" },
-      ],
-      content: (
-        <>
-          <p
-            style={{
-              fontSize: 14,
-              color: shell.muted,
-              lineHeight: 1.7,
-              margin: "0 0 16px",
-            }}
-          >
-            Threshold auto-variant —{" "}
-            <strong style={{ color: shell.text }}>warnAt</strong> and{" "}
-            <strong style={{ color: shell.text }}>dangerAt</strong> props
-            auto-switch color based on value direction. Ascending for
-            &ldquo;high is bad&rdquo; metrics, descending for &ldquo;low is
-            bad&rdquo;. The <em>intent</em> lives in the manifest.
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>LucentDevTools</strong> — a floating panel from{" "}
+            <code style={{ fontSize: 12, padding: "1px 5px", borderRadius: 3, background: shell.codeBg, color: shell.codeText }}>lucent-ui/devtools</code>{" "}
+            for real-time design system manipulation. Three tabs: Design, Typography, Tokens.
           </p>
-          <div
-            style={{
-              background: shell.codeBg,
-              border: `1px solid ${shell.border}`,
-              borderRadius: 8,
-              padding: "16px 20px",
-              fontSize: 13,
-              fontFamily: "monospace",
-              lineHeight: 1.8,
-              overflowX: "auto",
-              color: shell.codeText,
-            }}
-          >
-            <span style={{ color: shell.muted }}>
-              {"// ascending — high is bad (CPU, disk, error rate)"}
-            </span>{" "}
-            <span style={{ color: GREEN }}>&lt;Progress</span> value=
-            <span style={{ color: GOLD }}>{"{usage}"}</span> warnAt=
-            <span style={{ color: GOLD }}>{"{70}"}</span> dangerAt=
-            <span style={{ color: GOLD }}>{"{90}"}</span>{" "}
-            <span style={{ color: GREEN }}>/&gt;</span>
-            <br />
-            <span style={{ color: shell.muted }}>
-              {"// descending — low is bad (battery, health, quota)"}
-            </span>{" "}
-            <span style={{ color: GREEN }}>&lt;Progress</span> value=
-            <span style={{ color: GOLD }}>{"{battery}"}</span> warnAt=
-            <span style={{ color: GOLD }}>{"{30}"}</span> dangerAt=
-            <span style={{ color: GOLD }}>{"{10}"}</span>{" "}
-            <span style={{ color: GREEN }}>/&gt;</span>
-          </div>
-        </>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>10 design presets</strong> via a single{" "}
+            <code style={{ fontSize: 12, padding: "1px 5px", borderRadius: 3, background: shell.codeBg, color: shell.codeText }}>preset</code>{" "}
+            prop — Liquid Glass, Bento, Brutalist, Terminal, Soft UI, Bloom, Minimal, and more. Each bundles palette, shape, density, shadow, and font.
+          </p>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>8 shadow presets</strong> with dark-mode-native variants that simulate light sources instead of darkening.
+          </p>
+        </div>
       ),
     },
     {
-      version: "V0.20",
+      version: "V0.26",
       date: "MARCH 2026",
       title: (
         <>
-          Stack <span style={{ color: GOLD }}>&amp;</span> Row
+          Composition <span style={{ color: GREEN }}>Recipes</span>
         </>
       ),
       badges: [
         { label: "NEW", green: true },
-        { label: "COMPONENT_MANIFEST" },
+        { label: "7 RECIPES" },
       ],
       content: (
-        <p
-          style={{
-            fontSize: 14,
-            color: shell.muted,
-            lineHeight: 1.7,
-            margin: 0,
-          }}
-        >
-          Layout primitives with density-aware spacing tokens. Gap values
-          reference{" "}
-          <strong style={{ color: shell.text }}>
-            var(--lucent-space-&#123;n&#125;)
-          </strong>
-          , so density presets scale the entire layout automatically — no
-          overrides required.
+        <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+          Ready-to-use patterns showing how components compose into production UIs —{" "}
+          <strong style={{ color: shell.text }}>ProfileCard</strong>,{" "}
+          <strong style={{ color: shell.text }}>SettingsPanel</strong>,{" "}
+          <strong style={{ color: shell.text }}>StatsRow</strong>,{" "}
+          <strong style={{ color: shell.text }}>ActionBar</strong>,{" "}
+          <strong style={{ color: shell.text }}>FormLayout</strong>,{" "}
+          <strong style={{ color: shell.text }}>EmptyStateCard</strong>,{" "}
+          <strong style={{ color: shell.text }}>CollapsibleCard</strong>.
+          Each recipe ships with working JSX, variants, and design notes.
         </p>
       ),
     },
     {
-      version: "V0.19",
+      version: "V0.25",
       date: "MARCH 2026",
       title: (
         <>
-          Toast <span style={{ color: GOLD }}>+</span> Overlay Polish
+          Card <span style={{ color: GOLD }}>&amp;</span> Collapsible{" "}
+          <span style={{ color: GREEN }}>Polish</span>
+        </>
+      ),
+      badges: [
+        { label: "ENHANCED" },
+        { label: "MOLECULE" },
+      ],
+      content: (
+        <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+          Card gets <strong style={{ color: shell.text }}>hoverable</strong> prop for lift + glow without onClick.
+          Collapsible adds smooth 180ms height animation, CSS hover feedback, focus-visible ring,{" "}
+          <strong style={{ color: shell.text }}>disabled</strong> and{" "}
+          <strong style={{ color: shell.text }}>padded</strong> props.
+          New <strong style={{ color: shell.text }}>CollapsibleCard</strong> recipe composes both.
+        </p>
+      ),
+    },
+    {
+      version: "V0.24",
+      date: "MARCH 2026",
+      title: (
+        <>
+          <span style={{ color: GREEN }}>NavMenu</span>
         </>
       ),
       badges: [
@@ -195,87 +148,35 @@ function buildEntries(shell: ShellColors): Entry[] {
         { label: "MOLECULE" },
       ],
       content: (
-        <p
-          style={{
-            fontSize: 14,
-            color: shell.muted,
-            lineHeight: 1.7,
-            margin: 0,
-          }}
-        >
-          Cascading card stack with hover-to-expand. Six positions. Imperative{" "}
-          <strong style={{ color: shell.text }}>useToast</strong> API. Then{" "}
-          <strong style={{ color: shell.text }}>v0.19.1</strong> dropped frosted
-          glass across every overlay — CommandPalette, Menu, MultiSelect,
-          DatePicker, SearchInput — with portal rendering that escapes{" "}
-          <strong style={{ color: shell.text }}>overflow:hidden</strong>.
+        <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+          Compound API with{" "}
+          <strong style={{ color: shell.text }}>Item</strong>,{" "}
+          <strong style={{ color: shell.text }}>Group</strong>,{" "}
+          <strong style={{ color: shell.text }}>Sub</strong>,{" "}
+          <strong style={{ color: shell.text }}>Separator</strong>.
+          Sliding highlight pill, 3 highlight states, inverse mode, hasIcons, 3 sizes.
         </p>
       ),
     },
     {
-      version: "V0.17 – V0.18",
+      version: "V0.23",
       date: "MARCH 2026",
       title: (
         <>
-          Menu <span style={{ color: GOLD }}>&amp;</span> Button
+          SplitButton <span style={{ color: GOLD }}>&amp;</span> ButtonGroup
         </>
       ),
       badges: [
         { label: "NEW", green: true },
         { label: "COMPONENT_MANIFEST" },
+        { label: "ATOM" },
       ],
       content: (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-          }}
-        >
-          {[
-            {
-              label: "Menu",
-              text: "Compound API, 8-direction portal placement, WAI-ARIA keyboard navigation, viewport-edge flipping",
-            },
-            {
-              label: "Button\n2xs",
-              text: "22px height for dense UIs — toolbars, table-inline actions, icon triggers where xs is still too tall",
-            },
-            {
-              label: "danger-outline / ghost",
-              text: "Two new destructive variants at different emphasis levels",
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              style={{ display: "flex", gap: 16, alignItems: "baseline" }}
-            >
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: shell.text,
-                  fontFamily: "monospace",
-                  minWidth: 120,
-                  flexShrink: 0,
-                  whiteSpace: "pre-line",
-                  lineHeight: 1.4,
-                }}
-              >
-                {item.label}
-              </span>
-              <span
-                style={{
-                  fontSize: 14,
-                  color: shell.muted,
-                  lineHeight: 1.6,
-                }}
-              >
-                {item.text}
-              </span>
-            </div>
-          ))}
-        </div>
+        <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+          <strong style={{ color: shell.text }}>SplitButton</strong> — primary action + chevron dropdown, all 7 variants, 5 sizes, composes Menu.{" "}
+          <strong style={{ color: shell.text }}>ButtonGroup</strong> — visual grouping with flattened inner radius.
+          Button also gets wider padding, icon-only auto-sizing, transparent outline backgrounds.
+        </p>
       ),
     },
   ];
@@ -499,7 +400,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          V0.17 → V0.22 · 6 RELEASES THIS MONTH
+          V0.16 → V0.28 · 13 RELEASES
         </span>
         <span
           style={{
@@ -510,8 +411,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          <span style={{ color: GOLD }}>25</span> COMPONENTS SHIP WITH
-          COMPONENT_MANIFEST
+          <span style={{ color: GOLD }}>53</span> COMPONENTS + <span style={{ color: GREEN }}>10</span> DESIGN PRESETS
         </span>
       </div>
 

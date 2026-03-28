@@ -13,7 +13,6 @@ import { InstallTabs } from "./InstallTabs";
 import { AiUsageSection } from "./AiUsageSection";
 import { ExampleCard } from "./ExampleCard";
 import { PropsTable } from "./PropsTable";
-import { PlaygroundPanel, generateCode } from "./PlaygroundPanel";
 import { ComponentCustomizer } from "./ComponentCustomizer";
 
 type Props = {
@@ -23,7 +22,7 @@ type Props = {
 };
 
 export function DocLayout({ def, prev, next }: Props) {
-  const { pg, setPg } = usePlayground();
+  const { pg } = usePlayground();
   const { tokens } = useLucent();
   const shell = getShell(pg.theme);
   const [mounted, setMounted] = useState(false);
@@ -60,31 +59,6 @@ export function DocLayout({ def, prev, next }: Props) {
       .filter(Boolean)
       .join(" ");
   }, [compValues]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const a = (v: string | number) => v as any;
-  const previewContainerStyle: React.CSSProperties = {
-    [a("--lucent-font-size-xs")]: `${0.75 * pg.fontScale}rem`,
-    [a("--lucent-font-size-sm")]: `${0.875 * pg.fontScale}rem`,
-    [a("--lucent-font-size-md")]: `${1 * pg.fontScale}rem`,
-    [a("--lucent-font-size-lg")]: `${1.125 * pg.fontScale}rem`,
-    [a("--lucent-font-size-xl")]: `${1.25 * pg.fontScale}rem`,
-    [a("--lucent-font-size-2xl")]: `${1.5 * pg.fontScale}rem`,
-    [a("--lucent-font-size-3xl")]: `${1.875 * pg.fontScale}rem`,
-    [a("--lucent-space-1")]: `${0.25 * pg.spacingScale}rem`,
-    [a("--lucent-space-2")]: `${0.5 * pg.spacingScale}rem`,
-    [a("--lucent-space-3")]: `${0.75 * pg.spacingScale}rem`,
-    [a("--lucent-space-4")]: `${1 * pg.spacingScale}rem`,
-    [a("--lucent-space-5")]: `${1.25 * pg.spacingScale}rem`,
-    [a("--lucent-space-6")]: `${1.5 * pg.spacingScale}rem`,
-    [a("--lucent-space-8")]: `${2 * pg.spacingScale}rem`,
-    [a("--lucent-space-10")]: `${2.5 * pg.spacingScale}rem`,
-    [a("--lucent-radius-sm")]: `${Math.max(0, pg.borderRadius - 4)}px`,
-    [a("--lucent-radius-md")]: `${pg.borderRadius}px`,
-    [a("--lucent-radius-lg")]: `${pg.borderRadius + 4}px`,
-    [a("--lucent-font-family-base")]: `"${pg.fontFamily}", sans-serif`,
-    fontFamily: `"${pg.fontFamily}", sans-serif`,
-  };
 
   const firstExample = def.examples[0];
   const TopPreview = firstExample ? componentPreviews[firstExample.previewKey] : null;
@@ -126,13 +100,8 @@ export function DocLayout({ def, prev, next }: Props) {
               value: "preview",
               label: "Preview",
               content: (
-                <div style={{ display: "flex", gap: 16 }}>
-                  <div style={{ flex: 1, background: tokens.surface, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12, ...previewContainerStyle }}>
-                    {mounted && TopPreview ? <TopPreview /> : null}
-                  </div>
-                  <div style={{ width: 280, flexShrink: 0, border: `1px solid ${shell.border}`, borderRadius: 12, background: shell.surface }}>
-                    <PlaygroundPanel state={pg} onChange={setPg} shell={shell} />
-                  </div>
+                <div style={{ background: tokens.surface, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12 }}>
+                  {mounted && TopPreview ? <TopPreview /> : null}
                 </div>
               ),
             },
@@ -145,20 +114,16 @@ export function DocLayout({ def, prev, next }: Props) {
                   shell={shell}
                   values={compValues}
                   onValuesChange={(name, v) => setCompValues((prev) => ({ ...prev, [name]: v }))}
-                  previewStyle={previewContainerStyle}
                   previewBg={tokens.surface}
                 />
               ),
             },
           ]}
         />
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <CodeBlock
-            code={`<${def.name}${compPropsAsString ? " " + compPropsAsString : ""} />`}
-            shell={shell}
-          />
-          <CodeBlock code={generateCode(pg)} shell={shell} />
-        </div>
+        <CodeBlock
+          code={`<${def.name}${compPropsAsString ? " " + compPropsAsString : ""} />`}
+          shell={shell}
+        />
       </div>
 
       <Divider style={{ margin: "0 0 36px" }} />
@@ -205,7 +170,6 @@ export function DocLayout({ def, prev, next }: Props) {
             previews={componentPreviews}
             shell={shell}
             previewBg={tokens.surface}
-            previewStyle={previewContainerStyle}
           />
         ))}
       </div>

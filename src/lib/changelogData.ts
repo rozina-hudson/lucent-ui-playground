@@ -13,6 +13,58 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.28.0",
+    date: "March 2026",
+    title: "LucentDevTools, Shadow Presets & Design Personalities",
+    items: [
+      {
+        label: "LucentDevTools — Live Token Editor",
+        description:
+          "New lucent-ui/devtools entry point with a floating panel (Cmd+Shift+D). Three tabs: Design (preset gallery, color pickers, density/roundness/shadow controls), Typography (14 Google Fonts with auto-loading, type scale presets), and Tokens (raw editor for all ~80 tokens).",
+      },
+      {
+        label: "10 curated design presets",
+        description:
+          "Full design personalities available via <LucentProvider preset=\"...\">: Default, Modern, Liquid Glass, Bento, Brutalist, Terminal, Soft UI, Bloom, Minimal, Enterprise — each bundles accent color, font family, type scale, density, roundness, and shadow style.",
+      },
+      {
+        label: "8 shadow styles + dark-mode-native shadows",
+        description:
+          "New shadow presets: Liquid Glass, Brutalist, Neumorphic, Natural, Glow — added to Flat, Subtle, Elevated. Every dark-mode variant rewritten to simulate light sources instead of darkening.",
+        subItems: [
+          "Default: lit edge (inset 0 1px white highlight)",
+          "Subtle: ambient accent-tinted glow via color-mix()",
+          "Elevated: internal luminosity via inset white glow",
+          "Natural: layered lit edges at increasing intensity",
+          "Liquid Glass: frosted backlight (inner + outer white diffusion)",
+          "Neumorphic: chromatic accent glow + white highlight",
+          "Brutalist: accent outline ring + offset block via color-mix()",
+          "Glow: pure accent glow (already dark-mode-native)",
+        ],
+      },
+      {
+        label: "Preset prop on LucentProvider",
+        description:
+          "New preset prop accepts a string name or object: <LucentProvider preset=\"brutalist\"> or preset={{ shadow: 'glow', shape: 'pill' }}.",
+      },
+      {
+        label: "Tabs: optional content",
+        description:
+          "content is now optional on TabItem. When no tab has content, panel rendering is skipped — enables header-only / controlled-mode usage.",
+      },
+      {
+        label: "ColorPicker zIndex bump",
+        description:
+          "Popover zIndex increased to 999999 to render above high-z-index containers.",
+      },
+      {
+        label: "tokenToCssVar export",
+        description:
+          "New utility exported from lucent-ui: converts camelCase token keys to --lucent-* CSS var names.",
+      },
+    ],
+  },
+  {
     version: "0.27.2",
     date: "March 2026",
     title: "Contained variant & Card selected: neutral fills",
