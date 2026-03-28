@@ -10,6 +10,7 @@ import {
   defaultPlaygroundState,
   PALETTE_OPTIONS,
   COMBINED_PRESETS,
+  DESIGN_PRESETS,
   resolveDimension,
   resolvePreset,
   type PlaygroundState,
@@ -68,7 +69,8 @@ export default function Home() {
                 return;
               }
 
-              const matchedPreset = COMBINED_PRESETS.find((preset) => {
+              const allPresets = [...COMBINED_PRESETS, ...DESIGN_PRESETS];
+              const matchedPreset = allPresets.find((preset) => {
                 const resolved = resolvePreset(preset, pg.theme);
                 return Object.entries(resolved).every(
                   ([k, v]) => pg[k as keyof PlaygroundState] === v,

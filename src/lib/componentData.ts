@@ -1709,7 +1709,7 @@ const results = allItems
 // Ask: "Add a Tabs component from lucent-ui with multiple panels"`,
     },
     props: [
-      { name: "tabs", type: "TabItem[]", description: "Array of { value, label, content, disabled? } tab definitions.", required: true },
+      { name: "tabs", type: "TabItem[]", description: "Array of { value, label, content?, disabled? } tab definitions. When no tab has content, panel rendering is skipped (header-only / controlled mode).", required: true },
       { name: "defaultValue", type: "string", description: "Uncontrolled initial active tab value." },
       { name: "value", type: "string", description: "Controlled active tab value." },
       { name: "onChange", type: "(value: string) => void", description: "Called when the active tab changes." },
@@ -2452,7 +2452,7 @@ const results = allItems
     name: "ColorPicker",
     category: "Atoms",
     description:
-      "Fully-featured color selection component. Opens a portaled popover with a spectrum panel, hue and alpha sliders, four input formats (Hex, RGB, HSL, HSB), eyedropper support, and multi-group preset palettes. Supports compact size and inline label placement.",
+      "Fully-featured color selection component. Opens a portaled popover (zIndex 999999) with a spectrum panel, hue and alpha sliders, four input formats (Hex, RGB, HSL, HSB), eyedropper support, and multi-group preset palettes. Supports compact size and inline label placement.",
     importStatement: "import { ColorPicker } from 'lucent-ui'",
     usageCode: `<ColorPicker value={color} onChange={setColor} label="Brand color" />`,
     aiPrompts: {

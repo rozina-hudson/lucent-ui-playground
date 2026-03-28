@@ -34,7 +34,6 @@ type Props = {
   shell: ShellColors;
   values: Record<string, any>;
   onValuesChange: (name: string, v: any) => void;
-  previewStyle?: React.CSSProperties;
   previewBg?: string;
 };
 
@@ -56,7 +55,7 @@ function ToastPreviewButtons() {
   );
 }
 
-export function ComponentCustomizer({ def, shell, values, onValuesChange, previewStyle, previewBg }: Props) {
+export function ComponentCustomizer({ def, shell, values, onValuesChange, previewBg }: Props) {
   const compName = def.customizerName ?? def.name;
   const Comp = useMemo(() => (Lucent as any)[compName] ?? null, [compName]);
   const { tokens } = useLucent();
@@ -122,7 +121,6 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          ...previewStyle,
         }}
       >
         {Comp ? (
