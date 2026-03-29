@@ -57,6 +57,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "alert", "card", "emptystate", "tooltip",
       "tabs", "collapsible", "commandpalette", "datatable",
       "fileupload", "pagelayout", "timeline", "menu", "toast", "navmenu",
+      "filtersearch", "filterselect", "filtermultiselect", "filterdaterange",
     ],
   },
   {
@@ -64,7 +65,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
     slugs: [
       "profilecard", "settingspanel", "statsrow",
       "actionbar", "formlayout", "emptystatecard",
-      "collapsiblecard",
+      "collapsiblecard", "searchfilterbar",
     ],
   },
 ];
@@ -83,9 +84,14 @@ export const ATOM_SUBGROUPS: { label: string; slugs: string[] }[] = [
 
 // ─── Sidebar: Recipe sub-groups for nested nav ──────────────────────────────
 
+export const MOLECULE_SUBGROUPS: { label: string; slugs: string[] }[] = [
+  { label: "Filters", slugs: ["filtersearch", "filterselect", "filtermultiselect", "filterdaterange"] },
+];
+
 export const RECIPE_SUBGROUPS: { label: string; slugs: string[] }[] = [
   { label: "Cards", slugs: ["profilecard", "statsrow", "emptystatecard", "collapsiblecard"] },
   { label: "Layouts", slugs: ["settingspanel", "actionbar", "formlayout"] },
+  { label: "Toolbars", slugs: ["searchfilterbar"] },
 ];
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
@@ -1538,6 +1544,7 @@ const results = allItems
       { name: "errorText", type: "string", description: "Error message — triggers the error visual state with aria-invalid." },
       { name: "size", type: `"sm" | "md" | "lg"`, description: "Height and font size — matches Input sizing.", defaultValue: `"md"` },
       { name: "disabled", type: "boolean", description: "Disables the input.", defaultValue: "false" },
+      { name: "trigger", type: "React.ReactNode", description: "Custom trigger element replacing the default input-style button. Use with a Button for compact toolbar layouts." },
       { name: "min", type: "Date", description: "Minimum selectable date." },
       { name: "max", type: "Date", description: "Maximum selectable date." },
       { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
@@ -1584,6 +1591,14 @@ const results = allItems
         code: `<DateRangePicker size="sm" placeholder="Size sm" />
 <DateRangePicker size="md" placeholder="Size md" />
 <DateRangePicker size="lg" placeholder="Size lg" />`,
+      },
+      {
+        title: "Custom trigger",
+        description: "Replace the default input with a compact Button trigger — ideal for filter bars and toolbars.",
+        previewKey: "daterangepicker-trigger",
+        code: `<DateRangePicker
+  trigger={<Button variant="secondary" size="sm">Date range</Button>}
+/>`,
       },
     ],
   },
@@ -1681,6 +1696,236 @@ const results = allItems
   onChange={setValues}
   placeholder="Select frameworks"
 />`,
+      },
+    ],
+  },
+
+  // ── FilterSearch ─────────────────────────────────────────────────────────────
+  {
+    slug: "filtersearch",
+    name: "FilterSearch",
+    category: "Molecules",
+    description:
+      "Collapsible search button that expands to a text input on click and collapses back when blurred empty. Designed for filter bars and toolbars where space is tight.",
+    importStatement: "import { FilterSearch } from 'lucent-ui'",
+    usageCode: `const [query, setQuery] = useState("");
+
+<FilterSearch value={query} onChange={setQuery} placeholder="Search..." />`,
+    aiPrompts: {
+      claude: `"Add a FilterSearch from lucent-ui for a toolbar. It shows as an icon button and expands to a search input on click."`,
+      cursor: `@lucent-ui Add a FilterSearch with controlled value and onChange for a compact toolbar search.`,
+      vscode: `Using lucent-ui, add a FilterSearch that expands from an icon button to a text input.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a FilterSearch from lucent-ui to a filter bar"`,
+    },
+    props: [
+      { name: "value", type: "string", description: "Controlled search value." },
+      { name: "defaultValue", type: "string", description: "Initial value for uncontrolled usage." },
+      { name: "onChange", type: "(value: string) => void", description: "Called with the current search string." },
+      { name: "placeholder", type: "string", description: "Input placeholder text.", defaultValue: '"Search…"' },
+      { name: "variant", type: `"secondary" | "outline"`, description: "Button style when collapsed.", defaultValue: `"secondary"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Button and input size.", defaultValue: `"md"` },
+      { name: "width", type: "number", description: "Width of the expanded input in pixels.", defaultValue: "260" },
+      { name: "disabled", type: "boolean", description: "Disables the button.", defaultValue: "false" },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Default",
+        description: "Click the search icon to expand, blur empty to collapse.",
+        previewKey: "filtersearch-default",
+        code: `<FilterSearch placeholder="Search items..." />`,
+      },
+      {
+        title: "Sizes",
+        description: "Three sizes matching the filter family.",
+        previewKey: "filtersearch-sizes",
+        code: `<FilterSearch size="sm" placeholder="Small" />
+<FilterSearch size="md" placeholder="Medium" />
+<FilterSearch size="lg" placeholder="Large" />`,
+      },
+    ],
+  },
+
+  // ── FilterSelect ────────────────────────────────────────────────────────────
+  {
+    slug: "filterselect",
+    name: "FilterSelect",
+    category: "Molecules",
+    description:
+      "Single-select filter button that opens a Menu popover. The trigger shows the selected label or falls back to the label prop. Outline variant auto-switches to secondary when a value is selected.",
+    importStatement: "import { FilterSelect } from 'lucent-ui'",
+    usageCode: `<FilterSelect
+  label="Availability"
+  options={[
+    { value: "in-stock", label: "In stock" },
+    { value: "out-of-stock", label: "Out of stock" },
+  ]}
+/>`,
+    aiPrompts: {
+      claude: `"Add a FilterSelect from lucent-ui for a single-select filter in a toolbar. It opens a Menu popover with selectable options."`,
+      cursor: `@lucent-ui Add a FilterSelect with label and options for a toolbar single-select filter.`,
+      vscode: `Using lucent-ui, add a FilterSelect with label and options for a filter bar.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a FilterSelect from lucent-ui to a filter toolbar"`,
+    },
+    props: [
+      { name: "label", type: "string", description: "Label shown on the trigger when no value is selected.", required: true },
+      { name: "options", type: "FilterSelectOption[]", description: "Array of { value, label, disabled? } options.", required: true },
+      { name: "value", type: "string", description: "Controlled selected value." },
+      { name: "defaultValue", type: "string", description: "Initial value for uncontrolled usage." },
+      { name: "onChange", type: "(value: string | undefined) => void", description: "Called with the selected value, or undefined when cleared." },
+      { name: "variant", type: `"secondary" | "outline"`, description: "Trigger style. Outline auto-switches to secondary when a value is selected.", defaultValue: `"secondary"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Trigger and dropdown size.", defaultValue: `"md"` },
+      { name: "icon", type: "React.ReactNode", description: "Icon rendered before the label in the trigger." },
+      { name: "disabled", type: "boolean", description: "Disables the trigger.", defaultValue: "false" },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Default",
+        description: "Single-select filter with label fallback.",
+        previewKey: "filterselect-default",
+        code: `<FilterSelect
+  label="Availability"
+  options={[
+    { value: "in-stock", label: "In stock" },
+    { value: "out-of-stock", label: "Out of stock" },
+  ]}
+/>`,
+      },
+      {
+        title: "Sizes",
+        description: "Three sizes matching the filter family.",
+        previewKey: "filterselect-sizes",
+        code: `<FilterSelect size="sm" label="Small" options={opts} />
+<FilterSelect size="md" label="Medium" options={opts} />
+<FilterSelect size="lg" label="Large" options={opts} />`,
+      },
+    ],
+  },
+
+  // ── FilterMultiSelect ───────────────────────────────────────────────────────
+  {
+    slug: "filtermultiselect",
+    name: "FilterMultiSelect",
+    category: "Molecules",
+    description:
+      "Filter-oriented multi-select with button-style trigger and popover dropdown. Supports xs–lg sizes, ghost variant, and label-less compact mode (no chevron). Ideal for toolbar and filter bar layouts.",
+    importStatement: "import { FilterMultiSelect } from 'lucent-ui'",
+    usageCode: `const [values, setValues] = useState<string[]>([]);
+
+<FilterMultiSelect
+  label="Status"
+  options={[
+    { value: "active", label: "Active" },
+    { value: "inactive", label: "Inactive" },
+    { value: "pending", label: "Pending" },
+  ]}
+  value={values}
+  onChange={setValues}
+/>`,
+    aiPrompts: {
+      claude: `"Add a FilterMultiSelect from lucent-ui for a toolbar filter. Use the ghost variant and xs size for compact layouts."`,
+      cursor: `@lucent-ui Add a FilterMultiSelect with label, options, ghost variant, and xs size for a filter bar.`,
+      vscode: `Using lucent-ui, add a FilterMultiSelect for a toolbar with ghost variant and compact xs size.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a FilterMultiSelect from lucent-ui to a filter toolbar"`,
+    },
+    props: [
+      { name: "options", type: "FilterMultiSelectOption[]", description: "Array of { value, label, disabled? } options.", required: true },
+      { name: "value", type: "string[]", description: "Controlled array of selected values." },
+      { name: "defaultValue", type: "string[]", description: "Uncontrolled initial selection.", defaultValue: "[]" },
+      { name: "onChange", type: "(values: string[]) => void", description: "Called with updated selection array." },
+      { name: "label", type: "string", description: "Label shown on the trigger button.", required: true },
+      { name: "size", type: `"xs" | "sm" | "md" | "lg"`, description: "Trigger and dropdown density. xs is new for compact toolbar usage.", defaultValue: `"md"` },
+      { name: "variant", type: `"secondary" | "outline" | "ghost"`, description: "Trigger button style. Outline switches to secondary when items are selected. Ghost blends into toolbars.", defaultValue: `"secondary"` },
+      { name: "icon", type: "React.ReactNode", description: "Icon rendered before the label in the trigger button." },
+      { name: "disabled", type: "boolean", description: "Disables the trigger.", defaultValue: "false" },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Sizes",
+        description: "Four sizes including the new xs for compact toolbars.",
+        previewKey: "filtermultiselect-sizes",
+        code: `<FilterMultiSelect size="xs" label="XS" options={opts} />
+<FilterMultiSelect size="sm" label="Small" options={opts} />
+<FilterMultiSelect size="md" label="Medium" options={opts} />
+<FilterMultiSelect size="lg" label="Large" options={opts} />`,
+      },
+      {
+        title: "Ghost variant",
+        description: "Ghost trigger style for seamless toolbar integration.",
+        previewKey: "filtermultiselect-ghost",
+        code: `<FilterMultiSelect
+  variant="ghost"
+  label="Status"
+  options={[
+    { value: "active", label: "Active" },
+    { value: "inactive", label: "Inactive" },
+  ]}
+/>`,
+      },
+      {
+        title: "Compact xs",
+        description: "The xs size is ideal for dense toolbars and filter bars.",
+        previewKey: "filtermultiselect-compact",
+        code: `<FilterMultiSelect
+  size="xs"
+  label="Filter"
+  options={[
+    { value: "active", label: "Active" },
+    { value: "inactive", label: "Inactive" },
+    { value: "pending", label: "Pending" },
+  ]}
+/>`,
+      },
+    ],
+  },
+
+  // ── FilterDateRange ─────────────────────────────────────────────────────────
+  {
+    slug: "filterdaterange",
+    name: "FilterDateRange",
+    category: "Molecules",
+    description:
+      "Date range filter button that opens a calendar popover. Shows the selected range on the trigger label. Outline variant auto-switches to secondary when a range is selected.",
+    importStatement: "import { FilterDateRange } from 'lucent-ui'",
+    usageCode: `<FilterDateRange label="Date range" />`,
+    aiPrompts: {
+      claude: `"Add a FilterDateRange from lucent-ui for a date filter in a toolbar. It opens a calendar popover and shows the selected range on the button."`,
+      cursor: `@lucent-ui Add a FilterDateRange with label for a toolbar date filter.`,
+      vscode: `Using lucent-ui, add a FilterDateRange for a filter bar date range picker.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a FilterDateRange from lucent-ui to a filter toolbar"`,
+    },
+    props: [
+      { name: "label", type: "string", description: "Label shown on the trigger when no range is selected." },
+      { name: "value", type: "DateRange", description: "Controlled range with { start: Date; end: Date }." },
+      { name: "defaultValue", type: "DateRange", description: "Initial range for uncontrolled usage." },
+      { name: "onChange", type: "(range: DateRange) => void", description: "Called with the selected range." },
+      { name: "variant", type: `"secondary" | "outline"`, description: "Trigger style. Outline auto-switches to secondary when a range is selected.", defaultValue: `"secondary"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Trigger and calendar size.", defaultValue: `"md"` },
+      { name: "min", type: "Date", description: "Minimum selectable date." },
+      { name: "max", type: "Date", description: "Maximum selectable date." },
+      { name: "disabled", type: "boolean", description: "Disables the trigger.", defaultValue: "false" },
+      { name: "style", type: "React.CSSProperties", description: "Inline styles for the wrapper." },
+    ],
+    examples: [
+      {
+        title: "Default",
+        description: "Button trigger that opens a calendar popover for range selection.",
+        previewKey: "filterdaterange-default",
+        code: `<FilterDateRange label="Date range" />`,
+      },
+      {
+        title: "Sizes",
+        description: "Three sizes matching the filter family.",
+        previewKey: "filterdaterange-sizes",
+        code: `<FilterDateRange size="sm" label="Small" />
+<FilterDateRange size="md" label="Medium" />
+<FilterDateRange size="lg" label="Large" />`,
       },
     ],
   },
@@ -2129,7 +2374,7 @@ const results = allItems
     name: "Timeline",
     category: "Molecules",
     description:
-      "Vertical list of timestamped events with status indicators, icons, and descriptions. Ideal for activity feeds and progress trackers.",
+      "Modern activity-feed timeline with compact filled dots, inline title + date layout, and optional rich content slots. Ideal for activity feeds, changelogs, and progress trackers.",
     importStatement: "import { Timeline } from 'lucent-ui'",
     usageCode: `<Timeline
   items={[
@@ -2139,20 +2384,20 @@ const results = allItems
   ]}
 />`,
     aiPrompts: {
-      claude: `"Add a Timeline from lucent-ui showing an order status history. Include timestamps, status indicators (success, info, warning, danger), and short descriptions."`,
-      cursor: `@lucent-ui Add a Timeline with items array containing id, title, date, and status.`,
-      vscode: `Using lucent-ui, add a Timeline component with status-coloured items and optional descriptions.`,
+      claude: `"Add a Timeline from lucent-ui showing an activity feed. Use filled-dot status indicators (success, info, warning, danger), inline dates, and optional content slots for rich nested blocks."`,
+      cursor: `@lucent-ui Add a Timeline with items array containing id, title, date, status, and optional content slot for rich blocks.`,
+      vscode: `Using lucent-ui, add a Timeline component with filled-dot status indicators, inline dates, and content prop for embedding Cards or other blocks.`,
       mcp: `// lucent-ui MCP
-// Ask: "Add a Timeline from lucent-ui to show event history"`,
+// Ask: "Add a Timeline activity feed from lucent-ui with content slots"`,
     },
     props: [
-      { name: "items", type: "TimelineItem[]", description: "Array of { id, title, description?, date?, status?, icon? } items.", required: true },
+      { name: "items", type: "TimelineItem[]", description: "Array of { id, title, description?, date?, status?, icon?, content? } items. content accepts ReactNode for rich nested blocks.", required: true },
       { name: "style", type: "React.CSSProperties", description: "Inline styles for the timeline wrapper." },
     ],
     examples: [
       {
         title: "Status variants",
-        description: "Items with different status indicators.",
+        description: "Filled-dot indicators for each status — success, info, warning, danger, and default (small white inner dot on muted fill).",
         previewKey: "timeline-statuses",
         code: `<Timeline
   items={[
@@ -2160,18 +2405,52 @@ const results = allItems
     { id: "2", title: "Build running", date: "Mar 1", status: "info" },
     { id: "3", title: "Tests warning", date: "Feb 28", status: "warning" },
     { id: "4", title: "Deploy failed", date: "Feb 27", status: "danger" },
+    { id: "5", title: "Commit pushed", date: "Feb 26" },
   ]}
 />`,
       },
       {
         title: "With descriptions",
-        description: "Each item has a title and longer description.",
+        description: "Each item has a title, inline date, and longer description.",
         previewKey: "timeline-descriptions",
         code: `<Timeline
   items={[
     { id: "1", title: "Account created", description: "Welcome to the platform!", date: "Jan 10", status: "success" },
     { id: "2", title: "Profile updated", description: "Added avatar and bio.", date: "Jan 12" },
     { id: "3", title: "First project", description: "Created project 'Lucent UI'.", date: "Jan 15", status: "info" },
+  ]}
+/>`,
+      },
+      {
+        title: "Rich content slots",
+        description: "Use the content prop to embed Cards or other rich blocks below each timeline item.",
+        previewKey: "timeline-content",
+        code: `<Timeline
+  items={[
+    {
+      id: "1",
+      title: "v2.0 released",
+      date: "Mar 15",
+      status: "success",
+      content: (
+        <Card variant="outline">
+          <Text size="sm" weight="medium">Release highlights</Text>
+          <Text size="xs" color="secondary">New dashboard, improved performance, and dark mode support.</Text>
+        </Card>
+      ),
+    },
+    {
+      id: "2",
+      title: "Design review",
+      date: "Mar 12",
+      status: "info",
+      content: (
+        <Card variant="outline">
+          <Text size="xs" color="secondary">Approved new component library with updated token system.</Text>
+        </Card>
+      ),
+    },
+    { id: "3", title: "Sprint started", date: "Mar 10" },
   ]}
 />`,
       },
@@ -3899,6 +4178,81 @@ toast({ title: "Saved", variant: "success" });`,
     </Text>
   </Collapsible>
 </Card>`,
+      },
+    ],
+  },
+
+  // ── Search / Filter Bar (Recipe) ────────────────────────────────────────────
+  {
+    slug: "searchfilterbar",
+    name: "SearchFilterBar",
+    category: "Recipes",
+    description:
+      "Compact toolbar recipe for filtering and sorting lists and data tables. Composes the Filter molecule family — FilterSearch, FilterSelect, FilterMultiSelect, and FilterDateRange — into a cohesive bar with conditional clear-all and view toggle.",
+    importStatement: `import { Row, Button, FilterSearch, FilterSelect, FilterMultiSelect, FilterDateRange, SegmentedControl } from 'lucent-ui'`,
+    usageCode: `<Row gap="2" align="center" style={{ flexWrap: "wrap" }}>
+  <FilterSearch size="sm" placeholder="Search..." />
+  <FilterSelect size="sm" label="Availability" options={availabilityOpts} />
+  <FilterMultiSelect size="sm" label="Status" options={statusOpts} />
+  <FilterDateRange size="sm" label="Date range" />
+  <Button variant="ghost" size="sm">Clear all</Button>
+  <div style={{ flex: 1 }} />
+  <FilterSelect size="sm" label="Sort" options={sortOpts} />
+  <SegmentedControl size="sm" defaultValue="list" options={viewOpts} />
+</Row>`,
+    aiPrompts: {
+      claude: `"Build a SearchFilterBar recipe from lucent-ui. Use a Row composing FilterSearch, FilterSelect, FilterMultiSelect, and FilterDateRange molecules. Add a conditional ghost Clear All button and a SegmentedControl for view toggle."`,
+      cursor: `@lucent-ui Build a SearchFilterBar: Row composing FilterSearch, FilterSelect, FilterMultiSelect, FilterDateRange, and SegmentedControl.`,
+      vscode: `Using lucent-ui, compose a search/filter bar with FilterSearch, FilterSelect, FilterMultiSelect, FilterDateRange, and SegmentedControl.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a search/filter bar recipe from lucent-ui using Filter molecules"`,
+    },
+    props: [
+      { name: "Row", type: "component", description: "Horizontal flex container for the toolbar layout." },
+      { name: "FilterSearch", type: "component", description: "Collapsible search icon that expands to an input on click." },
+      { name: "FilterSelect", type: "component", description: "Single-select button + menu popover (e.g. Availability, Sort)." },
+      { name: "FilterMultiSelect", type: "component", description: "Multi-select filter with chip count badge in trigger." },
+      { name: "FilterDateRange", type: "component", description: "Date range button + calendar popover." },
+      { name: "SegmentedControl", type: "component", description: "View toggle (grid/list) pushed to the right edge." },
+      { name: "Button variant=\"ghost\"", type: "component", description: "Conditional Clear All button that appears when any filter is active." },
+    ],
+    examples: [
+      {
+        title: "Full toolbar",
+        description: "Search, single/multi-select filters, date range, clear all, sort, and view toggle.",
+        previewKey: "recipe-searchfilterbar",
+        code: `<Row gap="2" align="center" style={{ flexWrap: "wrap" }}>
+  <FilterSearch size="sm" placeholder="Search..." />
+  <FilterSelect size="sm" label="Availability" options={availabilityOpts} />
+  <FilterMultiSelect size="sm" label="Status" options={statusOpts} />
+  <FilterMultiSelect size="sm" label="Tags" options={tagOpts} />
+  <FilterDateRange size="sm" label="Date range" />
+  <Button variant="ghost" size="sm">Clear all</Button>
+  <div style={{ flex: 1 }} />
+  <FilterSelect size="sm" label="Sort" options={sortOpts} />
+  <SegmentedControl size="sm" defaultValue="list" options={viewOpts} />
+</Row>`,
+      },
+      {
+        title: "Minimal",
+        description: "Search and sort only — simplest variant.",
+        previewKey: "recipe-searchfilterbar-minimal",
+        code: `<Row gap="2" align="center">
+  <FilterSearch size="sm" placeholder="Search..." />
+  <div style={{ flex: 1 }} />
+  <FilterSelect size="sm" label="Sort" options={sortOpts} />
+</Row>`,
+      },
+      {
+        title: "Pipeline filters",
+        description: "Multi-select filters only — for pipeline and kanban views.",
+        previewKey: "recipe-searchfilterbar-pipeline",
+        code: `<Row gap="2" align="center" style={{ flexWrap: "wrap" }}>
+  <FilterMultiSelect size="sm" label="Status" options={statusOpts} />
+  <FilterMultiSelect size="sm" label="Assignee" options={assigneeOpts} />
+  <FilterMultiSelect size="sm" label="Priority" options={priorityOpts} />
+  <Button variant="ghost" size="sm">Clear all</Button>
+</Row>`,
       },
     ],
   },

@@ -15,7 +15,7 @@ import dynamic from "next/dynamic";
 const LucentDevTools = dynamic(() => import("lucent-ui/devtools").then((m) => m.LucentDevTools), { ssr: false });
 import { getShell } from "@/lib/shellColors";
 import { usePlayground } from "@/lib/playgroundContext";
-import { CATEGORIES, ATOM_SUBGROUPS, RECIPE_SUBGROUPS, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
+import { CATEGORIES, ATOM_SUBGROUPS, MOLECULE_SUBGROUPS, RECIPE_SUBGROUPS, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
 import {
   defaultPlaygroundState,
@@ -84,18 +84,43 @@ const SidebarNav = memo(function SidebarNav({
         })}
       </NavMenu.Group>
 
-      {/* Molecules — flat list */}
+      {/* Molecules — flat list + sub-grouped filters */}
       <NavMenu.Group label="Molecules" defaultOpen>
-        {CATEGORIES.find((c) => c.label === "Molecules")!.slugs.map((slug) => {
-          const comp = componentRegistry.find((c) => c.slug === slug);
+        {CATEGORIES.find((c) => c.label === "Molecules")!.slugs
+          .filter((slug) => !MOLECULE_SUBGROUPS.some((sub) => sub.slugs.includes(slug)))
+          .map((slug) => {
+            const comp = componentRegistry.find((c) => c.slug === slug);
+            return (
+              <NavMenu.Item
+                key={slug}
+                as={Link}
+                href={`/components/${slug}`}
+                isActive={slug === segment}
+              >
+                {comp?.name ?? slug}
+              </NavMenu.Item>
+            );
+          })}
+        {MOLECULE_SUBGROUPS.map((sub) => {
+          const hasActiveChild = sub.slugs.includes(segment ?? "");
           return (
-            <NavMenu.Item
-              key={slug}
-              as={Link}
-              href={`/components/${slug}`}
-              isActive={slug === segment}
-            >
-              {comp?.name ?? slug}
+            <NavMenu.Item key={sub.label} isActive={hasActiveChild}>
+              {sub.label}
+              <NavMenu.Sub>
+                {sub.slugs.map((slug) => {
+                  const comp = componentRegistry.find((c) => c.slug === slug);
+                  return (
+                    <NavMenu.Item
+                      key={slug}
+                      as={Link}
+                      href={`/components/${slug}`}
+                      isActive={slug === segment}
+                    >
+                      {comp?.name ?? slug}
+                    </NavMenu.Item>
+                  );
+                })}
+              </NavMenu.Sub>
             </NavMenu.Item>
           );
         })}

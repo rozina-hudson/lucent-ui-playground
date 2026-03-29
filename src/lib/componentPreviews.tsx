@@ -55,6 +55,10 @@ import {
   SplitButton,
   ButtonGroup,
   NavMenu,
+  FilterMultiSelect,
+  FilterSearch,
+  FilterSelect,
+  FilterDateRange,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -896,6 +900,12 @@ const DateRangePickerSizes: PreviewFC = () => (
   </div>
 );
 
+const DateRangePickerTrigger: PreviewFC = () => (
+  <DateRangePicker
+    trigger={<Button variant="secondary" size="sm">Date range</Button>}
+  />
+);
+
 // ─── MultiSelect ──────────────────────────────────────────────────────────────
 
 const MultiSelectControlled: PreviewFC = () => {
@@ -954,6 +964,85 @@ const MultiSelectLabeled: PreviewFC = () => {
     </div>
   );
 };
+
+// ─── FilterSearch ─────────────────────────────────────────────────────────────
+
+const FilterSearchDefault: PreviewFC = () => (
+  <FilterSearch placeholder="Search items..." />
+);
+
+const FilterSearchSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+    <FilterSearch size="sm" placeholder="Small" />
+    <FilterSearch size="md" placeholder="Medium" />
+    <FilterSearch size="lg" placeholder="Large" />
+  </div>
+);
+
+// ─── FilterSelect ─────────────────────────────────────────────────────────────
+
+const filterSelectOpts = [
+  { value: "in-stock", label: "In stock" },
+  { value: "out-of-stock", label: "Out of stock" },
+  { value: "preorder", label: "Pre-order" },
+];
+
+const FilterSelectDefault: PreviewFC = () => (
+  <FilterSelect label="Availability" options={filterSelectOpts} />
+);
+
+const FilterSelectSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+    {(["sm", "md", "lg"] as const).map((s) => (
+      <FilterSelect key={s} size={s} label={s.toUpperCase()} options={filterSelectOpts} />
+    ))}
+  </div>
+);
+
+// ─── FilterMultiSelect ────────────────────────────────────────────────────────
+
+const filterOpts = [
+  { value: "active", label: "Active" },
+  { value: "inactive", label: "Inactive" },
+  { value: "pending", label: "Pending" },
+];
+
+const FilterMultiSelectSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+    {(["xs", "sm", "md", "lg"] as const).map((s) => (
+      <FilterMultiSelect key={s} size={s} label={s.toUpperCase()} options={filterOpts} />
+    ))}
+  </div>
+);
+
+const FilterMultiSelectGhost: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+    <FilterMultiSelect variant="ghost" label="Status" options={filterOpts} />
+    <FilterMultiSelect variant="ghost" label="Priority" options={[
+      { value: "high", label: "High" },
+      { value: "medium", label: "Medium" },
+      { value: "low", label: "Low" },
+    ]} />
+  </div>
+);
+
+const FilterMultiSelectCompact: PreviewFC = () => (
+  <FilterMultiSelect size="xs" label="Filter" options={filterOpts} />
+);
+
+// ─── FilterDateRange ──────────────────────────────────────────────────────────
+
+const FilterDateRangeDefault: PreviewFC = () => (
+  <FilterDateRange label="Date range" />
+);
+
+const FilterDateRangeSizes: PreviewFC = () => (
+  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+    {(["sm", "md", "lg"] as const).map((s) => (
+      <FilterDateRange key={s} size={s} label={s.toUpperCase()} />
+    ))}
+  </div>
+);
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
@@ -1372,6 +1461,78 @@ const RecipeEmptyStateError: PreviewFC = () => (
   </Card>
 );
 
+// ─── Recipe: SearchFilterBar ──────────────────────────────────────────────────
+
+const sfbStatusOpts = [
+  { value: "active", label: "Active" },
+  { value: "inactive", label: "Inactive" },
+  { value: "pending", label: "Pending" },
+];
+
+const sfbTagOpts = [
+  { value: "frontend", label: "Frontend" },
+  { value: "backend", label: "Backend" },
+  { value: "design", label: "Design" },
+  { value: "devops", label: "DevOps" },
+];
+
+const RecipeSearchFilterBar: PreviewFC = () => (
+  <Row gap="2" align="center" style={{ flexWrap: "wrap" }}>
+    <FilterSearch size="sm" placeholder="Search..." />
+    <FilterSelect size="sm" label="Availability" options={[
+      { value: "in-stock", label: "In stock" },
+      { value: "out-of-stock", label: "Out of stock" },
+    ]} />
+    <FilterMultiSelect size="sm" label="Status" options={sfbStatusOpts} />
+    <FilterMultiSelect size="sm" label="Tags" options={sfbTagOpts} />
+    <FilterDateRange size="sm" label="Date range" />
+    <Button variant="ghost" size="sm">Clear all</Button>
+    <div style={{ flex: 1 }} />
+    <Row gap="2" align="center" style={{ flexShrink: 0 }}>
+      <FilterSelect size="sm" label="Sort" options={[
+        { value: "newest", label: "Newest first" },
+        { value: "oldest", label: "Oldest first" },
+      ]} />
+      <SegmentedControl
+        size="sm"
+        defaultValue="list"
+        options={[
+          { value: "grid", label: "▦" },
+          { value: "list", label: "☰" },
+        ]}
+      />
+    </Row>
+  </Row>
+);
+
+const RecipeSearchFilterBarMinimal: PreviewFC = () => (
+  <Row gap="2" align="center">
+    <FilterSearch size="sm" placeholder="Search..." />
+    <div style={{ flex: 1 }} />
+    <FilterSelect size="sm" label="Sort" options={[
+      { value: "newest", label: "Newest first" },
+      { value: "oldest", label: "Oldest first" },
+    ]} />
+  </Row>
+);
+
+const RecipeSearchFilterBarPipeline: PreviewFC = () => (
+  <Row gap="2" align="center" style={{ flexWrap: "wrap" }}>
+    <FilterMultiSelect size="sm" label="Status" options={sfbStatusOpts} />
+    <FilterMultiSelect size="sm" label="Assignee" options={[
+      { value: "alice", label: "Alice" },
+      { value: "bob", label: "Bob" },
+      { value: "carol", label: "Carol" },
+    ]} />
+    <FilterMultiSelect size="sm" label="Priority" options={[
+      { value: "high", label: "High" },
+      { value: "medium", label: "Medium" },
+      { value: "low", label: "Low" },
+    ]} />
+    <Button variant="ghost" size="sm">Clear all</Button>
+  </Row>
+);
+
 // ─── CommandPalette ───────────────────────────────────────────────────────────
 
 const CommandPaletteGroups: PreviewFC = () => {
@@ -1522,6 +1683,7 @@ const TimelineStatuses: PreviewFC = () => (
       { id: "2", title: "Build running", date: "Mar 1", status: "info" },
       { id: "3", title: "Tests warning", date: "Feb 28", status: "warning" },
       { id: "4", title: "Deploy failed", date: "Feb 27", status: "danger" },
+      { id: "5", title: "Commit pushed", date: "Feb 26" },
     ]}
   />
 );
@@ -1532,6 +1694,37 @@ const TimelineDescriptions: PreviewFC = () => (
       { id: "1", title: "Account created", description: "Welcome to the platform!", date: "Jan 10", status: "success" },
       { id: "2", title: "Profile updated", description: "Added avatar and bio.", date: "Jan 12" },
       { id: "3", title: "First project", description: "Created project 'Lucent UI'.", date: "Jan 15", status: "info" },
+    ]}
+  />
+);
+
+const TimelineContent: PreviewFC = () => (
+  <Timeline
+    items={[
+      {
+        id: "1",
+        title: "v2.0 released",
+        date: "Mar 15",
+        status: "success",
+        content: (
+          <Card variant="outline">
+            <Text size="sm" weight="medium">Release highlights</Text>
+            <Text size="xs" color="secondary">New dashboard, improved performance, and dark mode support.</Text>
+          </Card>
+        ),
+      },
+      {
+        id: "2",
+        title: "Design review",
+        date: "Mar 12",
+        status: "info",
+        content: (
+          <Card variant="outline">
+            <Text size="xs" color="secondary">Approved new component library with updated token system.</Text>
+          </Card>
+        ),
+      },
+      { id: "3", title: "Sprint started", date: "Mar 10" },
     ]}
   />
 );
@@ -2211,10 +2404,24 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "daterangepicker-labeled": DateRangePickerLabeled,
   "daterangepicker-disabled": DateRangePickerDisabled,
   "daterangepicker-sizes": DateRangePickerSizes,
+  "daterangepicker-trigger": DateRangePickerTrigger,
   // MultiSelect
   "multiselect-controlled": MultiSelectControlled,
   "multiselect-max": MultiSelectMax,
   "multiselect-labeled": MultiSelectLabeled,
+  // FilterSearch
+  "filtersearch-default": FilterSearchDefault,
+  "filtersearch-sizes": FilterSearchSizes,
+  // FilterSelect
+  "filterselect-default": FilterSelectDefault,
+  "filterselect-sizes": FilterSelectSizes,
+  // FilterMultiSelect
+  "filtermultiselect-sizes": FilterMultiSelectSizes,
+  "filtermultiselect-ghost": FilterMultiSelectGhost,
+  "filtermultiselect-compact": FilterMultiSelectCompact,
+  // FilterDateRange
+  "filterdaterange-default": FilterDateRangeDefault,
+  "filterdaterange-sizes": FilterDateRangeSizes,
   // Tabs
   "tabs-basic": TabsBasic,
   "tabs-disabled": TabsDisabled,
@@ -2240,6 +2447,7 @@ export const componentPreviews: Record<string, PreviewFC> = {
   // Timeline
   "timeline-statuses": TimelineStatuses,
   "timeline-descriptions": TimelineDescriptions,
+  "timeline-content": TimelineContent,
   // Slider
   "slider-sizes": SliderSizes,
   "slider-controlled": SliderControlled,
@@ -2316,4 +2524,8 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "recipe-emptystate-noresults": RecipeEmptyStateNoResults,
   "recipe-emptystate-onboarding": RecipeEmptyStateOnboarding,
   "recipe-emptystate-error": RecipeEmptyStateError,
+  // Recipe: SearchFilterBar
+  "recipe-searchfilterbar": RecipeSearchFilterBar,
+  "recipe-searchfilterbar-minimal": RecipeSearchFilterBarMinimal,
+  "recipe-searchfilterbar-pipeline": RecipeSearchFilterBarPipeline,
 };

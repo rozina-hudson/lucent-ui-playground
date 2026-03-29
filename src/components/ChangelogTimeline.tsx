@@ -53,9 +53,44 @@ type Entry = {
 function buildEntries(shell: ShellColors): Entry[] {
   return [
     {
-      version: "V0.28",
+      version: "V0.30",
       date: "MARCH 2026",
       latest: true,
+      title: (
+        <>
+          Timeline <span style={{ color: GREEN }}>Redesign</span>{" "}
+          <span style={{ color: GOLD }}>&amp;</span> Filter{" "}
+          <span style={{ color: GREEN }}>Molecules</span>
+        </>
+      ),
+      badges: [
+        { label: "NEW", green: true },
+        { label: "4 MOLECULES" },
+        { label: "RECIPE" },
+      ],
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>Timeline redesigned</strong> — modern activity-feed pattern with compact filled dots, inline title + date, and a new{" "}
+            <code style={{ fontSize: 12, padding: "1px 5px", borderRadius: 3, background: shell.codeBg, color: shell.codeText }}>content</code>{" "}
+            prop for embedding rich nested blocks like Cards.
+          </p>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>4 Filter molecules</strong> —{" "}
+            <strong style={{ color: shell.text }}>FilterSearch</strong> (collapsible icon → input),{" "}
+            <strong style={{ color: shell.text }}>FilterSelect</strong> (single-select button + menu),{" "}
+            <strong style={{ color: shell.text }}>FilterMultiSelect</strong> (multi-select with chip count),{" "}
+            <strong style={{ color: shell.text }}>FilterDateRange</strong> (date range button + calendar).
+          </p>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            New <strong style={{ color: shell.text }}>SearchFilterBar</strong> recipe composes the Filter family into a compact toolbar with three variants: Default, Minimal, and Pipeline.
+          </p>
+        </div>
+      ),
+    },
+    {
+      version: "V0.28",
+      date: "MARCH 2026",
       title: (
         <>
           DevTools <span style={{ color: GOLD }}>&amp;</span> Design{" "}
@@ -400,7 +435,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          V0.16 → V0.28 · 13 RELEASES
+          V0.16 → V0.30 · 15 RELEASES
         </span>
         <span
           style={{
@@ -411,7 +446,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          <span style={{ color: GOLD }}>53</span> COMPONENTS + <span style={{ color: GREEN }}>10</span> DESIGN PRESETS
+          <span style={{ color: GOLD }}>58</span> COMPONENTS + <span style={{ color: GREEN }}>10</span> DESIGN PRESETS
         </span>
       </div>
 
