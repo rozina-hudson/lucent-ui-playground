@@ -13,6 +13,64 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.30.0",
+    date: "March 2026",
+    title: "Timeline Redesign & FilterMultiSelect Enhancements",
+    items: [
+      {
+        label: "Timeline redesign",
+        description:
+          "Redesigned from outlined-ring event list to a modern activity-feed pattern with filled dots, inline title + date, and a new content prop for embedding rich nested blocks.",
+        subItems: [
+          "Filled dots — compact 20px circles filled with the status color, white iconography (was 28px outlined rings)",
+          "Inline title + date — date follows title on the same line instead of pushed to the far right",
+          "content prop — new slot on TimelineItem for embedding rich blocks (e.g. Card) below the title/description",
+          "info status icon — added (was missing)",
+          "Default dot — small white inner dot on muted fill",
+          "Thinner connector — 1.5px (was 2px)",
+        ],
+      },
+      {
+        label: "FilterMultiSelect enhancements",
+        description:
+          "New xs size for compact toolbar usage, new ghost variant, and label-less triggers no longer render a chevron.",
+      },
+    ],
+  },
+  {
+    version: "0.29.0",
+    date: "March 2026",
+    title: "Filter Molecules & Search / Filter Bar Recipe",
+    items: [
+      {
+        label: "Filter molecule family",
+        description:
+          "Four new filter-oriented molecules designed for toolbar and filter bar layouts. Each is a button-style trigger with a popover — no visible input fields cluttering the bar.",
+        subItems: [
+          "FilterSearch — collapsible square icon button that expands to an Input on click, collapses when blurred empty",
+          "FilterSelect — single-select button + chevron opens a Menu with selectable items",
+          "FilterMultiSelect — multi-select button with accent Chip count badge in the trigger label",
+          "FilterDateRange — date range button + calendar popover, shows selected range on trigger",
+        ],
+      },
+      {
+        label: "Recipe: Search / Filter Bar",
+        description:
+          "New composition recipe — search-filter-bar — a compact toolbar for filtering and sorting lists and data tables. Composes the Filter molecule family into a cohesive bar.",
+        subItems: [
+          "Default variant — full toolbar with search, single/multi-select filters, date range, clear all, sort, and view toggle",
+          "Minimal variant — search and sort only",
+          "Pipeline variant — multi-select filters only, for kanban and pipeline views",
+        ],
+      },
+      {
+        label: "DateRangePicker: trigger prop",
+        description:
+          "New optional trigger prop accepts a custom ReactNode, replacing the default input-style button. Ideal for compact toolbar layouts.",
+      },
+    ],
+  },
+  {
     version: "0.28.0",
     date: "March 2026",
     title: "LucentDevTools, Shadow Presets & Design Personalities",
