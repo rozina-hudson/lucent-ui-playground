@@ -498,6 +498,61 @@ export function DesignPresetShowcase({ shellTheme }: { shellTheme: "light" | "da
           );
         })()}
       </div>
+
+      {/* DevTools code snippet */}
+      <div
+        style={{
+          marginTop: 40,
+          textAlign: "left",
+          maxWidth: 480,
+          marginLeft: "auto",
+          marginRight: "auto",
+          background: shell.codeBg,
+          border: `1px solid ${shell.border}`,
+          borderRadius: 10,
+          padding: "16px 20px",
+          fontFamily: "monospace",
+          fontSize: 13,
+          lineHeight: 1.7,
+          color: shell.codeText,
+          overflow: "auto",
+          position: "relative",
+        }}
+      >
+        <div style={{ color: shell.subtle }}>{"// Add the DevTools to explore presets live"}</div>
+        <div>
+          <span style={{ color: shell.muted }}>import </span>
+          <span>{"{ "}</span>
+          <span style={{ color: pg.primaryColor }}>LucentDevTools</span>
+          <span>{" }"}</span>
+          <span style={{ color: shell.muted }}> from </span>
+          <span style={{ color: "#e9c96b" }}>{`'lucent-ui/devtools'`}</span>
+        </div>
+        <div style={{ height: 6 }} />
+        <div>
+          <span style={{ color: shell.muted }}>{"<"}</span>
+          <span style={{ color: pg.primaryColor }}>LucentProvider</span>
+          <span style={{ color: shell.muted }}>{" preset"}</span>
+          <span>{"="}</span>
+          <span style={{ color: "#e9c96b" }}>{`"${activePresetName?.toLowerCase() ?? "modern"}"`}</span>
+          <span style={{ color: shell.muted }}>{">"}</span>
+        </div>
+        <div style={{ paddingLeft: 16 }}>
+          <span style={{ color: shell.muted }}>{"<"}</span>
+          <span style={{ color: pg.primaryColor }}>LucentDevTools</span>
+          <span style={{ color: shell.muted }}>{" />"}</span>
+        </div>
+        <div style={{ paddingLeft: 16 }}>
+          <span style={{ color: shell.muted }}>{"<"}</span>
+          <span style={{ color: pg.primaryColor }}>App</span>
+          <span style={{ color: shell.muted }}>{" />"}</span>
+        </div>
+        <div>
+          <span style={{ color: shell.muted }}>{"</"}</span>
+          <span style={{ color: pg.primaryColor }}>LucentProvider</span>
+          <span style={{ color: shell.muted }}>{">"}</span>
+        </div>
+      </div>
     </div>
   );
 }
