@@ -1,0 +1,55 @@
+name: IndexNow — notify search engines
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for Vercel deploy
+        run: sleep 60
+
+      - name: Build URL list and ping IndexNow
+        run: |
+          HOST="lucentui.dev"
+          KEY="35b17789a0f8405ea129c116d0737b58"
+
+          # Static pages
+          URLS="https://${HOST}/
+          https://${HOST}/llms.txt
+          https://${HOST}/components
+          https://${HOST}/components/migration
+          https://${HOST}/components/changelog"
+
+          # Dynamic component pages from componentData.ts
+          COMPONENT_SLUGS=$(grep -oP 'slug:\s*"\K[^"]*' src/lib/componentData.ts | sort -u)
+          for slug in $COMPONENT_SLUGS; do
+            URLS+=$'\n'"https://${HOST}/components/${slug}"
+          done
+
+          # Build JSON payload with jq
+          PAYLOAD=$(echo "$URLS" | jq -R -s --arg host "$HOST" --arg key "$KEY" \
+            --arg keyLocation "https://${HOST}/${KEY}.txt" '{
+              host: $host,
+              key: $key,
+              keyLocation: $keyLocation,
+              urlList: (split("\n") | map(select(length > 0)))
+            }')
+
+          URL_COUNT=$(echo "$PAYLOAD" | jq '.urlList | length')
+          echo "Submitting ${URL_COUNT} URLs to IndexNow"
+          echo "$PAYLOAD" | jq .
+
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          echo "IndexNow response: HTTP ${HTTP_STATUS}"
+          if [ "$HTTP_STATUS" -ge 400 ]; then
+            echo "::warning::IndexNow returned HTTP ${HTTP_STATUS}"
+          fi
