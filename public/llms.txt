@@ -1,0 +1,102 @@
+# Lucent UI
+
+> Lucent UI is a React component library for building polished interfaces fast. One install (`npm i lucent-ui`) gives you 58 components — atoms, molecules, and recipes — with built-in theming, dark mode, design presets, and a DevTools panel. Works with Next.js, Vite, and any React 18+ project.
+
+- Docs site: https://lucentui.dev
+- npm: https://www.npmjs.com/package/lucent-ui
+- GitHub: https://github.com/rozina-hudson/lucent-ui
+
+## Install
+
+```
+npm i lucent-ui
+```
+
+Wrap your app with `<LucentProvider>` and import components directly:
+
+```jsx
+import { LucentProvider } from 'lucent-ui'
+import { Button, Card, Stack } from 'lucent-ui'
+```
+
+## Theming
+
+LucentProvider accepts `theme` ("light" | "dark"), `preset` (one of 10 named design personalities), and `anchors` for token overrides. Design presets: default, modern, liquidGlass, bento, brutalist, terminal, softUI, bloom, minimal, enterprise. Shadow styles: flat, subtle, elevated, liquidGlass, brutalist, neumorphic, natural, glow.
+
+## DevTools
+
+Import from `lucent-ui/devtools`. Floating panel toggled with Cmd+Shift+D — 3 tabs for Design, Typography, and Tokens. 10 design presets and ~80 editable tokens.
+
+## Pages
+
+- [Home](https://lucentui.dev/): Landing page with overview, install, and design preset showcase
+- [Components](https://lucentui.dev/components): Component index (redirects to /components/button)
+- [Changelog](https://lucentui.dev/components/changelog): Version history
+- [Migration Guide](https://lucentui.dev/components/migration): Upgrade instructions
+
+## Atoms (32)
+
+- [Button](https://lucentui.dev/components/button): Trigger actions and navigation. Seven variants, five sizes, loading/disabled states, icon-only mode.
+- [Input](https://lucentui.dev/components/input): Single-line text field with label, helper text, and error state.
+- [Textarea](https://lucentui.dev/components/textarea): Multi-line text field with auto-resize, character count, and three sizes.
+- [Select](https://lucentui.dev/components/select): Native dropdown for choosing from a fixed list.
+- [SearchInput](https://lucentui.dev/components/searchinput): Text field with search icon and inline results dropdown.
+- [Checkbox](https://lucentui.dev/components/checkbox): Checkbox with checked, indeterminate, disabled, and contained states.
+- [Radio](https://lucentui.dev/components/radio): Radio group for mutually exclusive selection.
+- [Toggle](https://lucentui.dev/components/toggle): On/off switch with optional contained card style.
+- [FormField](https://lucentui.dev/components/formfield): Label wrapper for required flags, helper text, and error messages.
+- [Text](https://lucentui.dev/components/text): Polymorphic typography primitive.
+- [Icon](https://lucentui.dev/components/icon): SVG wrapper sized and coloured to the type scale.
+- [Divider](https://lucentui.dev/components/divider): Horizontal or vertical separator line.
+- [Spinner](https://lucentui.dev/components/spinner): Animated loading indicator in five sizes.
+- [Avatar](https://lucentui.dev/components/avatar): Circular user image with initials fallback.
+- [Skeleton](https://lucentui.dev/components/skeleton): Pulsing placeholder shapes for loading states.
+- [Breadcrumb](https://lucentui.dev/components/breadcrumb): Navigational links showing location in a hierarchy.
+- [NavLink](https://lucentui.dev/components/navlink): Styled navigation anchor with active, disabled, and icon states.
+- [DatePicker](https://lucentui.dev/components/datepicker): Date input with calendar popover.
+- [DateRangePicker](https://lucentui.dev/components/daterangepicker): Start/end date selection from a calendar popover.
+- [MultiSelect](https://lucentui.dev/components/multiselect): Multi-option dropdown rendered as Chips.
+- [Slider](https://lucentui.dev/components/slider): Range input for numeric values.
+- [CodeBlock](https://lucentui.dev/components/codeblock): Code display with tabs, language label, and copy button.
+- [Table](https://lucentui.dev/components/table): Token-styled HTML table with compound sub-components.
+- [ColorPicker](https://lucentui.dev/components/colorpicker): Full-featured color selection with popover.
+- [ColorSwatch](https://lucentui.dev/components/colorswatch): Standalone color preview.
+- [SegmentedControl](https://lucentui.dev/components/segmentedcontrol): Pill-style toggle group with sliding indicator.
+- [Chip](https://lucentui.dev/components/chip): Status label with pulse, ghost, and dot-only modes.
+- [SplitButton](https://lucentui.dev/components/splitbutton): Primary action + chevron dropdown for secondary actions.
+- [ButtonGroup](https://lucentui.dev/components/buttongroup): Visual grouping with flattened inner radius.
+- [Stack](https://lucentui.dev/components/stack): Vertical flex layout primitive.
+- [Row](https://lucentui.dev/components/row): Horizontal flex layout primitive.
+- [Progress](https://lucentui.dev/components/progress): Horizontal progress bar with threshold auto-variant.
+
+## Molecules (18)
+
+- [Alert](https://lucentui.dev/components/alert): Contextual message for info, success, warning, and error.
+- [Card](https://lucentui.dev/components/card): Surface container with elevation variants, header/footer, interactive and selectable states.
+- [EmptyState](https://lucentui.dev/components/emptystate): Zero-data placeholder with illustration and call-to-action.
+- [Tooltip](https://lucentui.dev/components/tooltip): On-hover contextual hint.
+- [Tabs](https://lucentui.dev/components/tabs): Horizontal tab bar with content panels.
+- [Collapsible](https://lucentui.dev/components/collapsible): Expandable/collapsible content section.
+- [CommandPalette](https://lucentui.dev/components/commandpalette): Keyboard-accessible command launcher with search.
+- [DataTable](https://lucentui.dev/components/datatable): Sortable, paginated data table.
+- [FileUpload](https://lucentui.dev/components/fileupload): Drag-and-drop upload zone with progress tracking.
+- [PageLayout](https://lucentui.dev/components/pagelayout): Full-page shell with header, sidebars, and scrollable main content.
+- [Timeline](https://lucentui.dev/components/timeline): Activity-feed timeline with filled dots, inline title + date, and rich content slots.
+- [Menu](https://lucentui.dev/components/menu): Compound dropdown menu with portal rendering and WAI-ARIA keyboard nav.
+- [Toast](https://lucentui.dev/components/toast): Imperative toast notifications via useToast hook.
+- [NavMenu](https://lucentui.dev/components/navmenu): Hierarchical sidebar/top-bar navigation with sliding highlight pill.
+- [FilterSearch](https://lucentui.dev/components/filtersearch): Collapsible search button that expands to a text input.
+- [FilterSelect](https://lucentui.dev/components/filterselect): Single-select filter button with Menu popover.
+- [FilterMultiSelect](https://lucentui.dev/components/filtermultiselect): Multi-select filter with button trigger and popover.
+- [FilterDateRange](https://lucentui.dev/components/filterdaterange): Date range filter button with calendar popover.
+
+## Recipes (8)
+
+- [ProfileCard](https://lucentui.dev/components/profilecard): User profile card from Card, Avatar, Text, Chip, and Button.
+- [SettingsPanel](https://lucentui.dev/components/settingspanel): Settings panel from Card, Toggle, Select, and Divider.
+- [StatsRow](https://lucentui.dev/components/statsrow): Stats row from Card, Row, Text, and Chip.
+- [ActionBar](https://lucentui.dev/components/actionbar): Action bar header from Breadcrumb, Text, Divider, and Button.
+- [FormLayout](https://lucentui.dev/components/formlayout): Form layout from Card, Input, Textarea, Select, and Button.
+- [EmptyStateCard](https://lucentui.dev/components/emptystatecard): Empty state card from Card, EmptyState, Icon, and Button.
+- [CollapsibleCard](https://lucentui.dev/components/collapsiblecard): Expandable card from Card + Collapsible.
+- [SearchFilterBar](https://lucentui.dev/components/searchfilterbar): Toolbar for filtering and sorting lists and data tables.

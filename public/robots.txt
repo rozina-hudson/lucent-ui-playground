@@ -1,0 +1,19 @@
+# robots.txt for lucentui.dev
+# IndexNow key: https://lucentui.dev/35b17789a0f8405ea129c116d0737b58.txt
+
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://lucentui.dev/sitemap.xml
+
+# LLM agent discovery — structured site overview
+# https://lucentui.dev/llms.txt
