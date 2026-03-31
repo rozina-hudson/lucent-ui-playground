@@ -27,7 +27,7 @@ export type ComponentDef = {
   name: string;
   /** Override the component rendered in the Playground customizer (e.g. "RadioGroup" for the radio page) */
   customizerName?: string;
-  category: "Atoms" | "Molecules" | "Recipes";
+  category: "Atoms" | "Molecules" | "Patterns";
   description: string;
   importStatement: string;
   usageCode: string;
@@ -58,14 +58,16 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "tabs", "collapsible", "commandpalette", "datatable",
       "fileupload", "pagelayout", "timeline", "menu", "toast", "navmenu",
       "filtersearch", "filterselect", "filtermultiselect", "filterdaterange",
+      "stepper",
     ],
   },
   {
-    label: "Recipes",
+    label: "Patterns",
     slugs: [
       "profilecard", "settingspanel", "statsrow",
       "actionbar", "formlayout", "emptystatecard",
       "collapsiblecard", "searchfilterbar",
+      "pricingtable", "notificationfeed", "onboardingflow", "dashboardheader",
     ],
   },
 ];
@@ -82,16 +84,17 @@ export const ATOM_SUBGROUPS: { label: string; slugs: string[] }[] = [
   { label: "Layout", slugs: ["stack", "row", "divider", "formfield", "breadcrumb", "navlink"] },
 ];
 
-// ─── Sidebar: Recipe sub-groups for nested nav ──────────────────────────────
+// ─── Sidebar: Pattern sub-groups for nested nav ─────────────────────────────
 
 export const MOLECULE_SUBGROUPS: { label: string; slugs: string[] }[] = [
   { label: "Filters", slugs: ["filtersearch", "filterselect", "filtermultiselect", "filterdaterange"] },
 ];
 
-export const RECIPE_SUBGROUPS: { label: string; slugs: string[] }[] = [
+export const PATTERN_SUBGROUPS: { label: string; slugs: string[] }[] = [
   { label: "Cards", slugs: ["profilecard", "statsrow", "emptystatecard", "collapsiblecard"] },
   { label: "Layouts", slugs: ["settingspanel", "actionbar", "formlayout"] },
   { label: "Toolbars", slugs: ["searchfilterbar"] },
+  { label: "Pages", slugs: ["pricingtable", "notificationfeed", "onboardingflow", "dashboardheader"] },
 ];
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
@@ -3509,13 +3512,77 @@ toast({ title: "Saved", variant: "success" });`,
     ],
   },
 
-  // ── Recipes ──────────────────────────────────────────────────────────────────
+  // ── Stepper ──────────────────────────────────────────────────────────────────
+  {
+    slug: "stepper",
+    name: "Stepper",
+    category: "Molecules",
+    description:
+      "Step indicator for multi-step flows — onboarding wizards, checkout funnels, and setup sequences. Horizontal or vertical orientation with animated checkmark on completion, numbered step labels, status badges, and custom per-step icons.",
+    importStatement: "import { Stepper } from 'lucent-ui'",
+    usageCode: `<Stepper
+  steps={["Account", "Profile", "Confirm"]}
+  current={1}
+/>`,
+    aiPrompts: {
+      claude: `"Add a Stepper from lucent-ui for a multi-step onboarding flow. Use steps array with current index. Show horizontal orientation with animated checkmarks."`,
+      cursor: `@lucent-ui Add a Stepper with steps array and current prop for a wizard flow. Show completed checkmarks and current step highlight.`,
+      vscode: `Using lucent-ui, add a Stepper component for a multi-step form. Configure steps, current, and orientation props.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Stepper for an onboarding wizard from lucent-ui"`,
+    },
+    props: [
+      { name: "steps", type: "string[] | StepDef[]", description: "Array of step labels (strings) or objects with { label, description?, icon? }.", required: true },
+      { name: "current", type: "number", description: "Zero-based index of the active step.", required: true },
+      { name: "orientation", type: `"horizontal" | "vertical"`, description: "Layout direction.", defaultValue: `"horizontal"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Circle and text size scale.", defaultValue: `"md"` },
+      { name: "numbered", type: "boolean", description: "Show STEP N prefix above each label.", defaultValue: "false" },
+      { name: "showStatus", type: "boolean", description: "Show Chip status badges (Completed / In Progress / Pending).", defaultValue: "false" },
+    ],
+    examples: [
+      {
+        title: "Horizontal stepper",
+        description: "Default horizontal layout with animated checkmarks on completed steps.",
+        previewKey: "stepper-horizontal",
+        code: `<Stepper
+  steps={["Account", "Profile", "Review", "Confirm"]}
+  current={2}
+/>`,
+      },
+      {
+        title: "Vertical stepper",
+        description: "Vertical layout with descriptions and connector lines.",
+        previewKey: "stepper-vertical",
+        code: `<Stepper
+  orientation="vertical"
+  steps={[
+    { label: "Create account", description: "Enter your email and password" },
+    { label: "Personal info", description: "Name, avatar, and bio" },
+    { label: "Preferences", description: "Notification and display settings" },
+  ]}
+  current={1}
+/>`,
+      },
+      {
+        title: "With status badges",
+        description: "Chip badges showing Completed, In Progress, and Pending status per step.",
+        previewKey: "stepper-status",
+        code: `<Stepper
+  steps={["Setup", "Configure", "Deploy"]}
+  current={1}
+  showStatus
+/>`,
+      },
+    ],
+  },
+
+  // ── Patterns ──────────────────────────────────────────────────────────────────
 
   // ── ProfileCard ──────────────────────────────────────────────────────────────
   {
     slug: "profilecard",
     name: "ProfileCard",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "User profile card composed from Card, Avatar, Text (display font), Chip, Row, Stack, Divider, and Button. Features a stat row with 2xl display numbers, borderless clickable chips for tags, and action buttons. Compact collapsible variant uses a filled Card with Collapsible.",
     importStatement: "import { Card, Avatar, Text, Chip, Row, Stack, Divider, Button, Collapsible } from 'lucent-ui'",
@@ -3648,7 +3715,7 @@ toast({ title: "Saved", variant: "success" });`,
   {
     slug: "settingspanel",
     name: "SettingsPanel",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "Settings panel composed from Card, Stack, Row, Text, Toggle, Select, Divider, and Button. Features toggle rows with descriptions, a select dropdown, and an action footer. Drill-down variant adds a NavMenu sidebar for multi-section navigation.",
     importStatement: "import { Card, Stack, Row, Text, Toggle, Select, Divider, Button } from 'lucent-ui'",
@@ -3755,7 +3822,7 @@ toast({ title: "Saved", variant: "success" });`,
   {
     slug: "statsrow",
     name: "StatsRow",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "Stats row composed from Card, Row, Stack, Text, and Chip. Individual stat cards display a metric label, a 2xl display number, and a trend chip with comparison text. Revenue variant adds avatar headers for team attribution.",
     importStatement: "import { Card, Row, Stack, Text, Chip } from 'lucent-ui'",
@@ -3850,7 +3917,7 @@ toast({ title: "Saved", variant: "success" });`,
   {
     slug: "actionbar",
     name: "ActionBar",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "Action bar header composed from Stack, Row, Breadcrumb, Text, Divider, and Button. Page header variant features breadcrumb navigation, a 3xl display title, a divider, and action buttons. Card header variant uses an uppercase label with md title and tight letter-spacing.",
     importStatement: "import { Stack, Row, Breadcrumb, Text, Divider, Button } from 'lucent-ui'",
@@ -3931,7 +3998,7 @@ toast({ title: "Saved", variant: "success" });`,
   {
     slug: "formlayout",
     name: "FormLayout",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "Form layout composed from Card, Stack, Row, Text, Input, Textarea, Select, Divider, and Button. Stacked form with section grouping, side-by-side fields using Row, dividers between sections, and a submit/cancel footer.",
     importStatement: "import { Card, Stack, Row, Text, Input, Textarea, Select, DatePicker, Divider, Button } from 'lucent-ui'",
@@ -4029,7 +4096,7 @@ toast({ title: "Saved", variant: "success" });`,
   {
     slug: "emptystatecard",
     name: "EmptyStateCard",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "Empty state card composed from Card, EmptyState, Icon, Text, and Button. Features an icon illustration, heading, description, and a call-to-action button. Three variants: no results, getting started, and error.",
     importStatement: "import { Card, EmptyState, Icon, Button } from 'lucent-ui'",
@@ -4110,7 +4177,7 @@ toast({ title: "Saved", variant: "success" });`,
   {
     slug: "collapsiblecard",
     name: "CollapsibleCard",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "Expandable card composed from Card + Collapsible. The Collapsible auto-bleeds inside the Card via CardPaddingContext — just wrap and it works. Use hoverable on the Card for hover lift without making it interactive. Works with all five card variants; combo gives a two-tone layout with a nested elevated Card.",
     importStatement: "import { Card, Collapsible } from 'lucent-ui'",
@@ -4182,11 +4249,11 @@ toast({ title: "Saved", variant: "success" });`,
     ],
   },
 
-  // ── Search / Filter Bar (Recipe) ────────────────────────────────────────────
+  // ── Search / Filter Bar (Pattern) ───────────────────────────────────────────
   {
     slug: "searchfilterbar",
     name: "SearchFilterBar",
-    category: "Recipes",
+    category: "Patterns",
     description:
       "Compact toolbar recipe for filtering and sorting lists and data tables. Composes the Filter molecule family — FilterSearch, FilterSelect, FilterMultiSelect, and FilterDateRange — into a cohesive bar with conditional clear-all and view toggle.",
     importStatement: `import { Row, Button, FilterSearch, FilterSelect, FilterMultiSelect, FilterDateRange, SegmentedControl } from 'lucent-ui'`,
@@ -4253,6 +4320,267 @@ toast({ title: "Saved", variant: "success" });`,
   <FilterMultiSelect size="sm" label="Priority" options={priorityOpts} />
   <Button variant="ghost" size="sm">Clear all</Button>
 </Row>`,
+      },
+    ],
+  },
+
+  // ── PricingTable ────────────────────────────────────────────────────────────
+  {
+    slug: "pricingtable",
+    name: "PricingTable",
+    category: "Patterns",
+    description:
+      "Three-tier pricing card layout with feature lists and a highlighted middle card. Composes Card, Stack, Row, Text, Chip, Divider, and Button to build a production-ready pricing comparison section.",
+    importStatement: `import { Card, Stack, Row, Text, Chip, Divider, Button } from 'lucent-ui'`,
+    usageCode: `<Row gap="4" align="stretch">
+  <Card variant="outline"><Stack gap="4">
+    <Text weight="semibold">Free</Text>
+    <Text size="3xl" weight="bold">$0<Text size="sm" color="secondary">/mo</Text></Text>
+    <Divider /><Text size="sm">5 projects</Text><Text size="sm">1 GB storage</Text>
+    <Button variant="outline" fullWidth>Get started</Button>
+  </Stack></Card>
+  <Card variant="elevated" style={{ borderColor: "var(--lucent-accent-default)" }}><Stack gap="4">
+    <Chip variant="accent" size="sm">Popular</Chip>
+    <Text weight="semibold">Pro</Text>
+    <Text size="3xl" weight="bold">$19<Text size="sm" color="secondary">/mo</Text></Text>
+    <Divider /><Text size="sm">Unlimited projects</Text><Text size="sm">50 GB storage</Text>
+    <Button variant="primary" fullWidth>Upgrade</Button>
+  </Stack></Card>
+</Row>`,
+    aiPrompts: {
+      claude: `"Build a PricingTable pattern from lucent-ui with three tiers (Free, Pro, Enterprise). Use Card, Stack, Text, Chip, Divider, and Button. Highlight the middle tier with accent border and a Popular chip."`,
+      cursor: `@lucent-ui Build a three-tier PricingTable pattern using Card, Stack, Text, Chip, Divider, and Button.`,
+      vscode: `Using lucent-ui, compose a pricing comparison layout with three Card tiers, feature lists, and CTA buttons.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a three-tier pricing table pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Card", type: "component", description: "Surface container for each pricing tier." },
+      { name: "Stack", type: "component", description: "Vertical layout inside each tier." },
+      { name: "Row", type: "component", description: "Horizontal layout for the three cards." },
+      { name: "Text", type: "component", description: "Typography for plan names, prices, and features." },
+      { name: "Chip", type: "component", description: "Highlight badge (e.g. Popular) on the featured tier." },
+      { name: "Divider", type: "component", description: "Separates price from feature list." },
+      { name: "Button", type: "component", description: "CTA buttons — outline for free, primary for featured." },
+    ],
+    examples: [
+      {
+        title: "Three-tier pricing",
+        description: "Free, Pro (highlighted), and Enterprise cards with feature lists.",
+        previewKey: "pattern-pricingtable",
+        code: `<Row gap="4" align="stretch">
+  {/* Free tier */}
+  <Card variant="outline"><Stack gap="3">
+    <Text weight="semibold">Free</Text>
+    <Text size="3xl" weight="bold">$0<Text size="sm" color="secondary">/mo</Text></Text>
+    <Divider /><Text size="sm">5 projects</Text><Text size="sm">1 GB storage</Text><Text size="sm">Community support</Text>
+    <Button variant="outline" fullWidth>Get started</Button>
+  </Stack></Card>
+  {/* Pro tier */}
+  <Card variant="elevated" style={{ borderColor: "var(--lucent-accent-default)" }}><Stack gap="3">
+    <Chip variant="accent" size="sm">Popular</Chip>
+    <Text weight="semibold">Pro</Text>
+    <Text size="3xl" weight="bold">$19<Text size="sm" color="secondary">/mo</Text></Text>
+    <Divider /><Text size="sm">Unlimited projects</Text><Text size="sm">50 GB storage</Text><Text size="sm">Priority support</Text>
+    <Button variant="primary" fullWidth>Upgrade</Button>
+  </Stack></Card>
+  {/* Enterprise tier */}
+  <Card variant="outline"><Stack gap="3">
+    <Text weight="semibold">Enterprise</Text>
+    <Text size="3xl" weight="bold">Custom</Text>
+    <Divider /><Text size="sm">Unlimited everything</Text><Text size="sm">SSO & SAML</Text><Text size="sm">Dedicated support</Text>
+    <Button variant="outline" fullWidth>Contact sales</Button>
+  </Stack></Card>
+</Row>`,
+      },
+    ],
+  },
+
+  // ── NotificationFeed ────────────────────────────────────────────────────────
+  {
+    slug: "notificationfeed",
+    name: "NotificationFeed",
+    category: "Patterns",
+    description:
+      "Notification list with read/unread states, type chips, and icon action buttons. Composes Card, Stack, Row, Text, Chip, Avatar, Button, and Tooltip for a production-ready notification feed.",
+    importStatement: `import { Card, Stack, Row, Text, Chip, Avatar, Button, Tooltip } from 'lucent-ui'`,
+    usageCode: `<Stack gap="0">
+  <Card style={{ background: "var(--lucent-accent-subtle)" }}>
+    <Row gap="3" align="start">
+      <Avatar size="sm" name="Alice" />
+      <Stack gap="1" style={{ flex: 1 }}>
+        <Text size="sm" weight="medium">Alice commented on your PR</Text>
+        <Text size="xs" color="secondary">2 minutes ago</Text>
+      </Stack>
+      <Chip size="sm" variant="accent">Comment</Chip>
+    </Row>
+  </Card>
+</Stack>`,
+    aiPrompts: {
+      claude: `"Build a NotificationFeed pattern from lucent-ui. Use Card with accent-subtle background for unread items, Avatar, Text for title and timestamp, and Chip for notification type."`,
+      cursor: `@lucent-ui Build a NotificationFeed pattern with read/unread Card states, Avatar, Text, and type Chips.`,
+      vscode: `Using lucent-ui, compose a notification feed with Card, Avatar, Text, Chip, and Tooltip.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a notification feed pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Card", type: "component", description: "Container for each notification — accent-subtle background for unread." },
+      { name: "Avatar", type: "component", description: "Sender avatar." },
+      { name: "Text", type: "component", description: "Notification title and timestamp." },
+      { name: "Chip", type: "component", description: "Notification type label (Comment, Mention, Update)." },
+      { name: "Button", type: "component", description: "Action buttons (mark read, archive)." },
+      { name: "Tooltip", type: "component", description: "Tooltips on icon action buttons." },
+    ],
+    examples: [
+      {
+        title: "Notification feed",
+        description: "Mixed read and unread notifications with type badges.",
+        previewKey: "pattern-notificationfeed",
+        code: `<Stack gap="1">
+  {/* Unread */}
+  <Card style={{ background: "var(--lucent-accent-subtle)" }}>
+    <Row gap="3" align="start"><Avatar size="sm" name="Alice" />
+      <Stack gap="1" style={{ flex: 1 }}>
+        <Text size="sm" weight="medium">Alice commented on your PR</Text>
+        <Text size="xs" color="secondary">2 minutes ago</Text>
+      </Stack>
+      <Chip size="sm" variant="accent">Comment</Chip>
+    </Row>
+  </Card>
+  {/* Read */}
+  <Card>
+    <Row gap="3" align="start"><Avatar size="sm" name="Bob" />
+      <Stack gap="1" style={{ flex: 1 }}>
+        <Text size="sm">Bob mentioned you in #general</Text>
+        <Text size="xs" color="secondary">1 hour ago</Text>
+      </Stack>
+      <Chip size="sm" variant="neutral">Mention</Chip>
+    </Row>
+  </Card>
+</Stack>`,
+      },
+    ],
+  },
+
+  // ── OnboardingFlow ──────────────────────────────────────────────────────────
+  {
+    slug: "onboardingflow",
+    name: "OnboardingFlow",
+    category: "Patterns",
+    description:
+      "Multi-step form with Stepper progress indicator, form fields, and back/next navigation. Composes Stepper, Card, Stack, Row, Input, Select, Button, and Text for a production-ready onboarding wizard.",
+    importStatement: `import { Stepper, Card, Stack, Row, Input, Select, Button, Text } from 'lucent-ui'`,
+    usageCode: `<Card><Stack gap="6">
+  <Stepper steps={["Account", "Profile", "Confirm"]} current={0} />
+  <Stack gap="4">
+    <Input label="Email" placeholder="you@example.com" />
+    <Input label="Password" type="password" />
+  </Stack>
+  <Row gap="3" style={{ justifyContent: "flex-end" }}>
+    <Button variant="primary">Next</Button>
+  </Row>
+</Stack></Card>`,
+    aiPrompts: {
+      claude: `"Build an OnboardingFlow pattern from lucent-ui with Stepper, Card, form fields (Input, Select), and back/next Button navigation."`,
+      cursor: `@lucent-ui Build an OnboardingFlow: Stepper progress, Card with form fields, and back/next buttons.`,
+      vscode: `Using lucent-ui, compose a multi-step onboarding form with Stepper, Card, Input, Select, and Button.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a multi-step onboarding flow pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Stepper", type: "component", description: "Progress indicator showing current step." },
+      { name: "Card", type: "component", description: "Surface container for the form." },
+      { name: "Input", type: "component", description: "Text inputs for form fields." },
+      { name: "Select", type: "component", description: "Dropdown for selection fields." },
+      { name: "Button", type: "component", description: "Back and Next navigation buttons." },
+      { name: "Stack", type: "component", description: "Vertical layout for form content." },
+      { name: "Row", type: "component", description: "Horizontal layout for button row." },
+    ],
+    examples: [
+      {
+        title: "Onboarding wizard",
+        description: "Three-step form with Stepper, input fields, and navigation buttons.",
+        previewKey: "pattern-onboardingflow",
+        code: `<Card style={{ maxWidth: 480 }}><Stack gap="6">
+  <Stepper steps={["Account", "Profile", "Confirm"]} current={1} />
+  <Stack gap="4">
+    <Input label="Full name" placeholder="Jane Doe" />
+    <Input label="Username" placeholder="@jane" />
+    <Select label="Role" options={[
+      { value: "dev", label: "Developer" },
+      { value: "design", label: "Designer" },
+      { value: "pm", label: "Product Manager" },
+    ]} />
+  </Stack>
+  <Row gap="3" style={{ justifyContent: "flex-end" }}>
+    <Button variant="outline">Back</Button>
+    <Button variant="primary">Next</Button>
+  </Row>
+</Stack></Card>`,
+      },
+    ],
+  },
+
+  // ── DashboardHeader ─────────────────────────────────────────────────────────
+  {
+    slug: "dashboardheader",
+    name: "DashboardHeader",
+    category: "Patterns",
+    description:
+      "Page header with breadcrumb navigation, page title with icon action buttons, and a row of stat cards with trend chips. Composes Breadcrumb, Text, Row, Stack, Card, Chip, Button, and Tooltip.",
+    importStatement: `import { Breadcrumb, Text, Row, Stack, Card, Chip, Button, Tooltip } from 'lucent-ui'`,
+    usageCode: `<Stack gap="4">
+  <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Dashboard" }]} />
+  <Row align="center" style={{ justifyContent: "space-between" }}>
+    <Text as="h1" size="2xl" weight="bold">Dashboard</Text>
+    <Row gap="2">
+      <Button variant="outline" size="sm">Export</Button>
+      <Button variant="primary" size="sm">New report</Button>
+    </Row>
+  </Row>
+  <Row gap="4">
+    <Card><Stack gap="1"><Text size="xs" color="secondary">Revenue</Text><Text size="xl" weight="bold">$48.2k</Text><Chip size="sm" variant="success">+12%</Chip></Stack></Card>
+    <Card><Stack gap="1"><Text size="xs" color="secondary">Users</Text><Text size="xl" weight="bold">2,847</Text><Chip size="sm" variant="success">+8%</Chip></Stack></Card>
+  </Row>
+</Stack>`,
+    aiPrompts: {
+      claude: `"Build a DashboardHeader pattern from lucent-ui with Breadcrumb, page title, action buttons, and stat cards with trend Chips."`,
+      cursor: `@lucent-ui Build a DashboardHeader: Breadcrumb, title Row with action buttons, and stat Cards with trend Chips.`,
+      vscode: `Using lucent-ui, compose a dashboard header with Breadcrumb, title, action buttons, and stat cards.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a dashboard header pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Breadcrumb", type: "component", description: "Navigation trail (e.g. Home > Dashboard)." },
+      { name: "Text", type: "component", description: "Page title and stat labels/values." },
+      { name: "Button", type: "component", description: "Action buttons (Export, New report)." },
+      { name: "Card", type: "component", description: "Stat cards for key metrics." },
+      { name: "Chip", type: "component", description: "Trend indicators (+12%, -3%)." },
+      { name: "Row", type: "component", description: "Horizontal layout for title row and stat cards." },
+      { name: "Stack", type: "component", description: "Vertical layout for the full header." },
+    ],
+    examples: [
+      {
+        title: "Dashboard header with stats",
+        description: "Breadcrumb, title with actions, and four stat cards with trend chips.",
+        previewKey: "pattern-dashboardheader",
+        code: `<Stack gap="4">
+  <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Analytics" }, { label: "Dashboard" }]} />
+  <Row align="center" style={{ justifyContent: "space-between" }}>
+    <Text as="h1" size="2xl" weight="bold">Dashboard</Text>
+    <Row gap="2">
+      <Button variant="ghost" size="sm">Refresh</Button>
+      <Button variant="outline" size="sm">Export</Button>
+      <Button variant="primary" size="sm">New report</Button>
+    </Row>
+  </Row>
+  <Row gap="4">
+    <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Revenue</Text><Text size="xl" weight="bold">$48.2k</Text><Chip size="sm" variant="success">+12%</Chip></Stack></Card>
+    <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Users</Text><Text size="xl" weight="bold">2,847</Text><Chip size="sm" variant="success">+8%</Chip></Stack></Card>
+    <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Orders</Text><Text size="xl" weight="bold">1,024</Text><Chip size="sm" variant="danger">-3%</Chip></Stack></Card>
+    <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Conversion</Text><Text size="xl" weight="bold">3.2%</Text><Chip size="sm" variant="success">+0.4%</Chip></Stack></Card>
+  </Row>
+</Stack>`,
       },
     ],
   },

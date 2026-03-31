@@ -53,9 +53,43 @@ type Entry = {
 function buildEntries(shell: ShellColors): Entry[] {
   return [
     {
-      version: "V0.30",
+      version: "V0.31",
       date: "MARCH 2026",
       latest: true,
+      title: (
+        <>
+          <span style={{ color: GREEN }}>Stepper</span>{" "}
+          <span style={{ color: GOLD }}>&amp;</span> Golden{" "}
+          <span style={{ color: GREEN }}>Compositions</span>
+        </>
+      ),
+      badges: [
+        { label: "NEW", green: true },
+        { label: "STEPPER" },
+        { label: "4 PATTERNS" },
+        { label: "6 COMPOSITIONS" },
+      ],
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>Stepper molecule</strong> — step indicator for onboarding wizards, checkout funnels, and setup sequences. Horizontal + vertical, animated checkmark, numbered steps, status badges, custom icons.
+          </p>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>4 new patterns</strong> —{" "}
+            <strong style={{ color: shell.text }}>PricingTable</strong>,{" "}
+            <strong style={{ color: shell.text }}>NotificationFeed</strong>,{" "}
+            <strong style={{ color: shell.text }}>OnboardingFlow</strong>,{" "}
+            <strong style={{ color: shell.text }}>DashboardHeader</strong>.
+          </p>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>6 golden compositions</strong> — interactive proof that the component system produces polished, real-world UI. Recipes tier renamed to <strong style={{ color: shell.text }}>Patterns</strong>.
+          </p>
+        </div>
+      ),
+    },
+    {
+      version: "V0.30",
+      date: "MARCH 2026",
       title: (
         <>
           Timeline <span style={{ color: GREEN }}>Redesign</span>{" "}
@@ -66,7 +100,7 @@ function buildEntries(shell: ShellColors): Entry[] {
       badges: [
         { label: "NEW", green: true },
         { label: "4 MOLECULES" },
-        { label: "RECIPE" },
+        { label: "PATTERN" },
       ],
       content: (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -83,7 +117,7 @@ function buildEntries(shell: ShellColors): Entry[] {
             <strong style={{ color: shell.text }}>FilterDateRange</strong> (date range button + calendar).
           </p>
           <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
-            New <strong style={{ color: shell.text }}>SearchFilterBar</strong> recipe composes the Filter family into a compact toolbar with three variants: Default, Minimal, and Pipeline.
+            New <strong style={{ color: shell.text }}>SearchFilterBar</strong> pattern composes the Filter family into a compact toolbar with three variants: Default, Minimal, and Pipeline.
           </p>
         </div>
       ),
@@ -125,12 +159,12 @@ function buildEntries(shell: ShellColors): Entry[] {
       date: "MARCH 2026",
       title: (
         <>
-          Composition <span style={{ color: GREEN }}>Recipes</span>
+          Composition <span style={{ color: GREEN }}>Patterns</span>
         </>
       ),
       badges: [
         { label: "NEW", green: true },
-        { label: "7 RECIPES" },
+        { label: "7 PATTERNS" },
       ],
       content: (
         <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
@@ -142,7 +176,7 @@ function buildEntries(shell: ShellColors): Entry[] {
           <strong style={{ color: shell.text }}>FormLayout</strong>,{" "}
           <strong style={{ color: shell.text }}>EmptyStateCard</strong>,{" "}
           <strong style={{ color: shell.text }}>CollapsibleCard</strong>.
-          Each recipe ships with working JSX, variants, and design notes.
+          Each pattern ships with working JSX, variants, and design notes.
         </p>
       ),
     },
@@ -165,7 +199,7 @@ function buildEntries(shell: ShellColors): Entry[] {
           Collapsible adds smooth 180ms height animation, CSS hover feedback, focus-visible ring,{" "}
           <strong style={{ color: shell.text }}>disabled</strong> and{" "}
           <strong style={{ color: shell.text }}>padded</strong> props.
-          New <strong style={{ color: shell.text }}>CollapsibleCard</strong> recipe composes both.
+          New <strong style={{ color: shell.text }}>CollapsibleCard</strong> pattern composes both.
         </p>
       ),
     },
@@ -435,7 +469,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          V0.16 → V0.30 · 15 RELEASES
+          V0.16 → V0.31 · 16 RELEASES
         </span>
         <span
           style={{
@@ -446,7 +480,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          <span style={{ color: GOLD }}>58</span> COMPONENTS + <span style={{ color: GREEN }}>10</span> DESIGN PRESETS
+          <span style={{ color: GOLD }}>63</span> COMPONENTS + <span style={{ color: GREEN }}>10</span> DESIGN PRESETS
         </span>
       </div>
 

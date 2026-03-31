@@ -50,6 +50,7 @@ export default function Home() {
         </span>
         <nav className="flex items-center gap-6 text-sm" style={{ color: shell.muted }}>
           <NavLink href="/components" shell={shell}>Components</NavLink>
+          <NavLink href="/compositions" shell={shell}>Compositions</NavLink>
           <NavLink href="/components/changelog" shell={shell}>Changelog</NavLink>
           <NavLink href="https://www.npmjs.com/package/lucent-ui" external shell={shell}>npm</NavLink>
           <NavLink href="https://github.com/rozina-hudson/lucent-ui" external shell={shell}>GitHub</NavLink>
