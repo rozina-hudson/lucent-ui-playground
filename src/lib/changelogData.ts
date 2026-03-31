@@ -13,6 +13,48 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.31.0",
+    date: "March 2026",
+    title: "Stepper Molecule, Golden Compositions & Recipes → Patterns",
+    items: [
+      {
+        label: "New molecule: Stepper",
+        description:
+          "Step indicator for multi-step flows — onboarding wizards, checkout funnels, and setup sequences. Horizontal or vertical orientation with animated checkmark on completion, numbered step labels, status badges, and custom per-step icons.",
+        subItems: [
+          "Horizontal — continuous connector track behind circles with animated fill between steps",
+          "Vertical — connector column on the left with labels, descriptions, and status",
+          "Animated checkmark — spring scale (0→1.2→1) on step completion",
+          "Status badges — Chip atoms (success/accent/neutral) for Completed / In Progress / Pending",
+          "Custom icons — per-step icon prop overrides the default number/checkmark",
+        ],
+      },
+      {
+        label: "6 golden compositions",
+        description:
+          "Interactive compositions in the dev playground that serve as visual proof the component system produces polished, real-world UI.",
+        subItems: [
+          "ProfileCard — avatar, name/status chip, bio, skill tags, stats row, follow/message buttons",
+          "PreferencesCard — header with version badge, overflow menu, toggle setting rows, slider, select dropdown, save/reset actions",
+          "PricingTable — three-tier pricing cards (Free/Pro/Enterprise) with feature lists, middle card highlighted with accent border",
+          "NotificationFeed — notification list with read/unread states, type chips, icon action buttons with tooltips",
+          "OnboardingFlow — multi-step form with Stepper, form fields, and back/next navigation",
+          "DashboardHeader — breadcrumb navigation, page title with icon action buttons, four stat cards with trend chips",
+        ],
+      },
+      {
+        label: "4 new patterns",
+        description:
+          "New pattern manifests for AI retrieval: PricingTable, NotificationFeed, OnboardingFlow, and DashboardHeader.",
+      },
+      {
+        label: "Recipes renamed to Patterns",
+        description:
+          "The \"recipes\" tier has been renamed to \"patterns\" across the entire codebase to clarify the design system hierarchy: Atoms → Molecules → Patterns → Compositions. Deprecated type aliases kept for backward compatibility.",
+      },
+    ],
+  },
+  {
     version: "0.30.0",
     date: "March 2026",
     title: "Timeline Redesign & FilterMultiSelect Enhancements",
@@ -40,7 +82,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     version: "0.29.0",
     date: "March 2026",
-    title: "Filter Molecules & Search / Filter Bar Recipe",
+    title: "Filter Molecules & Search / Filter Bar Pattern",
     items: [
       {
         label: "Filter molecule family",
@@ -54,9 +96,9 @@ export const CHANGELOG: ChangelogEntry[] = [
         ],
       },
       {
-        label: "Recipe: Search / Filter Bar",
+        label: "Pattern: Search / Filter Bar",
         description:
-          "New composition recipe — search-filter-bar — a compact toolbar for filtering and sorting lists and data tables. Composes the Filter molecule family into a cohesive bar.",
+          "New composition pattern — search-filter-bar — a compact toolbar for filtering and sorting lists and data tables. Composes the Filter molecule family into a cohesive bar.",
         subItems: [
           "Default variant — full toolbar with search, single/multi-select filters, date range, clear all, sort, and view toggle",
           "Minimal variant — search and sort only",
@@ -184,15 +226,15 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     version: "0.26.0",
     date: "March 2026",
-    title: "Composition Recipes & Divider zero spacing",
+    title: "Composition Patterns & Divider zero spacing",
     items: [
       {
-        label: "CompositionRecipe type",
+        label: "CompositionPattern type",
         description:
           "New manifest type describing how multiple components compose into real UIs. Fields include id, name, description, category, components, structure (ASCII tree), code (working JSX), variants, and designNotes.",
       },
       {
-        label: "7 composition recipes",
+        label: "7 composition patterns",
         description:
           "Ready-to-use patterns showing how lucent-ui components combine into production UIs.",
         subItems: [
@@ -206,19 +248,19 @@ export const CHANGELOG: ChangelogEntry[] = [
         ],
       },
       {
-        label: "New MCP tool: get_composition_recipe",
+        label: "New MCP tool: get_composition_pattern",
         description:
-          "Query recipes by name/id, by category, or list all. Returns full recipe with structure tree, working code, variants, and design notes.",
+          "Query patterns by name/id, by category, or list all. Returns full pattern with structure tree, working code, variants, and design notes.",
       },
       {
         label: "search_components extended",
         description:
-          "Now returns both components and recipes in search results.",
+          "Now returns both components and patterns in search results.",
       },
       {
-        label: "Recipes nav group",
+        label: "Patterns nav group",
         description:
-          "New \"Recipes\" section in the sidebar with Cards and Layouts sub-groups, each recipe rendered as a live interactive demo.",
+          "New \"Patterns\" section in the sidebar with Cards and Layouts sub-groups, each pattern rendered as a live interactive demo.",
       },
       {
         label: "Divider: zero default spacing",
@@ -247,7 +289,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     version: "0.25.0",
     date: "March 2026",
-    title: "Collapsible polish, Card hoverable & CollapsibleCard recipe",
+    title: "Collapsible polish, Card hoverable & CollapsibleCard pattern",
     items: [
       {
         label: "Collapsible",
@@ -268,9 +310,9 @@ export const CHANGELOG: ChangelogEntry[] = [
         ],
       },
       {
-        label: "CollapsibleCard recipe",
+        label: "CollapsibleCard pattern",
         description:
-          "Composition recipe showing all five card variants with Collapsible inside. Combo variant gives a two-tone layout via pure composition.",
+          "Composition pattern showing all five card variants with Collapsible inside. Combo variant gives a two-tone layout via pure composition.",
       },
     ],
   },

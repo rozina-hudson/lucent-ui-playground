@@ -1,6 +1,6 @@
 # Lucent UI
 
-> Lucent UI is a React component library for building polished interfaces fast. One install (`npm i lucent-ui`) gives you 58 components — atoms, molecules, and recipes — with built-in theming, dark mode, design presets, and a DevTools panel. Works with Next.js, Vite, and any React 18+ project.
+> Lucent UI is a React component library for building polished interfaces fast. One install (`npm i lucent-ui`) gives you 63 components — atoms, molecules, and patterns — with built-in theming, dark mode, design presets, and a DevTools panel. Works with Next.js, Vite, and any React 18+ project.
 
 - Docs site: https://lucentui.dev
 - npm: https://www.npmjs.com/package/lucent-ui
@@ -26,6 +26,15 @@ LucentProvider accepts `theme` ("light" | "dark"), `preset` (one of 10 named des
 ## DevTools
 
 Import from `lucent-ui/devtools`. Floating panel toggled with Cmd+Shift+D — 3 tabs for Design, Typography, and Tokens. 10 design presets and ~80 editable tokens.
+
+## Design System Hierarchy
+
+Atoms → Molecules → Patterns → Compositions
+
+- **Atoms**: Primitive UI building blocks (buttons, inputs, icons, layout)
+- **Molecules**: Composed interactive components (cards, menus, toasts, data tables)
+- **Patterns**: Production-ready compositions showing how components work together
+- **Compositions**: Golden interactive demos proving the system produces polished UI (in dev playground)
 
 ## Pages
 
@@ -69,7 +78,7 @@ Import from `lucent-ui/devtools`. Floating panel toggled with Cmd+Shift+D — 3 
 - [Row](https://lucentui.dev/components/row): Horizontal flex layout primitive.
 - [Progress](https://lucentui.dev/components/progress): Horizontal progress bar with threshold auto-variant.
 
-## Molecules (18)
+## Molecules (19)
 
 - [Alert](https://lucentui.dev/components/alert): Contextual message for info, success, warning, and error.
 - [Card](https://lucentui.dev/components/card): Surface container with elevation variants, header/footer, interactive and selectable states.
@@ -89,8 +98,9 @@ Import from `lucent-ui/devtools`. Floating panel toggled with Cmd+Shift+D — 3 
 - [FilterSelect](https://lucentui.dev/components/filterselect): Single-select filter button with Menu popover.
 - [FilterMultiSelect](https://lucentui.dev/components/filtermultiselect): Multi-select filter with button trigger and popover.
 - [FilterDateRange](https://lucentui.dev/components/filterdaterange): Date range filter button with calendar popover.
+- [Stepper](https://lucentui.dev/components/stepper): Step indicator for multi-step flows with horizontal/vertical orientation, animated checkmarks, and status badges.
 
-## Recipes (8)
+## Patterns (12)
 
 - [ProfileCard](https://lucentui.dev/components/profilecard): User profile card from Card, Avatar, Text, Chip, and Button.
 - [SettingsPanel](https://lucentui.dev/components/settingspanel): Settings panel from Card, Toggle, Select, and Divider.
@@ -100,3 +110,7 @@ Import from `lucent-ui/devtools`. Floating panel toggled with Cmd+Shift+D — 3 
 - [EmptyStateCard](https://lucentui.dev/components/emptystatecard): Empty state card from Card, EmptyState, Icon, and Button.
 - [CollapsibleCard](https://lucentui.dev/components/collapsiblecard): Expandable card from Card + Collapsible.
 - [SearchFilterBar](https://lucentui.dev/components/searchfilterbar): Toolbar for filtering and sorting lists and data tables.
+- [PricingTable](https://lucentui.dev/components/pricingtable): Three-tier pricing card layout with feature lists and highlighted middle card.
+- [NotificationFeed](https://lucentui.dev/components/notificationfeed): Notification list with read/unread states, type chips, and action buttons.
+- [OnboardingFlow](https://lucentui.dev/components/onboardingflow): Multi-step form with Stepper progress indicator and back/next navigation.
+- [DashboardHeader](https://lucentui.dev/components/dashboardheader): Page header with breadcrumbs, title, action buttons, and stat cards with trend chips.

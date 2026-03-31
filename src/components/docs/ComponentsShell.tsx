@@ -15,7 +15,7 @@ import dynamic from "next/dynamic";
 const LucentDevTools = dynamic(() => import("lucent-ui/devtools").then((m) => m.LucentDevTools), { ssr: false });
 import { getShell } from "@/lib/shellColors";
 import { usePlayground } from "@/lib/playgroundContext";
-import { CATEGORIES, ATOM_SUBGROUPS, MOLECULE_SUBGROUPS, RECIPE_SUBGROUPS, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
+import { CATEGORIES, ATOM_SUBGROUPS, MOLECULE_SUBGROUPS, PATTERN_SUBGROUPS, componentRegistry, getComponent, getPrevNext, type ComponentDef } from "@/lib/componentData";
 import { BentoGrid } from "@/components/docs/BentoGrid";
 import {
   defaultPlaygroundState,
@@ -126,9 +126,9 @@ const SidebarNav = memo(function SidebarNav({
         })}
       </NavMenu.Group>
 
-      {/* Recipes — sub-nav groups */}
-      <NavMenu.Group label="Recipes" defaultOpen>
-        {RECIPE_SUBGROUPS.map((sub) => {
+      {/* Patterns — sub-nav groups */}
+      <NavMenu.Group label="Patterns" defaultOpen>
+        {PATTERN_SUBGROUPS.map((sub) => {
           const hasActiveChild = sub.slugs.includes(segment ?? "");
           return (
             <NavMenu.Item key={sub.label} isActive={hasActiveChild}>

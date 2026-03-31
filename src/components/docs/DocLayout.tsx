@@ -80,7 +80,7 @@ export function DocLayout({ def, prev, next }: Props) {
           <Text as="h1" family="display" size="3xl" weight="bold" style={{ color: shell.text, margin: 0, letterSpacing: "-0.02em" }}>
             {def.name}
           </Text>
-          <Badge variant="neutral" size="sm">{def.category === "Atoms" ? "atom" : def.category === "Molecules" ? "molecule" : "recipe"}</Badge>
+          <Badge variant="neutral" size="sm">{def.category === "Atoms" ? "atom" : def.category === "Molecules" ? "molecule" : "pattern"}</Badge>
         </div>
         <Text as="p" size="sm" lineHeight="relaxed" style={{ margin: "0 0 16px", color: shell.muted, maxWidth: 620 }}>
           {def.description}

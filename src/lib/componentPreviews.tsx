@@ -59,6 +59,7 @@ import {
   FilterSearch,
   FilterSelect,
   FilterDateRange,
+  Stepper,
 } from "lucent-ui";
 import type { UploadFile } from "lucent-ui";
 
@@ -1129,7 +1130,36 @@ const CollapsibleCardRecipe: PreviewFC = () => (
   </div>
 );
 
-// ─── Recipe Previews ──────────────────────────────────────────────────────────
+// ─── Stepper ──────────────────────────────────────────────────────────────────
+
+const StepperHorizontal: PreviewFC = () => (
+  <Stepper
+    steps={["Account", "Profile", "Review", "Confirm"]}
+    current={2}
+  />
+);
+
+const StepperVertical: PreviewFC = () => (
+  <Stepper
+    orientation="vertical"
+    steps={[
+      { label: "Create account", description: "Enter your email and password" },
+      { label: "Personal info", description: "Name, avatar, and bio" },
+      { label: "Preferences", description: "Notification and display settings" },
+    ]}
+    current={1}
+  />
+);
+
+const StepperStatus: PreviewFC = () => (
+  <Stepper
+    steps={["Setup", "Configure", "Deploy"]}
+    current={1}
+    showStatus
+  />
+);
+
+// ─── Pattern Previews ────────────────────────────────────────────────────────
 
 const RecipeProfileCard: PreviewFC = () => (
   <Card variant="elevated" style={{ width: 320 }}>
@@ -1531,6 +1561,122 @@ const RecipeSearchFilterBarPipeline: PreviewFC = () => (
     ]} />
     <Button variant="ghost" size="sm">Clear all</Button>
   </Row>
+);
+
+// ─── Pattern: PricingTable ────────────────────────────────────────────────────
+
+const PatternPricingTable: PreviewFC = () => (
+  <Row gap="4" align="stretch">
+    <Card variant="outline" style={{ flex: 1 }}><Stack gap="3">
+      <Text weight="semibold">Free</Text>
+      <Text size="3xl" weight="bold">$0<Text size="sm" color="secondary">/mo</Text></Text>
+      <Divider />
+      <Text size="sm">5 projects</Text>
+      <Text size="sm">1 GB storage</Text>
+      <Text size="sm">Community support</Text>
+      <Button variant="outline" fullWidth>Get started</Button>
+    </Stack></Card>
+    <Card variant="elevated" style={{ flex: 1, borderColor: "var(--lucent-accent-default)", borderWidth: 2 }}><Stack gap="3">
+      <Chip variant="accent" size="sm">Popular</Chip>
+      <Text weight="semibold">Pro</Text>
+      <Text size="3xl" weight="bold">$19<Text size="sm" color="secondary">/mo</Text></Text>
+      <Divider />
+      <Text size="sm">Unlimited projects</Text>
+      <Text size="sm">50 GB storage</Text>
+      <Text size="sm">Priority support</Text>
+      <Button variant="primary" fullWidth>Upgrade</Button>
+    </Stack></Card>
+    <Card variant="outline" style={{ flex: 1 }}><Stack gap="3">
+      <Text weight="semibold">Enterprise</Text>
+      <Text size="3xl" weight="bold">Custom</Text>
+      <Divider />
+      <Text size="sm">Unlimited everything</Text>
+      <Text size="sm">SSO &amp; SAML</Text>
+      <Text size="sm">Dedicated support</Text>
+      <Button variant="outline" fullWidth>Contact sales</Button>
+    </Stack></Card>
+  </Row>
+);
+
+// ─── Pattern: NotificationFeed ───────────────────────────────────────────────
+
+const PatternNotificationFeed: PreviewFC = () => (
+  <Stack gap="1" style={{ maxWidth: 440 }}>
+    <Card style={{ background: "var(--lucent-accent-subtle)" }}>
+      <Row gap="3" align="start">
+        <Avatar size="sm" alt="Alice" />
+        <Stack gap="1" style={{ flex: 1 }}>
+          <Text size="sm" weight="medium">Alice commented on your PR</Text>
+          <Text size="xs" color="secondary">2 minutes ago</Text>
+        </Stack>
+        <Chip size="sm" variant="accent">Comment</Chip>
+      </Row>
+    </Card>
+    <Card style={{ background: "var(--lucent-accent-subtle)" }}>
+      <Row gap="3" align="start">
+        <Avatar size="sm" alt="Carol" />
+        <Stack gap="1" style={{ flex: 1 }}>
+          <Text size="sm" weight="medium">Carol assigned you to PROJ-42</Text>
+          <Text size="xs" color="secondary">15 minutes ago</Text>
+        </Stack>
+        <Chip size="sm" variant="warning">Assigned</Chip>
+      </Row>
+    </Card>
+    <Card>
+      <Row gap="3" align="start">
+        <Avatar size="sm" alt="Bob" />
+        <Stack gap="1" style={{ flex: 1 }}>
+          <Text size="sm">Bob mentioned you in #general</Text>
+          <Text size="xs" color="secondary">1 hour ago</Text>
+        </Stack>
+        <Chip size="sm" variant="neutral">Mention</Chip>
+      </Row>
+    </Card>
+  </Stack>
+);
+
+// ─── Pattern: OnboardingFlow ─────────────────────────────────────────────────
+
+const PatternOnboardingFlow: PreviewFC = () => (
+  <Card style={{ maxWidth: 480 }}>
+    <Stack gap="6">
+      <Stepper steps={["Account", "Profile", "Confirm"]} current={1} />
+      <Stack gap="4">
+        <Input label="Full name" placeholder="Jane Doe" />
+        <Input label="Username" placeholder="@jane" />
+        <Select label="Role" options={[
+          { value: "dev", label: "Developer" },
+          { value: "design", label: "Designer" },
+          { value: "pm", label: "Product Manager" },
+        ]} />
+      </Stack>
+      <Row gap="3" style={{ justifyContent: "flex-end" }}>
+        <Button variant="outline">Back</Button>
+        <Button variant="primary">Next</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+// ─── Pattern: DashboardHeader ────────────────────────────────────────────────
+
+const PatternDashboardHeader: PreviewFC = () => (
+  <Stack gap="4">
+    <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Analytics" }, { label: "Dashboard" }]} />
+    <Row align="center" style={{ justifyContent: "space-between" }}>
+      <Text as="h2" size="2xl" weight="bold" family="display" style={{ margin: 0 }}>Dashboard</Text>
+      <Row gap="2">
+        <Button variant="outline" size="sm">Export</Button>
+        <Button variant="primary" size="sm">New report</Button>
+      </Row>
+    </Row>
+    <Row gap="4">
+      <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Revenue</Text><Text size="xl" weight="bold">$48.2k</Text><Chip size="sm" variant="success">+12%</Chip></Stack></Card>
+      <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Users</Text><Text size="xl" weight="bold">2,847</Text><Chip size="sm" variant="success">+8%</Chip></Stack></Card>
+      <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Orders</Text><Text size="xl" weight="bold">1,024</Text><Chip size="sm" variant="danger">-3%</Chip></Stack></Card>
+      <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Conversion</Text><Text size="xl" weight="bold">3.2%</Text><Chip size="sm" variant="success">+0.4%</Chip></Stack></Card>
+    </Row>
+  </Stack>
 );
 
 // ─── CommandPalette ───────────────────────────────────────────────────────────
@@ -2528,4 +2674,16 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "recipe-searchfilterbar": RecipeSearchFilterBar,
   "recipe-searchfilterbar-minimal": RecipeSearchFilterBarMinimal,
   "recipe-searchfilterbar-pipeline": RecipeSearchFilterBarPipeline,
+  // Stepper
+  "stepper-horizontal": StepperHorizontal,
+  "stepper-vertical": StepperVertical,
+  "stepper-status": StepperStatus,
+  // Pattern: PricingTable
+  "pattern-pricingtable": PatternPricingTable,
+  // Pattern: NotificationFeed
+  "pattern-notificationfeed": PatternNotificationFeed,
+  // Pattern: OnboardingFlow
+  "pattern-onboardingflow": PatternOnboardingFlow,
+  // Pattern: DashboardHeader
+  "pattern-dashboardheader": PatternDashboardHeader,
 };
