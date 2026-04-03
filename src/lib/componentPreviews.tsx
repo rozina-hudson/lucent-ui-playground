@@ -1679,6 +1679,133 @@ const PatternDashboardHeader: PreviewFC = () => (
   </Stack>
 );
 
+// ─── Pattern: ProductCard ────────────────────────────────────────────────────
+
+const PatternProductCard: PreviewFC = () => (
+  <Card style={{ maxWidth: 280 }} media={
+    <div style={{ height: 160, background: "var(--lucent-accent-subtle)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Text size="3xl">🎧</Text>
+    </div>
+  }>
+    <Stack gap="3">
+      <Row align="center" style={{ justifyContent: "space-between" }}>
+        <Text weight="semibold">Wireless Headphones</Text>
+        <Chip size="sm" variant="accent">New</Chip>
+      </Row>
+      <Text size="sm" color="secondary">Premium noise-cancelling with 30h battery.</Text>
+      <Row align="center" style={{ justifyContent: "space-between" }}>
+        <Text size="lg" weight="bold">$299</Text>
+        <Button size="sm">Add to cart</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+const PatternProductCardTeam: PreviewFC = () => (
+  <Card style={{ maxWidth: 280 }}>
+    <Stack gap="3" align="center" style={{ textAlign: "center" }}>
+      <Avatar size="xl" alt="Jane Doe" />
+      <Stack gap="1" align="center">
+        <Text weight="semibold">Jane Doe</Text>
+        <Text size="sm" color="secondary">Lead Designer</Text>
+      </Stack>
+      <Row gap="2">
+        <Chip size="sm" variant="accent">Design</Chip>
+        <Chip size="sm" variant="neutral">UX</Chip>
+      </Row>
+      <Button variant="outline" size="sm" fullWidth>Contact</Button>
+    </Stack>
+  </Card>
+);
+
+// ─── Pattern: AnnouncementCard ──────────────────────────────────────────────
+
+const PatternAnnouncementCard: PreviewFC = () => (
+  <Card style={{ maxWidth: 440 }}>
+    <Stack gap="3">
+      <Row gap="2" align="center">
+        <Chip size="sm" variant="info">Announcement</Chip>
+        <Text size="xs" color="secondary">2 hours ago</Text>
+      </Row>
+      <Text size="lg" weight="semibold">New Feature: Dark Mode</Text>
+      <Text size="sm" color="secondary">We&apos;ve added a dark mode toggle to all pages. Try it out in your settings.</Text>
+      <Row gap="2">
+        <Button size="sm">Learn more</Button>
+        <Button size="sm" variant="ghost">Dismiss</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+const PatternAnnouncementCardSystem: PreviewFC = () => (
+  <Card status="warning" style={{ maxWidth: 440 }}>
+    <Stack gap="3">
+      <Row gap="2" align="center">
+        <Chip size="sm" variant="warning">Maintenance</Chip>
+      </Row>
+      <Text weight="semibold">Scheduled Downtime</Text>
+      <Text size="sm" color="secondary">Systems will be offline Saturday 2:00–4:00 AM UTC for database migration.</Text>
+      <Button size="sm" variant="outline">View status page</Button>
+    </Stack>
+  </Card>
+);
+
+// ─── Pattern: ConfirmationDialog ────────────────────────────────────────────
+
+const PatternConfirmationDialog: PreviewFC = () => (
+  <Card variant="elevated" style={{ maxWidth: 400 }}>
+    <Stack gap="4">
+      <Text size="lg" weight="semibold">Delete project?</Text>
+      <Text size="sm" color="secondary">This action cannot be undone. All data associated with this project will be permanently removed.</Text>
+      <Row gap="2" style={{ justifyContent: "flex-end" }}>
+        <Button variant="outline">Cancel</Button>
+        <Button variant="danger">Delete</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+const PatternConfirmationDialogTyped: PreviewFC = () => (
+  <Card variant="elevated" style={{ maxWidth: 400 }}>
+    <Stack gap="4">
+      <Text size="lg" weight="semibold">Delete &quot;my-project&quot;?</Text>
+      <Text size="sm" color="secondary">Type the project name to confirm deletion.</Text>
+      <Input placeholder="my-project" />
+      <Row gap="2" style={{ justifyContent: "flex-end" }}>
+        <Button variant="outline">Cancel</Button>
+        <Button variant="danger" disabled>Delete</Button>
+      </Row>
+    </Stack>
+  </Card>
+);
+
+// ─── Pattern: BulkActionBar ─────────────────────────────────────────────────
+
+const PatternBulkActionBar: PreviewFC = () => (
+  <Card variant="filled">
+    <Row gap="3" align="center">
+      <Chip variant="accent">3 selected</Chip>
+      <Divider orientation="vertical" />
+      <Button size="sm" variant="outline">Archive</Button>
+      <Button size="sm" variant="outline">Move to…</Button>
+      <Button size="sm" variant="danger-outline">Delete</Button>
+      <div style={{ flex: 1 }} />
+      <Button size="sm" variant="ghost">Clear selection</Button>
+    </Row>
+  </Card>
+);
+
+const PatternBulkActionBarMinimal: PreviewFC = () => (
+  <Card variant="filled">
+    <Row gap="3" align="center">
+      <Text size="sm" weight="medium">5 items selected</Text>
+      <div style={{ flex: 1 }} />
+      <Button size="sm" variant="danger-outline">Delete</Button>
+      <Button size="sm" variant="ghost">Clear</Button>
+    </Row>
+  </Card>
+);
+
 // ─── CommandPalette ───────────────────────────────────────────────────────────
 
 const CommandPaletteGroups: PreviewFC = () => {
@@ -2686,4 +2813,16 @@ export const componentPreviews: Record<string, PreviewFC> = {
   "pattern-onboardingflow": PatternOnboardingFlow,
   // Pattern: DashboardHeader
   "pattern-dashboardheader": PatternDashboardHeader,
+  // Pattern: ProductCard
+  "pattern-productcard": PatternProductCard,
+  "pattern-productcard-team": PatternProductCardTeam,
+  // Pattern: AnnouncementCard
+  "pattern-announcementcard": PatternAnnouncementCard,
+  "pattern-announcementcard-system": PatternAnnouncementCardSystem,
+  // Pattern: ConfirmationDialog
+  "pattern-confirmationdialog": PatternConfirmationDialog,
+  "pattern-confirmationdialog-typed": PatternConfirmationDialogTyped,
+  // Pattern: BulkActionBar
+  "pattern-bulkactionbar": PatternBulkActionBar,
+  "pattern-bulkactionbar-minimal": PatternBulkActionBarMinimal,
 };

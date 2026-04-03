@@ -13,6 +13,63 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.34.0",
+    date: "April 2026",
+    title: "4 New Patterns, Collapsible Card & Disabled Text",
+    items: [
+      {
+        label: "4 new patterns",
+        description:
+          "Four new pattern manifests for AI retrieval, expanding the Patterns tier with common real-world UI compositions.",
+        subItems: [
+          "Product/Item Card — product card layout with article and team member variants",
+          "Announcement Card — announcement card with media, system notice, and promo variants",
+          "Confirmation Dialog — confirmation dialog with typed confirmation and non-destructive variants",
+          "Bulk Action Bar — bulk action bar with minimal and extended variants",
+        ],
+      },
+      {
+        label: "Collapsible Card improvements",
+        description:
+          "Style escape hatch and card recipe enhancements for more flexible Collapsible + Card compositions.",
+      },
+      {
+        label: "Disabled text",
+        description:
+          "Lightened disabled text color for better visual distinction between disabled and enabled states.",
+      },
+    ],
+  },
+  {
+    version: "0.33.0",
+    date: "April 2026",
+    title: "MCP Design Rules",
+    items: [
+      {
+        label: "Layout design rules in MCP",
+        description:
+          "Design rules are now injected into the MCP system prompt. A new get_design_rules tool lets AI agents query layout guidelines, spacing conventions, and composition best practices.",
+      },
+    ],
+  },
+  {
+    version: "0.32.1",
+    date: "April 2026",
+    title: "DevTools Preset Colors",
+    items: [
+      {
+        label: "Full palette presets",
+        description:
+          "DevTools presets now apply full color palettes (background, surface, border, accent) instead of accent only. All colors are theme-aware with distinct light and dark variants.",
+        subItems: [
+          "Dark mode accents use lighter palette variants for proper visibility",
+          "Preset colors automatically re-apply when toggling between light/dark mode",
+          "Dark mode surfaces use stronger hue tints for visible distinction between presets",
+        ],
+      },
+    ],
+  },
+  {
     version: "0.31.0",
     date: "March 2026",
     title: "Stepper Molecule, Golden Compositions & Recipes → Patterns",

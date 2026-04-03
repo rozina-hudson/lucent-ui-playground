@@ -68,6 +68,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "actionbar", "formlayout", "emptystatecard",
       "collapsiblecard", "searchfilterbar",
       "pricingtable", "notificationfeed", "onboardingflow", "dashboardheader",
+      "productcard", "announcementcard", "confirmationdialog", "bulkactionbar",
     ],
   },
 ];
@@ -95,6 +96,9 @@ export const PATTERN_SUBGROUPS: { label: string; slugs: string[] }[] = [
   { label: "Layouts", slugs: ["settingspanel", "actionbar", "formlayout"] },
   { label: "Toolbars", slugs: ["searchfilterbar"] },
   { label: "Pages", slugs: ["pricingtable", "notificationfeed", "onboardingflow", "dashboardheader"] },
+  { label: "Dialogs", slugs: ["confirmationdialog"] },
+  { label: "Content", slugs: ["productcard", "announcementcard"] },
+  { label: "Actions", slugs: ["bulkactionbar"] },
 ];
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
@@ -4581,6 +4585,297 @@ toast({ title: "Saved", variant: "success" });`,
     <Card style={{ flex: 1 }}><Stack gap="1"><Text size="xs" color="secondary">Conversion</Text><Text size="xl" weight="bold">3.2%</Text><Chip size="sm" variant="success">+0.4%</Chip></Stack></Card>
   </Row>
 </Stack>`,
+      },
+    ],
+  },
+  // ── ProductCard ──────────────────────────────────────────────────────────────
+  {
+    slug: "productcard",
+    name: "ProductCard",
+    category: "Patterns",
+    description:
+      "Product card layout with image media slot, title, description, price, and CTA button. Includes article and team member variants. Composes Card, Stack, Row, Text, Chip, Avatar, and Button.",
+    importStatement: `import { Card, Stack, Row, Text, Chip, Avatar, Button } from 'lucent-ui'`,
+    usageCode: `<Card media={<img src="/product.jpg" alt="Product" style={{ width: "100%", height: 160, objectFit: "cover" }} />}>
+  <Stack gap="3">
+    <Row align="center" style={{ justifyContent: "space-between" }}>
+      <Text weight="semibold">Wireless Headphones</Text>
+      <Chip size="sm" variant="accent">New</Chip>
+    </Row>
+    <Text size="sm" color="secondary">Premium noise-cancelling headphones with 30h battery.</Text>
+    <Row align="center" style={{ justifyContent: "space-between" }}>
+      <Text size="lg" weight="bold">$299</Text>
+      <Button size="sm">Add to cart</Button>
+    </Row>
+  </Stack>
+</Card>`,
+    aiPrompts: {
+      claude: `"Build a ProductCard pattern from lucent-ui with Card media slot, title, description, price, and CTA. Include a Chip badge for labels like 'New' or 'Sale'."`,
+      cursor: `@lucent-ui Build a ProductCard pattern with Card media, Text for title/price, Chip label, and Button CTA.`,
+      vscode: `Using lucent-ui, compose a product card with Card media, title, description, price row, and action button.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a product card pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Card", type: "component", description: "Surface container with media slot for the product image." },
+      { name: "Text", type: "component", description: "Product title, description, and price." },
+      { name: "Chip", type: "component", description: "Label badge (New, Sale, Sold out)." },
+      { name: "Button", type: "component", description: "CTA button (Add to cart, View details)." },
+      { name: "Avatar", type: "component", description: "Author/team member photo in article and team variants." },
+      { name: "Stack", type: "component", description: "Vertical layout inside the card." },
+      { name: "Row", type: "component", description: "Horizontal layout for price/CTA and metadata rows." },
+    ],
+    examples: [
+      {
+        title: "Product card",
+        description: "E-commerce product card with image, title, price, and add-to-cart button.",
+        previewKey: "pattern-productcard",
+        code: `<Card style={{ maxWidth: 280 }} media={
+  <div style={{ height: 160, background: "var(--lucent-accent-subtle)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <Text size="3xl">🎧</Text>
+  </div>
+}>
+  <Stack gap="3">
+    <Row align="center" style={{ justifyContent: "space-between" }}>
+      <Text weight="semibold">Wireless Headphones</Text>
+      <Chip size="sm" variant="accent">New</Chip>
+    </Row>
+    <Text size="sm" color="secondary">Premium noise-cancelling with 30h battery.</Text>
+    <Row align="center" style={{ justifyContent: "space-between" }}>
+      <Text size="lg" weight="bold">$299</Text>
+      <Button size="sm">Add to cart</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+      {
+        title: "Team member card",
+        description: "Team member variant with avatar, name, role, and contact button.",
+        previewKey: "pattern-productcard-team",
+        code: `<Card style={{ maxWidth: 280 }}>
+  <Stack gap="3" align="center" style={{ textAlign: "center" }}>
+    <Avatar size="xl" alt="Jane Doe" />
+    <Stack gap="1" align="center">
+      <Text weight="semibold">Jane Doe</Text>
+      <Text size="sm" color="secondary">Lead Designer</Text>
+    </Stack>
+    <Row gap="2">
+      <Chip size="sm" variant="accent">Design</Chip>
+      <Chip size="sm" variant="neutral">UX</Chip>
+    </Row>
+    <Button variant="outline" size="sm" fullWidth>Contact</Button>
+  </Stack>
+</Card>`,
+      },
+    ],
+  },
+
+  // ── AnnouncementCard ────────────────────────────────────────────────────────
+  {
+    slug: "announcementcard",
+    name: "AnnouncementCard",
+    category: "Patterns",
+    description:
+      "Announcement card with title, description, optional media, and action buttons. Includes system notice and promo variants. Composes Card, Stack, Row, Text, Chip, Button, and Icon.",
+    importStatement: `import { Card, Stack, Row, Text, Chip, Button, Icon } from 'lucent-ui'`,
+    usageCode: `<Card>
+  <Stack gap="3">
+    <Row gap="2" align="center">
+      <Chip size="sm" variant="info">Announcement</Chip>
+      <Text size="xs" color="secondary">2 hours ago</Text>
+    </Row>
+    <Text size="lg" weight="semibold">New Feature: Dark Mode</Text>
+    <Text size="sm" color="secondary">We've added a dark mode toggle to all pages. Try it out in your settings.</Text>
+    <Row gap="2">
+      <Button size="sm">Learn more</Button>
+      <Button size="sm" variant="ghost">Dismiss</Button>
+    </Row>
+  </Stack>
+</Card>`,
+    aiPrompts: {
+      claude: `"Build an AnnouncementCard pattern from lucent-ui with Card, Text for title/body, Chip for type label, and action Buttons. Include system notice and promo variants."`,
+      cursor: `@lucent-ui Build an AnnouncementCard pattern with Chip type label, Text title/body, and action Buttons.`,
+      vscode: `Using lucent-ui, compose an announcement card with title, description, type chip, and action buttons.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build an announcement card pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Card", type: "component", description: "Surface container for the announcement." },
+      { name: "Text", type: "component", description: "Announcement title and description." },
+      { name: "Chip", type: "component", description: "Type label (Announcement, Update, Promo)." },
+      { name: "Button", type: "component", description: "Action buttons (Learn more, Dismiss)." },
+      { name: "Stack", type: "component", description: "Vertical layout for content." },
+      { name: "Row", type: "component", description: "Horizontal layout for header and actions." },
+    ],
+    examples: [
+      {
+        title: "Feature announcement",
+        description: "Announcement with type chip, title, description, and action buttons.",
+        previewKey: "pattern-announcementcard",
+        code: `<Card style={{ maxWidth: 440 }}>
+  <Stack gap="3">
+    <Row gap="2" align="center">
+      <Chip size="sm" variant="info">Announcement</Chip>
+      <Text size="xs" color="secondary">2 hours ago</Text>
+    </Row>
+    <Text size="lg" weight="semibold">New Feature: Dark Mode</Text>
+    <Text size="sm" color="secondary">We've added a dark mode toggle to all pages. Try it out in your settings.</Text>
+    <Row gap="2">
+      <Button size="sm">Learn more</Button>
+      <Button size="sm" variant="ghost">Dismiss</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+      {
+        title: "System notice",
+        description: "Warning-style notice for maintenance or downtime announcements.",
+        previewKey: "pattern-announcementcard-system",
+        code: `<Card status="warning" style={{ maxWidth: 440 }}>
+  <Stack gap="3">
+    <Row gap="2" align="center">
+      <Chip size="sm" variant="warning">Maintenance</Chip>
+    </Row>
+    <Text weight="semibold">Scheduled Downtime</Text>
+    <Text size="sm" color="secondary">Systems will be offline Saturday 2:00–4:00 AM UTC for database migration.</Text>
+    <Button size="sm" variant="outline">View status page</Button>
+  </Stack>
+</Card>`,
+      },
+    ],
+  },
+
+  // ── ConfirmationDialog ──────────────────────────────────────────────────────
+  {
+    slug: "confirmationdialog",
+    name: "ConfirmationDialog",
+    category: "Patterns",
+    description:
+      "Confirmation dialog with title, description, and confirm/cancel actions. Includes a typed confirmation variant that requires the user to type a value before confirming, and a non-destructive variant. Composes Card, Stack, Row, Text, Input, Button, and Icon.",
+    importStatement: `import { Card, Stack, Row, Text, Input, Button } from 'lucent-ui'`,
+    usageCode: `<Card variant="elevated" style={{ maxWidth: 400 }}>
+  <Stack gap="4">
+    <Text size="lg" weight="semibold">Delete project?</Text>
+    <Text size="sm" color="secondary">This action cannot be undone. All data associated with this project will be permanently removed.</Text>
+    <Row gap="2" style={{ justifyContent: "flex-end" }}>
+      <Button variant="outline">Cancel</Button>
+      <Button variant="danger">Delete</Button>
+    </Row>
+  </Stack>
+</Card>`,
+    aiPrompts: {
+      claude: `"Build a ConfirmationDialog pattern from lucent-ui with Card, destructive title, warning description, and Cancel/Delete buttons. Include a typed confirmation variant with Input."`,
+      cursor: `@lucent-ui Build a ConfirmationDialog with Card, Text title/body, and Cancel/Delete Buttons. Add typed confirmation with Input.`,
+      vscode: `Using lucent-ui, compose a confirmation dialog with title, description, and confirm/cancel actions.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a confirmation dialog pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Card", type: "component", description: "Elevated surface container for the dialog." },
+      { name: "Text", type: "component", description: "Dialog title and description." },
+      { name: "Input", type: "component", description: "Typed confirmation field for destructive actions." },
+      { name: "Button", type: "component", description: "Cancel and confirm action buttons." },
+      { name: "Stack", type: "component", description: "Vertical layout for dialog content." },
+      { name: "Row", type: "component", description: "Horizontal layout for button row." },
+    ],
+    examples: [
+      {
+        title: "Destructive confirmation",
+        description: "Delete confirmation with warning description and danger button.",
+        previewKey: "pattern-confirmationdialog",
+        code: `<Card variant="elevated" style={{ maxWidth: 400 }}>
+  <Stack gap="4">
+    <Text size="lg" weight="semibold">Delete project?</Text>
+    <Text size="sm" color="secondary">This action cannot be undone. All data associated with this project will be permanently removed.</Text>
+    <Row gap="2" style={{ justifyContent: "flex-end" }}>
+      <Button variant="outline">Cancel</Button>
+      <Button variant="danger">Delete</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+      {
+        title: "Typed confirmation",
+        description: "Requires typing the project name to enable the delete button.",
+        previewKey: "pattern-confirmationdialog-typed",
+        code: `<Card variant="elevated" style={{ maxWidth: 400 }}>
+  <Stack gap="4">
+    <Text size="lg" weight="semibold">Delete "my-project"?</Text>
+    <Text size="sm" color="secondary">Type the project name to confirm deletion.</Text>
+    <Input placeholder="my-project" />
+    <Row gap="2" style={{ justifyContent: "flex-end" }}>
+      <Button variant="outline">Cancel</Button>
+      <Button variant="danger" disabled>Delete</Button>
+    </Row>
+  </Stack>
+</Card>`,
+      },
+    ],
+  },
+
+  // ── BulkActionBar ───────────────────────────────────────────────────────────
+  {
+    slug: "bulkactionbar",
+    name: "BulkActionBar",
+    category: "Patterns",
+    description:
+      "Bulk action bar that appears when items are selected in a list or table. Shows selection count with select-all, action buttons, and a clear selection control. Includes minimal and extended variants. Composes Card, Row, Text, Chip, Button, and Divider.",
+    importStatement: `import { Card, Row, Text, Chip, Button, Divider } from 'lucent-ui'`,
+    usageCode: `<Card variant="filled">
+  <Row gap="3" align="center">
+    <Chip variant="accent">3 selected</Chip>
+    <Divider orientation="vertical" />
+    <Button size="sm" variant="outline">Archive</Button>
+    <Button size="sm" variant="outline">Move to…</Button>
+    <Button size="sm" variant="danger-outline">Delete</Button>
+    <div style={{ flex: 1 }} />
+    <Button size="sm" variant="ghost">Clear selection</Button>
+  </Row>
+</Card>`,
+    aiPrompts: {
+      claude: `"Build a BulkActionBar pattern from lucent-ui. Show a selection count Chip, action Buttons (Archive, Move, Delete), and a Clear selection ghost Button. Wrap in a filled Card."`,
+      cursor: `@lucent-ui Build a BulkActionBar: selection count Chip, action Buttons, divider, and clear selection.`,
+      vscode: `Using lucent-ui, compose a bulk action bar with selection count, action buttons, and clear selection.`,
+      mcp: `// lucent-ui MCP
+// Ask: "Build a bulk action bar pattern from lucent-ui"`,
+    },
+    props: [
+      { name: "Card", type: "component", description: "Filled surface container for the bar." },
+      { name: "Chip", type: "component", description: "Selection count indicator." },
+      { name: "Button", type: "component", description: "Action buttons (Archive, Move, Delete, Clear)." },
+      { name: "Divider", type: "component", description: "Vertical separator between count and actions." },
+      { name: "Row", type: "component", description: "Horizontal layout for the bar." },
+      { name: "Text", type: "component", description: "Labels and helper text." },
+    ],
+    examples: [
+      {
+        title: "Bulk action bar",
+        description: "Selection count with archive, move, delete actions and clear selection.",
+        previewKey: "pattern-bulkactionbar",
+        code: `<Card variant="filled">
+  <Row gap="3" align="center">
+    <Chip variant="accent">3 selected</Chip>
+    <Divider orientation="vertical" />
+    <Button size="sm" variant="outline">Archive</Button>
+    <Button size="sm" variant="outline">Move to…</Button>
+    <Button size="sm" variant="danger-outline">Delete</Button>
+    <div style={{ flex: 1 }} />
+    <Button size="sm" variant="ghost">Clear selection</Button>
+  </Row>
+</Card>`,
+      },
+      {
+        title: "Minimal variant",
+        description: "Compact bar with just count and primary action.",
+        previewKey: "pattern-bulkactionbar-minimal",
+        code: `<Card variant="filled">
+  <Row gap="3" align="center">
+    <Text size="sm" weight="medium">5 items selected</Text>
+    <div style={{ flex: 1 }} />
+    <Button size="sm" variant="danger-outline">Delete</Button>
+    <Button size="sm" variant="ghost">Clear</Button>
+  </Row>
+</Card>`,
       },
     ],
   },

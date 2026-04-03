@@ -53,9 +53,41 @@ type Entry = {
 function buildEntries(shell: ShellColors): Entry[] {
   return [
     {
+      version: "V0.34",
+      date: "APRIL 2026",
+      latest: true,
+      title: (
+        <>
+          4 New <span style={{ color: GREEN }}>Patterns</span>{" "}
+          <span style={{ color: GOLD }}>&amp;</span> MCP{" "}
+          <span style={{ color: GREEN }}>Design Rules</span>
+        </>
+      ),
+      badges: [
+        { label: "NEW", green: true },
+        { label: "4 PATTERNS" },
+        { label: "MCP" },
+      ],
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>4 new patterns</strong> —{" "}
+            <strong style={{ color: shell.text }}>ProductCard</strong> (article &amp; team member variants),{" "}
+            <strong style={{ color: shell.text }}>AnnouncementCard</strong> (media, system notice, promo),{" "}
+            <strong style={{ color: shell.text }}>ConfirmationDialog</strong> (typed confirmation),{" "}
+            <strong style={{ color: shell.text }}>BulkActionBar</strong> (minimal &amp; extended).
+          </p>
+          <p style={{ fontSize: 14, color: shell.muted, lineHeight: 1.7, margin: 0 }}>
+            <strong style={{ color: shell.text }}>MCP design rules</strong> — layout guidelines injected into the MCP system prompt with a new{" "}
+            <code style={{ fontSize: 12, padding: "1px 5px", borderRadius: 3, background: shell.codeBg, color: shell.codeText }}>get_design_rules</code>{" "}
+            tool. DevTools presets now apply full color palettes with theme-aware light/dark variants.
+          </p>
+        </div>
+      ),
+    },
+    {
       version: "V0.31",
       date: "MARCH 2026",
-      latest: true,
       title: (
         <>
           <span style={{ color: GREEN }}>Stepper</span>{" "}
@@ -64,7 +96,6 @@ function buildEntries(shell: ShellColors): Entry[] {
         </>
       ),
       badges: [
-        { label: "NEW", green: true },
         { label: "STEPPER" },
         { label: "4 PATTERNS" },
         { label: "6 COMPOSITIONS" },
@@ -469,7 +500,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          V0.16 → V0.31 · 16 RELEASES
+          V0.16 → V0.34 · 19 RELEASES
         </span>
         <span
           style={{
@@ -480,7 +511,7 @@ export function ChangelogTimeline({
             fontFamily: "monospace",
           }}
         >
-          <span style={{ color: GOLD }}>63</span> COMPONENTS + <span style={{ color: GREEN }}>10</span> DESIGN PRESETS
+          <span style={{ color: GOLD }}>67</span> COMPONENTS + <span style={{ color: GREEN }}>10</span> DESIGN PRESETS
         </span>
       </div>
 
