@@ -29,9 +29,15 @@ export function DocLayout({ def, prev, next }: Props) {
   useEffect(() => setMounted(true), []);
 
   const [compValues, setCompValues] = useState<Record<string, any>>(() => {
+    const SKIP = new Set([
+      "children", "value", "defaultValue", "type", "id", "name",
+      "htmlFor", "className", "ref", "required", "options", "results",
+      "items", "columns", "rows", "steps", "commands", "tabs",
+      "bordered", "menuPlacement",
+    ]);
     const obj: Record<string, any> = {};
     def.props.forEach((p) => {
-      if (p.name === "children") return;
+      if (SKIP.has(p.name)) return;
       if (p.type.includes("=>") || p.type.includes("CSSProperties")) return;
       if (p.defaultValue !== undefined) {
         let v: any = p.defaultValue;
@@ -103,7 +109,7 @@ export function DocLayout({ def, prev, next }: Props) {
               value: "preview",
               label: "Preview",
               content: (
-                <div style={{ background: tokens.surface, padding: "32px 28px", minHeight: 300, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12 }}>
+                <div style={{ background: `radial-gradient(circle, ${shell.border} 1px, ${tokens.surface} 1px)`, backgroundSize: "24px 24px", padding: "32px 28px", minHeight: 300, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12 }}>
                   {mounted && TopPreview ? <TopPreview /> : null}
                 </div>
               ),
@@ -165,6 +171,61 @@ export function DocLayout({ def, prev, next }: Props) {
                   if (tag === "SplitButton") {
                     const label = compValues._label ?? "Save";
                     return `${def.importStatement}\n\n<${tag}${props}\n  menuItems={[\n    { label: "Save as draft", onSelect: () => {} },\n    { label: "Save & publish", onSelect: () => {} },\n  ]}\n>\n  ${label}\n</${tag}>`;
+                  }
+
+                  // Components with required data props — generate realistic usage
+                  const dataSnippets: Record<string, { imports?: string; before?: string; data: string; children?: string }> = {
+                    MultiSelect: {
+                      before: `const [values, setValues] = useState<string[]>([]);\n\n`,
+                      data: `\n  options={[\n    { value: "react", label: "React" },\n    { value: "vue", label: "Vue" },\n    { value: "svelte", label: "Svelte" },\n    { value: "angular", label: "Angular" },\n  ]}\n  value={values}\n  onChange={setValues}`,
+                    },
+                    Select: {
+                      data: `\n  options={[\n    { value: "react", label: "React" },\n    { value: "vue", label: "Vue" },\n    { value: "svelte", label: "Svelte" },\n    { value: "angular", label: "Angular" },\n  ]}`,
+                    },
+                    Tabs: {
+                      data: `\n  defaultValue="one"\n  tabs={[\n    { value: "one", label: "Tab One", content: <Text size="sm">Content for Tab One.</Text> },\n    { value: "two", label: "Tab Two", content: <Text size="sm">Content for Tab Two.</Text> },\n  ]}`,
+                    },
+                    Breadcrumb: {
+                      data: `\n  items={[\n    { label: "Home", href: "#" },\n    { label: "Components", href: "#" },\n    { label: "Breadcrumb" },\n  ]}`,
+                    },
+                    SegmentedControl: {
+                      data: `\n  options={[\n    { value: "grid", label: "Grid" },\n    { value: "list", label: "List" },\n    { value: "board", label: "Board" },\n  ]}\n  defaultValue="grid"`,
+                    },
+                    FilterSelect: {
+                      data: `\n  label="Status"\n  options={[\n    { value: "active", label: "Active" },\n    { value: "inactive", label: "Inactive" },\n    { value: "pending", label: "Pending" },\n  ]}`,
+                    },
+                    FilterMultiSelect: {
+                      data: `\n  label="Tags"\n  options={[\n    { value: "react", label: "React" },\n    { value: "typescript", label: "TypeScript" },\n    { value: "node", label: "Node.js" },\n  ]}`,
+                    },
+                    Stepper: {
+                      data: `\n  steps={["Account", "Profile", "Review", "Confirm"]}\n  current={1}`,
+                    },
+                    Timeline: {
+                      data: `\n  items={[\n    { title: "Deployed to production", date: "2 min ago", status: "success" },\n    { title: "Build completed", date: "5 min ago", status: "success" },\n    { title: "Tests passed", date: "8 min ago", status: "info" },\n  ]}`,
+                    },
+                    DataTable: {
+                      data: `\n  columns={[\n    { key: "name", header: "Name" },\n    { key: "role", header: "Role" },\n    { key: "status", header: "Status" },\n  ]}\n  rows={[\n    { name: "Alice", role: "Engineer", status: "Active" },\n    { name: "Bob", role: "Designer", status: "Away" },\n  ]}`,
+                    },
+                    Tooltip: {
+                      data: ` content="This is a tooltip"`,
+                      children: `<Button variant="outline">Hover me</Button>`,
+                    },
+                    Alert: {
+                      data: ` title="Heads up"`,
+                      children: `This is an alert message with additional details.`,
+                    },
+                    Collapsible: {
+                      data: `\n  trigger={<Text weight="medium">Click to expand</Text>}\n  defaultOpen`,
+                      children: `<Text size="sm" color="secondary">Collapsible content here.</Text>`,
+                    },
+                  };
+
+                  const snippet = dataSnippets[tag];
+                  if (snippet) {
+                    const body = snippet.children
+                      ? `>\n  ${snippet.children}\n</${tag}>`
+                      : ` />`;
+                    return `${def.importStatement}\n\n${snippet.before ?? ""}<${tag}${props}${snippet.data}${body}`;
                   }
 
                   // Components with a text label (Button, Chip)

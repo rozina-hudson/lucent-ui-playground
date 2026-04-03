@@ -500,7 +500,7 @@ const SpinnerSizes: PreviewFC = () => (
 const AvatarImage: PreviewFC = () => (
   <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
     {(["xs", "sm", "md", "lg", "xl"] as const).map((s) => (
-      <Avatar key={s} src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size={s} />
+      <Avatar key={s} src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size={s} />
     ))}
   </div>
 );

@@ -69,10 +69,21 @@ function ToastPreviewButtons() {
   );
 }
 
+// Strip empty strings and _-prefixed pseudo-props so they don't leak into components
+function cleanValues(vals: Record<string, any>) {
+  const out: Record<string, any> = {};
+  for (const [k, v] of Object.entries(vals)) {
+    if (k.startsWith("_") || v === "") continue;
+    out[k] = v;
+  }
+  return out;
+}
+
 export function ComponentCustomizer({ def, shell, values, onValuesChange, previewBg, fallbackPreview: FallbackPreview }: Props) {
   const compName = def.customizerName ?? def.name;
   const Comp = useMemo(() => (Lucent as any)[compName] ?? null, [compName]);
   const { tokens } = useLucent();
+  const clean = useMemo(() => cleanValues(values), [values]);
 
   const EXCLUDED_PROPS = new Set([
     "children", "value", "defaultValue", "type", "id", "name",
@@ -86,7 +97,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
   const hasLabel = LABEL_COMPONENTS.has(compName);
 
   // Components with custom playground-only controls (not in props table)
-  const hasCustomControls = compName === "ButtonGroup";
+  const hasCustomControls = compName === "ButtonGroup" || compName === "Progress";
 
   const configurableProps = def.props.filter(
     (p) =>
@@ -126,13 +137,17 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
         </div>
       );
     } else {
+      const isNumeric = type.includes("number");
       return (
         <div key={name} style={{ marginBottom: 12 }}>
           <Text size="xs" style={{ marginBottom: 4, color: shell.muted }}>{name}</Text>
           <Input
             size="sm"
             value={values[name] ?? ""}
-            onChange={(e) => onValuesChange(name, e.target.value)}
+            onChange={(e) => {
+              const raw = e.target.value;
+              onValuesChange(name, isNumeric && raw !== "" && !isNaN(Number(raw)) ? Number(raw) : raw);
+            }}
           />
         </div>
       );
@@ -152,11 +167,11 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
         return <RadioGroupPreview values={values} />;
 
       case "Tabs":
-        return <Comp defaultValue="one" tabs={DEFAULT_TABS} {...(values as any)} />;
+        return <Comp defaultValue="one" tabs={DEFAULT_TABS} {...clean} />;
 
       case "Table":
         return (
-          <Comp {...(values as any)}>
+          <Comp {...clean}>
             <Lucent.Table.Head>
               <Lucent.Table.Row>
                 <Lucent.Table.Cell as="th">Name</Lucent.Table.Cell>
@@ -181,7 +196,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
         );
 
       case "CodeBlock":
-        return <Comp language="tsx" code={`<Button variant="primary">Save</Button>`} {...(values as any)} />;
+        return <Comp {...clean} language={values.language || "tsx"} code={values.code || `<Button variant="primary">Save</Button>`} />;
 
       case "NavLink":
         return (
@@ -189,14 +204,14 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
             display: "flex", flexDirection: "column", gap: 4, width: 200, padding: 12, borderRadius: 10,
             ...(values.inverse ? { background: tokens.bgSubtle, boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)" } : {}),
           }}>
-            <Comp {...(values as any)} isActive href="#">Dashboard</Comp>
-            <Comp {...(values as any)} isActive={false} href="#">Components</Comp>
-            <Comp {...(values as any)} isActive={false} href="#">Settings</Comp>
+            <Comp {...clean} isActive href="#">Dashboard</Comp>
+            <Comp {...clean} isActive={false} href="#">Components</Comp>
+            <Comp {...clean} isActive={false} href="#">Settings</Comp>
           </div>
         );
 
       case "Chip":
-        return <Comp {...(values as any)}>{values._label ?? "Sample Chip"}</Comp>;
+        return <Comp {...clean}>{values._label ?? "Sample Chip"}</Comp>;
 
       case "ToastProvider":
         return (
@@ -215,7 +230,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
           <Comp
             trigger={<Text weight="medium">Click to expand</Text>}
             defaultOpen
-            {...(values as any)}
+            {...clean}
           >
             <Text size="sm" color="secondary">This is the collapsible content. It animates smoothly when toggling.</Text>
           </Comp>
@@ -223,7 +238,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
 
       case "Menu":
         return (
-          <Lucent.Menu trigger={<Button variant="outline">Actions</Button>} {...(values as any)}>
+          <Lucent.Menu trigger={<Button variant="outline">Actions</Button>} {...clean}>
             <Lucent.MenuItem onSelect={() => {}}>Edit</Lucent.MenuItem>
             <Lucent.MenuItem onSelect={() => {}}>Duplicate</Lucent.MenuItem>
             <Lucent.MenuSeparator />
@@ -239,7 +254,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
               { label: "Save & publish", onSelect: () => {} },
               { label: "Discard", onSelect: () => {}, danger: true },
             ]}
-            {...(values as any)}
+            {...clean}
           >
             {values._label ?? "Save"}
           </Comp>
@@ -263,7 +278,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
           <Comp
             steps={["Account", "Profile", "Review", "Confirm"]}
             current={1}
-            {...(values as any)}
+            {...clean}
           />
         );
 
@@ -276,7 +291,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
               { title: "Tests passed", date: "8 min ago", status: "info" as const },
               { title: "PR approved", date: "15 min ago", status: "default" as const },
             ]}
-            {...(values as any)}
+            {...clean}
           />
         );
 
@@ -293,13 +308,13 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
               { name: "Bob", role: "Designer", status: "Away" },
               { name: "Carol", role: "Manager", status: "Active" },
             ]}
-            {...(values as any)}
+            {...clean}
           />
         );
 
       case "NavMenu":
         return (
-          <Lucent.NavMenu aria-label="Preview" {...(values as any)}>
+          <Lucent.NavMenu aria-label="Preview" {...clean}>
             <Lucent.NavMenuItem href="#" isActive>Dashboard</Lucent.NavMenuItem>
             <Lucent.NavMenuItem href="#">Components</Lucent.NavMenuItem>
             <Lucent.NavMenuItem href="#">Settings</Lucent.NavMenuItem>
@@ -316,17 +331,17 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
                 { id: "save", label: "Save", group: "File", onSelect: () => {} },
                 { id: "find", label: "Find in project", group: "Edit", onSelect: () => {} },
               ]}
-              {...(values as any)}
+              {...clean}
             />
           </div>
         );
 
       case "Alert":
-        return <Comp title="Heads up" {...(values as any)}>This is an alert message with additional details.</Comp>;
+        return <Comp title="Heads up" {...clean}>This is an alert message with additional details.</Comp>;
 
       case "Card":
         return (
-          <Comp {...(values as any)}>
+          <Comp {...clean}>
             <Lucent.Stack gap="2">
               <Text weight="semibold">Card Title</Text>
               <Text size="sm" color="secondary">Card content goes here. This is a sample card with some text.</Text>
@@ -344,26 +359,33 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
                 { value: "svelte", label: "Svelte" },
                 { value: "angular", label: "Angular" },
               ]}
-              {...(values as any)}
+              {...clean}
             />
           </div>
         );
 
       case "EmptyState":
-        return <Comp title="No results found" description="Try adjusting your search or filters." {...(values as any)} />;
+        return <Comp title="No results found" description="Try adjusting your search or filters." {...clean} />;
 
       case "Tooltip":
-        return <Comp content="This is a tooltip" {...(values as any)}><Button variant="outline">Hover me</Button></Comp>;
+        return <Comp content="This is a tooltip" {...clean}><Button variant="outline">Hover me</Button></Comp>;
 
       case "Breadcrumb":
-        return <Comp items={[{ label: "Home", href: "#" }, { label: "Components", href: "#" }, { label: "Breadcrumb" }]} {...(values as any)} />;
+        return <Comp items={[{ label: "Home", href: "#" }, { label: "Components", href: "#" }, { label: "Breadcrumb" }]} {...clean} />;
 
       case "Skeleton":
         return (
           <Lucent.Stack gap="3" style={{ width: 200 }}>
-            <Comp variant="circle" width={48} height={48} {...(values as any)} />
-            <Comp variant="text" lines={3} {...(values as any)} />
+            <Comp variant="circle" width={48} height={48} {...clean} />
+            <Comp variant="text" lines={3} {...clean} />
           </Lucent.Stack>
+        );
+
+      case "Progress":
+        return (
+          <div style={{ width: "100%", maxWidth: 360 }}>
+            <Comp value={values._progressValue ?? 65} {...clean} />
+          </div>
         );
 
       case "MultiSelect":
@@ -377,7 +399,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
                 { value: "angular", label: "Angular" },
               ]}
               placeholder="Select frameworks..."
-              {...(values as any)}
+              {...clean}
             />
           </div>
         );
@@ -391,14 +413,14 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
               { value: "board", label: "Board" },
             ]}
             defaultValue="grid"
-            {...(values as any)}
+            {...clean}
           />
         );
 
       case "FormField":
         return (
           <div style={{ width: "100%", maxWidth: 360 }}>
-            <Comp label="Email" htmlFor="preview-email" helperText="We'll never share your email." {...(values as any)}>
+            <Comp label="Email" htmlFor="preview-email" helperText="We'll never share your email." {...clean}>
               <Input id="preview-email" placeholder="you@example.com" />
             </Comp>
           </div>
@@ -413,7 +435,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
               { value: "inactive", label: "Inactive" },
               { value: "pending", label: "Pending" },
             ]}
-            {...(values as any)}
+            {...clean}
           />
         );
 
@@ -426,12 +448,12 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
               { value: "typescript", label: "TypeScript" },
               { value: "node", label: "Node.js" },
             ]}
-            {...(values as any)}
+            {...clean}
           />
         );
 
       case "FileUpload":
-        return <Comp accept="image/*" multiple {...(values as any)} />;
+        return <Comp accept="image/*" multiple {...clean} />;
 
       case "PageLayout":
         return (
@@ -441,7 +463,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
               sidebar={<div style={{ padding: "8px 16px" }}><Text size="xs" color="secondary">Sidebar</Text></div>}
               headerHeight={36}
               sidebarWidth={100}
-              {...(values as any)}
+              {...clean}
             >
               <div style={{ padding: 16 }}><Text size="sm">Main content area</Text></div>
             </Comp>
@@ -457,7 +479,7 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
         const needsMaxWidth = FORM_COMPONENTS.has(compName);
         const el = (
           <Comp
-            {...(values as any)}
+            {...clean}
             {...(def.props.some((p) => p.name === "children") ? { children: values._label ?? def.name } : {})}
           />
         );
@@ -474,7 +496,8 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
       <div
         style={{
           flex: 1,
-          background: previewBg,
+          background: `radial-gradient(circle, ${shell.border} 1px, ${previewBg} 1px)`,
+          backgroundSize: "24px 24px",
           padding: "32px 28px",
           minHeight: 200,
           display: "flex",
@@ -552,6 +575,17 @@ export function ComponentCustomizer({ def, shell, values, onValuesChange, previe
                 />
               </div>
             </>
+          )}
+          {compName === "Progress" && (
+            <div style={{ marginBottom: 12 }}>
+              <Text size="xs" style={{ marginBottom: 4, color: shell.muted }}>value</Text>
+              <Input
+                size="sm"
+                type="number"
+                value={values._progressValue ?? 65}
+                onChange={(e) => onValuesChange("_progressValue", e.target.value === "" ? "" : Number(e.target.value))}
+              />
+            </div>
           )}
           {configurableProps.map(renderControl)}
         </div>

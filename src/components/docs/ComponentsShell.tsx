@@ -159,7 +159,6 @@ const SidebarNav = memo(function SidebarNav({
 
 const HeaderContent = memo(function HeaderContent({
   shell,
-  bg,
   prev,
   next,
   defName,
@@ -170,7 +169,6 @@ const HeaderContent = memo(function HeaderContent({
   onDismissGenerateUI,
 }: {
   shell: Shell;
-  bg: string;
   prev: ComponentDef | null;
   next: ComponentDef | null;
   defName: string;
@@ -181,7 +179,7 @@ const HeaderContent = memo(function HeaderContent({
   onDismissGenerateUI: () => void;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: bg, gap: 12 }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "100%", background: "var(--lucent-bg-base)", gap: 12 }}>
       <Link href="/" style={{ fontFamily: "var(--font-unbounded), sans-serif", fontWeight: 600, fontSize: 13, color: shell.gold, textDecoration: "none", letterSpacing: "-0.01em", flexShrink: 0 }}>
         Lucent UI
       </Link>
@@ -354,7 +352,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
   useEffect(() => () => genTimers.current.forEach(clearTimeout), []);
 
   const sidebar = (
-    <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: resolvedBg }}>
+    <div className="hide-scrollbar" style={{ height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: "var(--lucent-bg-base)" }}>
       <SidebarNav segment={segment} />
     </div>
   );
@@ -367,7 +365,7 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
       </span>
     </div>
   ) : generateUI ? (
-    <div style={{ flex: 1, minHeight: "100%", background: resolvedSurface }}>
+    <div style={{ flex: 1, minHeight: "100%", background: "var(--lucent-surface)" }}>
       <BentoGrid />
     </div>
   ) : children;
@@ -379,8 +377,8 @@ export function ComponentsShell({ children }: { children: React.ReactNode }) {
     <LucentProvider theme={pg.theme} anchors={anchors} preset={shadowPreset}>
       <LucentDevTools />
       <PageLayout
-        style={{ height: "100vh", background: resolvedBg, color: resolvedText }}
-        header={<HeaderContent shell={shell} bg={resolvedBg} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={handleThemeToggle} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
+        style={{ height: "100vh", background: "var(--lucent-bg-base)", color: "var(--lucent-text-primary)" }}
+        header={<HeaderContent shell={shell} prev={prev} next={next} defName={def?.name ?? ""} isDark={pg.theme === "dark"} onThemeToggle={handleThemeToggle} generateUI={generateUI} onToggleGenerateUI={toggleGenerateUI} onDismissGenerateUI={dismissGenerateUI} />}
         sidebar={sidebar}
         headerHeight={56}
         sidebarWidth={generateUI ? 10 : 240}

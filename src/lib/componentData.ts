@@ -941,7 +941,7 @@ const results = allItems
 // Ask: "Add an Avatar from lucent-ui with image and initials fallback"`,
     },
     props: [
-      { name: "alt", type: "string", description: "Alt text for the image. Also used to generate initials when src is missing.", required: true },
+      { name: "alt", type: "string", description: "Alt text for the image. Also used to generate initials when src is missing.", required: true, defaultValue: '"Jane Doe"' },
       { name: "src", type: "string", description: "Image URL. If not provided or fails to load, initials are shown." },
       { name: "size", type: `"xs" | "sm" | "md" | "lg" | "xl"`, description: "Avatar diameter.", defaultValue: `"md"` },
     ],
@@ -950,11 +950,11 @@ const results = allItems
         title: "With image",
         description: "All five sizes with a photo.",
         previewKey: "avatar-image",
-        code: `<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="xs" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="sm" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="md" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="lg" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="xl" />`,
+        code: `<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="xs" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="sm" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="md" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="lg" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="xl" />`,
       },
       {
         title: "Initials fallback",
@@ -2552,8 +2552,8 @@ const results = allItems
 // Ask: "Add a CodeBlock from lucent-ui"`,
     },
     props: [
-      { name: "code", type: "string", description: "Code string — used in single (non-tabbed) mode." },
-      { name: "language", type: "string", description: "Language label shown in the header. Purely cosmetic." },
+      { name: "code", type: "string", description: "Code string — used in single (non-tabbed) mode.", defaultValue: `"<Button variant='primary'>Save</Button>"` },
+      { name: "language", type: "string", description: "Language label shown in the header. Purely cosmetic.", defaultValue: '"tsx"' },
       { name: "tabs", type: "{ label: string; code: string; language?: string; icon?: string }[]", description: "Tabbed mode. Each entry has label, code, optional language and icon. Switching tabs resets copy state." },
       { name: "variant", type: `"code" | "prompt"`, description: `"code" renders a scrollable pre/code block. "prompt" renders a single-line truncated span suited to AI tool prompts.`, defaultValue: `"code"` },
       { name: "helperText", type: "string", description: "Descriptive text rendered between the tab bar and the code area." },
@@ -2859,6 +2859,8 @@ const results = allItems
       { name: "defaultValue", type: "string", description: "Initially selected value (uncontrolled)." },
       { name: "value", type: "string", description: "Selected value (controlled)." },
       { name: "onChange", type: "(value: string) => void", description: "Callback fired when the selection changes." },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Controls the height and font size of the control.", defaultValue: `"md"` },
+      { name: "fullWidth", type: "boolean", description: "Stretches the control to fill its container width.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Disables all options.", defaultValue: "false" },
     ],
     examples: [
