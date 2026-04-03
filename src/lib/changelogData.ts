@@ -13,6 +13,23 @@ export type ChangelogItem = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "0.35.0",
+    date: "April 2026",
+    title: "CodeBlock: wrap & minimal",
+    items: [
+      {
+        label: "CodeBlock wrap prop",
+        description:
+          "New wrap boolean prop enables line wrapping instead of horizontal scroll or truncation. Works with both code and prompt variants — ideal for displaying natural-language AI prompts that should be fully visible.",
+      },
+      {
+        label: "CodeBlock minimal prop",
+        description:
+          "New minimal boolean prop renders a headerless code block with a corner copy button. No language label or tab bar — just the code and a subtle copy action.",
+      },
+    ],
+  },
+  {
     version: "0.34.0",
     date: "April 2026",
     title: "4 New Patterns, Collapsible Card & Disabled Text",

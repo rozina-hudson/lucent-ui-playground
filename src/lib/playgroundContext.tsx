@@ -17,12 +17,15 @@ function loadState(): PlaygroundState {
 type PlaygroundContextValue = {
   pg: PlaygroundState;
   setPg: (s: PlaygroundState) => void;
+  activeDocTab: string;
+  setActiveDocTab: (tab: string) => void;
 };
 
 const PlaygroundContext = createContext<PlaygroundContextValue | null>(null);
 
 export function PlaygroundProvider({ children }: { children: React.ReactNode }) {
   const [pg, setPgState] = useState<PlaygroundState>(defaultPlaygroundState);
+  const [activeDocTab, setActiveDocTab] = useState("preview");
 
   useEffect(() => {
     setPgState(loadState());
@@ -36,7 +39,7 @@ export function PlaygroundProvider({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <PlaygroundContext.Provider value={{ pg, setPg }}>
+    <PlaygroundContext.Provider value={{ pg, setPg, activeDocTab, setActiveDocTab }}>
       {children}
     </PlaygroundContext.Provider>
   );

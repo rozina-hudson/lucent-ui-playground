@@ -7,8 +7,9 @@ type Props = {
   code: string;
   shell?: ShellColors;
   language?: string;
+  minimal?: boolean;
 };
 
-export function CodeBlock({ code, language }: Props) {
-  return <LucentCodeBlock code={code} language={language} />;
+export function CodeBlock({ code, language, minimal }: Props) {
+  return <LucentCodeBlock code={code} language={language} minimal={minimal} />;
 }

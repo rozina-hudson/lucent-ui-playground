@@ -22,7 +22,7 @@ type Props = {
 };
 
 export function DocLayout({ def, prev, next }: Props) {
-  const { pg } = usePlayground();
+  const { pg, activeDocTab, setActiveDocTab } = usePlayground();
   const { tokens } = useLucent();
   const shell = getShell(pg.theme);
   const [mounted, setMounted] = useState(false);
@@ -50,9 +50,9 @@ export function DocLayout({ def, prev, next }: Props) {
 
   const compPropsAsString = useMemo(() => {
     return Object.entries(compValues)
-      .filter(([k]) => k !== "children")
+      .filter(([k]) => k !== "children" && !k.startsWith("_"))
       .map(([k, v]) => {
-        if (typeof v === "string") return `${k}={"${v}"}`;
+        if (typeof v === "string") return `${k}="${v}"`;
         if (typeof v === "boolean") return v ? k : "";
         return `${k}={${JSON.stringify(v)}}`;
       })
@@ -64,43 +64,46 @@ export function DocLayout({ def, prev, next }: Props) {
   const TopPreview = firstExample ? componentPreviews[firstExample.previewKey] : null;
 
   return (
-    <main style={{ flex: 1, padding: "40px 48px", maxWidth: 900, overflow: "visible" }}>
-      <Breadcrumb
-        style={{ marginBottom: 24 }}
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Components", href: "/components/button" },
-          { label: def.name },
-        ]}
-      />
+    <main style={{ flex: 1, overflow: "visible" }}>
+      {/* ── Full-width preview/playground area ─────────────────────────────── */}
+      <div style={{ padding: "40px 48px 0" }}>
+        <Breadcrumb
+          style={{ marginBottom: 24, maxWidth: 900 }}
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Components", href: "/components/button" },
+            { label: def.name },
+          ]}
+        />
 
-      {/* Component header */}
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-          <Text as="h1" family="display" size="3xl" weight="bold" style={{ color: shell.text, margin: 0, letterSpacing: "-0.02em" }}>
-            {def.name}
+        {/* Component header */}
+        <div style={{ marginBottom: 32, maxWidth: 900 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+            <Text as="h1" family="display" size="3xl" weight="bold" style={{ color: shell.text, margin: 0, letterSpacing: "-0.02em" }}>
+              {def.name}
+            </Text>
+            <Badge variant="neutral" size="sm">{def.category === "Atoms" ? "atom" : def.category === "Molecules" ? "molecule" : "pattern"}</Badge>
+          </div>
+          <Text as="p" size="sm" lineHeight="relaxed" style={{ margin: "0 0 16px", color: shell.muted, maxWidth: 620 }}>
+            {def.description}
           </Text>
-          <Badge variant="neutral" size="sm">{def.category === "Atoms" ? "atom" : def.category === "Molecules" ? "molecule" : "pattern"}</Badge>
+          <AiUsageSection prompts={def.aiPrompts} />
         </div>
-        <Text as="p" size="sm" lineHeight="relaxed" style={{ margin: "0 0 16px", color: shell.muted, maxWidth: 620 }}>
-          {def.description}
-        </Text>
-        <CopyImportButton importStatement={def.importStatement} shell={shell} />
       </div>
 
-      <Divider style={{ margin: "0 0 36px" }} />
+      <Divider style={{ margin: "0 0 0" }} />
 
-      <SectionTitle shell={shell}>Preview</SectionTitle>
-      <div style={{ marginBottom: 40 }}>
+      {/* Preview / Playground / Examples — full width */}
+      <div style={{ padding: "40px 48px 40px" }}>
         <Tabs
-          defaultValue="preview"
-          style={{ marginBottom: 16 }}
+          value={activeDocTab}
+          onChange={setActiveDocTab}
           tabs={[
             {
               value: "preview",
               label: "Preview",
               content: (
-                <div style={{ background: tokens.surface, padding: "32px 28px", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12 }}>
+                <div style={{ background: tokens.surface, padding: "32px 28px", minHeight: 300, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${shell.border}`, borderRadius: 12 }}>
                   {mounted && TopPreview ? <TopPreview /> : null}
                 </div>
               ),
@@ -115,89 +118,109 @@ export function DocLayout({ def, prev, next }: Props) {
                   values={compValues}
                   onValuesChange={(name, v) => setCompValues((prev) => ({ ...prev, [name]: v }))}
                   previewBg={tokens.surface}
+                  fallbackPreview={TopPreview}
                 />
+              ),
+            },
+            {
+              value: "examples",
+              label: `Examples (${def.examples.length})`,
+              content: (
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  {def.examples.map((ex) => (
+                    <ExampleCard
+                      key={ex.previewKey}
+                      example={ex}
+                      previews={componentPreviews}
+                      shell={shell}
+                      previewBg={tokens.surface}
+                    />
+                  ))}
+                </div>
               ),
             },
           ]}
         />
-        <CodeBlock
-          code={`<${def.name}${compPropsAsString ? " " + compPropsAsString : ""} />`}
-          shell={shell}
-        />
+        {activeDocTab !== "examples" && (
+          <>
+            <div style={{ marginTop: 32 }} />
+            <SectionTitle shell={shell}>Usage</SectionTitle>
+            <div>
+              <CodeBlock
+                code={(() => {
+                  const tag = def.name;
+                  const props = compPropsAsString ? " " + compPropsAsString : "";
+
+                  // ButtonGroup: render child Buttons
+                  if (tag === "ButtonGroup") {
+                    const variant = compValues._bgVariant ?? "outline";
+                    const size = compValues._bgSize ?? "md";
+                    const labels = (compValues._bgLabels ?? "Left, Center, Right").split(",").map((s: string) => s.trim());
+                    const btnProps = `variant="${variant}"${size !== "md" ? ` size="${size}"` : ""}`;
+                    const children = labels.map((l: string) => `  <Button ${btnProps}>${l}</Button>`).join("\n");
+                    return `import { ButtonGroup, Button } from 'lucent-ui'\n\n<${tag}>\n${children}\n</${tag}>`;
+                  }
+
+                  // SplitButton: render with children label
+                  if (tag === "SplitButton") {
+                    const label = compValues._label ?? "Save";
+                    return `${def.importStatement}\n\n<${tag}${props}\n  menuItems={[\n    { label: "Save as draft", onSelect: () => {} },\n    { label: "Save & publish", onSelect: () => {} },\n  ]}\n>\n  ${label}\n</${tag}>`;
+                  }
+
+                  // Components with a text label (Button, Chip)
+                  const label = compValues._label;
+                  if (label !== undefined && label !== def.name) {
+                    return `${def.importStatement}\n\n<${tag}${props}>${label}</${tag}>`;
+                  }
+
+                  // Default: self-closing or with component name as children
+                  if (def.props.some((p) => p.name === "children")) {
+                    return `${def.importStatement}\n\n<${tag}${props}>${def.name}</${tag}>`;
+                  }
+                  return `${def.importStatement}\n\n<${tag}${props} />`;
+                })()}
+                shell={shell}
+                language="React / JSX"
+              />
+            </div>
+          </>
+        )}
       </div>
 
-      <Divider style={{ margin: "0 0 36px" }} />
+      <Divider style={{ margin: "0" }} />
 
-      <SectionTitle shell={shell}>Installation</SectionTitle>
-      <div style={{ marginBottom: 40 }}>
-        <InstallTabs shell={shell} />
-      </div>
+      {/* ── Constrained content area ──────────────────────────────────────── */}
+      <div style={{ padding: "36px 48px 0", maxWidth: 900 }}>
+        <SectionTitle shell={shell}>Installation</SectionTitle>
+        <div style={{ marginBottom: 40 }}>
+          <InstallTabs shell={shell} />
+        </div>
 
-      <Divider style={{ margin: "0 0 36px" }} />
+        <Divider style={{ margin: "0 0 36px" }} />
 
-      <SectionTitle shell={shell}>Import</SectionTitle>
-      <div style={{ marginBottom: 40 }}>
-        <CodeBlock code={def.importStatement} shell={shell} />
-      </div>
+        <SectionTitle shell={shell}>API Reference</SectionTitle>
+        <div style={{ marginBottom: 64 }}>
+          <Text as="p" size="sm" style={{ color: shell.muted, marginTop: 0, marginBottom: 16 }}>
+            {def.name} props — <span style={{ color: shell.subtle }}>* required</span>
+          </Text>
+          <PropsTable props={def.props} shell={shell} />
+        </div>
 
-      <Divider style={{ margin: "0 0 36px" }} />
-
-      <SectionTitle shell={shell}>Usage</SectionTitle>
-      <div style={{ marginBottom: 40 }}>
-        <CodeBlock code={def.usageCode} shell={shell} />
-      </div>
-
-      <Divider style={{ margin: "0 0 36px" }} />
-
-      <SectionTitle shell={shell}>
-        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          AI Usage
-          <span style={{ fontSize: 11, color: shell.gold, fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 400 }}>✦ Claude · Cursor · VS Code · MCP</span>
-        </span>
-      </SectionTitle>
-      <div style={{ marginBottom: 40 }}>
-        <AiUsageSection prompts={def.aiPrompts} shell={shell} />
-      </div>
-
-      <Divider style={{ margin: "0 0 36px" }} />
-
-      <SectionTitle shell={shell}>Examples</SectionTitle>
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 40 }}>
-        {def.examples.map((ex) => (
-          <ExampleCard
-            key={ex.previewKey}
-            example={ex}
-            previews={componentPreviews}
-            shell={shell}
-            previewBg={tokens.surface}
-          />
-        ))}
-      </div>
-
-      <Divider style={{ margin: "0 0 36px" }} />
-
-      <SectionTitle shell={shell}>API Reference</SectionTitle>
-      <div style={{ marginBottom: 64 }}>
-        <Text as="p" size="sm" style={{ color: shell.muted, marginTop: 0, marginBottom: 16 }}>
-          {def.name} props — <span style={{ color: shell.subtle }}>* required</span>
-        </Text>
-        <PropsTable props={def.props} shell={shell} />
-      </div>
-
-      {/* Prev / Next footer */}
-      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 24, borderTop: `1px solid ${shell.border}` }}>
-        {prev ? (
-          <Link href={`/components/${prev.slug}`} style={{ display: "flex", flexDirection: "column", gap: 2, textDecoration: "none" }}>
-            <span style={{ fontSize: 11, color: shell.subtle, fontFamily: "var(--font-dm-sans), sans-serif" }}>← Previous</span>
-            <span style={{ fontSize: 13, color: shell.text, fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 500 }}>{prev.name}</span>
-          </Link>
-        ) : <div />}
-        {next ? (
-          <Link href={`/components/${next.slug}`} style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2, textDecoration: "none" }}>
-            <span style={{ fontSize: 11, color: shell.subtle, fontFamily: "var(--font-dm-sans), sans-serif" }}>Next →</span>
-            <span style={{ fontSize: 13, color: shell.text, fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 500 }}>{next.name}</span>
-          </Link>
-        ) : <div />}
+        {/* Prev / Next footer */}
+        <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 24, borderTop: `1px solid ${shell.border}` }}>
+          {prev ? (
+            <Link href={`/components/${prev.slug}`} style={{ display: "flex", flexDirection: "column", gap: 2, textDecoration: "none" }}>
+              <span style={{ fontSize: 11, color: shell.subtle, fontFamily: "var(--font-dm-sans), sans-serif" }}>← Previous</span>
+              <span style={{ fontSize: 13, color: shell.text, fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 500 }}>{prev.name}</span>
+            </Link>
+          ) : <div />}
+          {next ? (
+            <Link href={`/components/${next.slug}`} style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2, textDecoration: "none" }}>
+              <span style={{ fontSize: 11, color: shell.subtle, fontFamily: "var(--font-dm-sans), sans-serif" }}>Next →</span>
+              <span style={{ fontSize: 13, color: shell.text, fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 500 }}>{next.name}</span>
+            </Link>
+          ) : <div />}
+        </div>
       </div>
     </main>
   );
@@ -223,44 +246,3 @@ function SectionTitle({ children, shell }: { children: React.ReactNode; shell: R
 }
 
 
-function CopyImportButton({ importStatement, shell }: { importStatement: string; shell: ReturnType<typeof getShell> }) {
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    await navigator.clipboard.writeText(importStatement);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
-  };
-  return (
-    <button
-      onClick={copy}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "8px 14px",
-        border: `1px solid ${shell.border}`,
-        borderRadius: 8,
-        background: shell.surface,
-        cursor: "pointer",
-        fontFamily: "monospace",
-        fontSize: 12,
-        color: shell.muted,
-        transition: "border-color 0.15s",
-      }}
-    >
-      <code style={{ color: shell.codeText }}>{importStatement}</code>
-      <span
-        style={{
-          fontSize: 11,
-          color: copied ? shell.gold : shell.subtle,
-          fontFamily: "var(--font-dm-sans), sans-serif",
-          fontWeight: 500,
-          borderLeft: `1px solid ${shell.border}`,
-          paddingLeft: 8,
-        }}
-      >
-        {copied ? "Copied!" : "Copy"}
-      </span>
-    </button>
-  );
-}
