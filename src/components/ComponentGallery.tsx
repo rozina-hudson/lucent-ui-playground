@@ -643,7 +643,7 @@ function GalleryContent({ tokens, shell }: { tokens: ReturnType<typeof useLucent
       <Section id="avatar" title="Avatar" tokens={tokens} shell={shell}>
         <Row label="With image" tokens={tokens} shell={shell}>
           {(["xs", "sm", "md", "lg", "xl"] as const).map((s) => (
-            <Avatar key={s} src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size={s} />
+            <Avatar key={s} src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size={s} />
           ))}
         </Row>
         <Row label="Initials fallback" tokens={tokens} shell={shell}>

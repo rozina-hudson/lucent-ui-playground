@@ -42,13 +42,20 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
   {
     label: "Atoms",
     slugs: [
-      "button", "input", "textarea", "select", "searchinput",
-      "checkbox", "radio", "toggle",
-      "formfield", "text", "icon", "divider", "spinner", "avatar", "skeleton",
-      "breadcrumb", "navlink", "datepicker", "daterangepicker", "multiselect",
-      "slider", "codeblock", "table", "colorpicker", "colorswatch", "segmentedcontrol", "chip",
-      "splitbutton", "buttongroup",
-      "stack", "row", "progress",
+      // Buttons
+      "button", "splitbutton", "buttongroup",
+      // Text Fields
+      "input", "textarea", "searchinput",
+      // Selectors
+      "select", "multiselect", "datepicker", "daterangepicker", "colorpicker", "slider",
+      // Controls
+      "checkbox", "radio", "toggle", "segmentedcontrol",
+      // Display
+      "text", "icon", "chip", "avatar", "colorswatch", "codeblock", "table",
+      // Feedback
+      "spinner", "skeleton", "progress",
+      // Layout
+      "stack", "row", "divider", "formfield", "breadcrumb", "navlink",
     ],
   },
   {
@@ -57,6 +64,7 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
       "alert", "card", "emptystate", "tooltip",
       "tabs", "collapsible", "commandpalette", "datatable",
       "fileupload", "pagelayout", "timeline", "menu", "toast", "navmenu",
+      // Filters
       "filtersearch", "filterselect", "filtermultiselect", "filterdaterange",
       "stepper",
     ],
@@ -64,11 +72,20 @@ export const CATEGORIES: { label: string; slugs: string[] }[] = [
   {
     label: "Patterns",
     slugs: [
-      "profilecard", "settingspanel", "statsrow",
-      "actionbar", "formlayout", "emptystatecard",
-      "collapsiblecard", "searchfilterbar",
+      // Cards
+      "profilecard", "statsrow", "emptystatecard", "collapsiblecard",
+      // Layouts
+      "settingspanel", "actionbar", "formlayout",
+      // Toolbars
+      "searchfilterbar",
+      // Pages
       "pricingtable", "notificationfeed", "onboardingflow", "dashboardheader",
-      "productcard", "announcementcard", "confirmationdialog", "bulkactionbar",
+      // Dialogs
+      "confirmationdialog",
+      // Content
+      "productcard", "announcementcard",
+      // Actions
+      "bulkactionbar",
     ],
   },
 ];
@@ -117,16 +134,8 @@ export const componentRegistry: ComponentDef[] = [
       claude: `"Add a Button from lucent-ui with variant="primary". It should trigger form submission and show a loading spinner while the request is in flight."`,
       cursor: `@lucent-ui Add a primary Button that submits the form. Show a loading state while the async action runs.`,
       vscode: `Using the lucent-ui component library, add a Button with variant="primary" for form submission. Handle the loading state.`,
-      mcp: `// lucent-ui MCP — add to your tools config:
-{
-  "mcpServers": {
-    "lucent-ui": {
-      "command": "npx",
-      "args": ["-y", "lucent-ui-mcp"]
-    }
-  }
-}
-// Then ask: "Add a primary Button from lucent-ui"`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a primary Button from lucent-ui"`,
     },
     props: [
       { name: "variant", type: `"primary" | "secondary" | "outline" | "ghost" | "danger" | "danger-outline" | "danger-ghost"`, description: "Visual style of the button. secondary is a filled surface button; outline is a bordered button. danger-outline is a red-bordered variant for destructive actions needing visual weight; danger-ghost is red text on transparent background for low-emphasis destructive actions.", defaultValue: `"primary"` },
@@ -194,14 +203,16 @@ export const componentRegistry: ComponentDef[] = [
     },
     props: [
       { name: "label", type: "string", description: "Label displayed above the input." },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Height, font size, and padding scale.", defaultValue: `"md"` },
       { name: "type", type: "string", description: "HTML input type (text, email, password, etc.).", defaultValue: `"text"` },
       { name: "placeholder", type: "string", description: "Hint text shown when the field is empty." },
       { name: "value", type: "string", description: "Controlled value." },
       { name: "defaultValue", type: "string", description: "Uncontrolled initial value." },
       { name: "helperText", type: "string", description: "Hint or description below the input." },
       { name: "errorText", type: "string", description: "Error message; triggers the error visual state." },
+      { name: "prefix", type: "ReactNode", description: "Inset label attached to the left of the field (e.g. \"$\", \"https://\")." },
+      { name: "suffix", type: "ReactNode", description: "Inset label attached to the right of the field (e.g. \"kg\", \".com\")." },
       { name: "disabled", type: "boolean", description: "Prevents interaction and mutes the appearance.", defaultValue: "false" },
-      { name: "required", type: "boolean", description: "Appends a red asterisk to the label.", defaultValue: "false" },
       { name: "onChange", type: "(e: React.ChangeEvent<HTMLInputElement>) => void", description: "Change event handler." },
     ],
     examples: [
@@ -533,6 +544,8 @@ const results = allItems
       { name: "value", type: "string", description: "Controlled selected value.", required: true },
       { name: "onChange", type: "(value: string) => void", description: "Called when the selection changes.", required: true },
       { name: "orientation", type: `"vertical" | "horizontal"`, description: "Layout direction.", defaultValue: `"vertical"` },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Radio button size.", defaultValue: `"md"` },
+      { name: "contained", type: "boolean", description: "Wraps each radio in a bordered container with padding.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Disables all radio buttons in the group.", defaultValue: "false" },
       { name: "children", type: "React.ReactNode", description: "Radio components.", required: true },
     ],
@@ -928,7 +941,7 @@ const results = allItems
 // Ask: "Add an Avatar from lucent-ui with image and initials fallback"`,
     },
     props: [
-      { name: "alt", type: "string", description: "Alt text for the image. Also used to generate initials when src is missing.", required: true },
+      { name: "alt", type: "string", description: "Alt text for the image. Also used to generate initials when src is missing.", required: true, defaultValue: '"Jane Doe"' },
       { name: "src", type: "string", description: "Image URL. If not provided or fails to load, initials are shown." },
       { name: "size", type: `"xs" | "sm" | "md" | "lg" | "xl"`, description: "Avatar diameter.", defaultValue: `"md"` },
     ],
@@ -937,11 +950,11 @@ const results = allItems
         title: "With image",
         description: "All five sizes with a photo.",
         previewKey: "avatar-image",
-        code: `<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="xs" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="sm" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="md" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="lg" />
-<Avatar src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size="xl" />`,
+        code: `<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="xs" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="sm" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="md" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="lg" />
+<Avatar src="https://i.pravatar.cc/150?img=5" alt="Jane Doe" size="xl" />`,
       },
       {
         title: "Initials fallback",
@@ -2477,16 +2490,8 @@ const results = allItems
       claude: `"Add a Slider from lucent-ui with a label and showValue. Range 0–100, step 1."`,
       cursor: `@lucent-ui Add a Slider with label and showValue. Make it controlled with a useState hook.`,
       vscode: `Using the lucent-ui component library, add a Slider with label and showValue props.`,
-      mcp: `// lucent-ui MCP — add to your tools config:
-{
-  "mcpServers": {
-    "lucent-ui": {
-      "command": "npx",
-      "args": ["-y", "lucent-ui-mcp"]
-    }
-  }
-}
-// Then ask: "Add a Slider from lucent-ui with label and showValue"`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Slider from lucent-ui with label and showValue"`,
     },
     props: [
       { name: "min", type: "number", description: "Minimum value.", defaultValue: "0" },
@@ -2543,20 +2548,12 @@ const results = allItems
       claude: `"Add a CodeBlock from lucent-ui to display a code snippet. Show a language label and copy-to-clipboard button."`,
       cursor: `@lucent-ui Add a CodeBlock with language label and code prop for displaying a snippet.`,
       vscode: `Using the lucent-ui component library, add a CodeBlock component to display a formatted code snippet.`,
-      mcp: `// lucent-ui MCP — add to your tools config:
-{
-  "mcpServers": {
-    "lucent-ui": {
-      "command": "npx",
-      "args": ["-y", "lucent-ui-mcp"]
-    }
-  }
-}
-// Then ask: "Add a CodeBlock from lucent-ui"`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a CodeBlock from lucent-ui"`,
     },
     props: [
-      { name: "code", type: "string", description: "Code string — used in single (non-tabbed) mode." },
-      { name: "language", type: "string", description: "Language label shown in the header. Purely cosmetic." },
+      { name: "code", type: "string", description: "Code string — used in single (non-tabbed) mode.", defaultValue: `"<Button variant='primary'>Save</Button>"` },
+      { name: "language", type: "string", description: "Language label shown in the header. Purely cosmetic.", defaultValue: '"tsx"' },
       { name: "tabs", type: "{ label: string; code: string; language?: string; icon?: string }[]", description: "Tabbed mode. Each entry has label, code, optional language and icon. Switching tabs resets copy state." },
       { name: "variant", type: `"code" | "prompt"`, description: `"code" renders a scrollable pre/code block. "prompt" renders a single-line truncated span suited to AI tool prompts.`, defaultValue: `"code"` },
       { name: "helperText", type: "string", description: "Descriptive text rendered between the tab bar and the code area." },
@@ -2620,16 +2617,8 @@ const results = allItems
       claude: `"Add a Table from lucent-ui with Table.Head, Table.Body, Table.Row, and Table.Cell sub-components. Include column headers."`,
       cursor: `@lucent-ui Add a Table with compound sub-components for a static reference data grid with column headers.`,
       vscode: `Using the lucent-ui component library, add a Table with Table.Head and Table.Body compound sub-components.`,
-      mcp: `// lucent-ui MCP — add to your tools config:
-{
-  "mcpServers": {
-    "lucent-ui": {
-      "command": "npx",
-      "args": ["-y", "lucent-ui-mcp"]
-    }
-  }
-}
-// Then ask: "Add a Table from lucent-ui to display reference data"`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a Table from lucent-ui to display reference data"`,
     },
     props: [
       { name: "striped", type: "boolean", description: "Applies alternating bgMuted backgrounds to even tbody rows.", defaultValue: "false" },
@@ -2745,16 +2734,8 @@ const results = allItems
       claude: `"Add a ColorPicker from lucent-ui with a label and preset color groups. Handle state with useState."`,
       cursor: `@lucent-ui Add a ColorPicker with preset brand and semantic color groups. Use controlled state.`,
       vscode: `Using the lucent-ui component library, add a ColorPicker with label and presetGroups for brand colors.`,
-      mcp: `// lucent-ui MCP — add to your tools config:
-{
-  "mcpServers": {
-    "lucent-ui": {
-      "command": "npx",
-      "args": ["-y", "lucent-ui-mcp"]
-    }
-  }
-}
-// Then ask: "Add a ColorPicker from lucent-ui with preset groups"`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a ColorPicker from lucent-ui with preset groups"`,
     },
     props: [
       { name: "value", type: "string", description: "Current color value (any CSS color string).", required: true },
@@ -2820,16 +2801,8 @@ const results = allItems
       claude: `"Add a ColorSwatch from lucent-ui with a selected state and square shape. Use size="lg"."`,
       cursor: `@lucent-ui Add a ColorSwatch with selected state, square shape, and lg size.`,
       vscode: `Using the lucent-ui component library, add a ColorSwatch with square shape, selected state, and onClick handler.`,
-      mcp: `// lucent-ui MCP — add to your tools config:
-{
-  "mcpServers": {
-    "lucent-ui": {
-      "command": "npx",
-      "args": ["-y", "lucent-ui-mcp"]
-    }
-  }
-}
-// Then ask: "Add a ColorSwatch from lucent-ui"`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a ColorSwatch from lucent-ui"`,
     },
     props: [
       { name: "color", type: "string", description: "CSS color value to display.", required: true },
@@ -2878,22 +2851,16 @@ const results = allItems
       claude: `"Add a SegmentedControl from lucent-ui with three options for switching between view modes. Use defaultValue."`,
       cursor: `@lucent-ui Add a SegmentedControl with grid/list/table options and a defaultValue.`,
       vscode: `Using the lucent-ui component library, add a SegmentedControl for view mode switching with three options.`,
-      mcp: `// lucent-ui MCP — add to your tools config:
-{
-  "mcpServers": {
-    "lucent-ui": {
-      "command": "npx",
-      "args": ["-y", "lucent-ui-mcp"]
-    }
-  }
-}
-// Then ask: "Add a SegmentedControl from lucent-ui for view mode toggling"`,
+      mcp: `// lucent-ui MCP
+// Ask: "Add a SegmentedControl from lucent-ui for view mode toggling"`,
     },
     props: [
       { name: "options", type: "{ value: string; label: string }[]", description: "The available options.", required: true },
       { name: "defaultValue", type: "string", description: "Initially selected value (uncontrolled)." },
       { name: "value", type: "string", description: "Selected value (controlled)." },
       { name: "onChange", type: "(value: string) => void", description: "Callback fired when the selection changes." },
+      { name: "size", type: `"sm" | "md" | "lg"`, description: "Controls the height and font size of the control.", defaultValue: `"md"` },
+      { name: "fullWidth", type: "boolean", description: "Stretches the control to fill its container width.", defaultValue: "false" },
       { name: "disabled", type: "boolean", description: "Disables all options.", defaultValue: "false" },
     ],
     examples: [
@@ -3336,7 +3303,7 @@ toast({ title: "Saved", variant: "success" });`,
       { name: "leftIcon", type: "ReactNode", description: "Icon displayed before the primary label." },
       { name: "disabled", type: "boolean", description: "Disables both halves.", defaultValue: "false" },
       { name: "loading", type: "boolean", description: "Shows spinner on primary half and disables interaction.", defaultValue: "false" },
-      { name: "bordered", type: "boolean", description: "Adds visible border around the split button." },
+      { name: "bordered", type: "boolean", description: "Adds visible border around the split button.", defaultValue: "true" },
       { name: "menuPlacement", type: `"bottom-start" | "bottom-end" | "top-start" | "top-end"`, description: "Preferred dropdown placement.", defaultValue: `"bottom-end"` },
       { name: "children", type: "React.ReactNode", description: "Primary button label.", required: true },
     ],
